@@ -85,6 +85,7 @@
     } catch (e) {}
 
     var LOG_PREFIX = "[jobars2]";
+    const BUILD = "jobars2-v1.1"; // build tag, surfaced in the "Copy debug report" output
 
     // Safety valves: robot.php always re-enters another wall post, and tokens are
     // single-use (a consumed token makes the resolver bounce between farm blogs
@@ -137,6 +138,14 @@
         return false;
     }
 
+    function clipboard() {
+        try {
+            if (typeof GM_setClipboard === "function") return GM_setClipboard;
+            if (W && typeof W.GM_setClipboard === "function") return W.GM_setClipboard;
+        } catch (e) {}
+        return null;
+    }
+
     function plausibleDomain(dom) {
         try { return /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/i.test(dom); } catch (e) { return false; }
     }
@@ -163,6 +172,70 @@
     }
 
     var menuRegistered = false;
+
+    // ---- debug report (menu: "Copy debug report") ----
+    // Privacy: cookie / sessionStorage / app_vars are reported as NAMES and KEYS
+    // only - never values; page text is only regex-tested, never included.
+    function buildDebugReport() {
+        var lines = [];
+        var alfsig = false, farmWall = false, modalUp = false;
+        try { alfsig = looksLikeAdlinkflyStep(); } catch (e) {}
+        try {
+            farmWall = !!(W.document.body && /You Are On Step|Click Any Ad|Access Restricted/i.test(W.document.body.textContent));
+        } catch (e) {}
+        try { modalUp = findModalContainers().length > 0; } catch (e) {}
+        lines.push("build: " + BUILD);
+        lines.push("time: " + new Date().toISOString());
+        try { lines.push("url: " + W.location.href); } catch (e) { lines.push("url: (unavailable)"); }
+        try { lines.push("path: " + W.location.pathname); } catch (e) {}
+        // cookie NAMES only - values are never included
+        var names = [];
+        try {
+            String(W.document.cookie || "").split(";").forEach(function(p) {
+                var n = p.split("=")[0].replace(/^\s+|\s+$/g, "");
+                if (n && names.indexOf(n) === -1) names.push(n);
+            });
+        } catch (e) {}
+        lines.push("cookie names: " + (names.length ? names.join(", ") : "(none)"));
+        var ssKeys = [];
+        try {
+            for (var i = 0; i < W.sessionStorage.length; i++) ssKeys.push(String(W.sessionStorage.key(i)));
+        } catch (e) {}
+        lines.push("sessionStorage keys: " + (ssKeys.length ? ssKeys.join(", ") : "(none)"));
+        var steplink = "";
+        try { steplink = readCookie("steplink"); } catch (e) {}
+        lines.push("gate steplink sniff: " + (steplink ? "FIRED (steplink cookie present)" : "no"));
+        lines.push("gate known-host: " + (gateKnown ? "FIRED" : "no"));
+        lines.push("gate AdLinkFly signature: " + (alfsig ? "FIRED" : "no"));
+        lines.push("gate psa.wf /goto/: " + (gatePsaGoto ? "FIRED" : "no"));
+        lines.push("wall type: " + (farmWall ? "farm wall" : (modalUp ? "AdLinkFly modal" : (alfsig ? "AdLinkFly page (no modal)" : "none"))));
+        try {
+            var map = gmGet(HARVEST_KEY, {}) || {};
+            var keys = Object.keys(map).sort();
+            lines.push("harvested domains (" + keys.length + "):");
+            keys.forEach(function(k) { lines.push("  " + k + "  (seen " + map[k] + ")"); });
+        } catch (e) {}
+        var avKeys = [];
+        try {
+            var av = W.app_vars;
+            if (av && typeof av === "object") avKeys = Object.keys(av);
+        } catch (e) {}
+        lines.push("app_vars keys: " + (avKeys.length ? avKeys.join(", ") : "(none)"));
+        return lines.join("\n");
+    }
+
+    // ---- @match export (menu: "Copy domains as @match rules") ----
+    function buildMatchExport() {
+        var out = ["// paste into extra_bypasses/jobars2_stepwall.user.js header"];
+        try {
+            var map = gmGet(HARVEST_KEY, {}) || {};
+            Object.keys(map).sort().forEach(function(k) {
+                out.push("// @match        *://*." + k + "/*");
+            });
+        } catch (e) {}
+        return out.join("\n");
+    }
+
     function registerMenu() {
         if (menuRegistered) return;
         try {
@@ -173,10 +246,25 @@
             reg("[jobars2] Copy discovered farm domains", function() {
                 try {
                     var data = JSON.stringify(gmGet(HARVEST_KEY, {}), null, 2);
-                    var clip = (typeof GM_setClipboard === "function") ? GM_setClipboard :
-                               ((W && typeof W.GM_setClipboard === "function") ? W.GM_setClipboard : null);
+                    var clip = clipboard();
                     if (clip) { clip(data); log("farm domain map copied to clipboard"); }
                     else { log("GM_setClipboard unavailable:", data); }
+                } catch (e) { log("copy failed:", e && e.message); }
+            });
+            reg("[jobars2] Copy domains as @match rules", function() {
+                try {
+                    var txt = buildMatchExport();
+                    var clip = clipboard();
+                    if (clip) { clip(txt); log("@match rules copied to clipboard"); }
+                    else { log("GM_setClipboard unavailable; export:\n" + txt); }
+                } catch (e) { log("copy failed:", e && e.message); }
+            });
+            reg("[jobars2] Copy debug report", function() {
+                try {
+                    var report = buildDebugReport();
+                    var clip = clipboard();
+                    if (clip) { clip(report); log("debug report copied to clipboard"); }
+                    else { log("GM_setClipboard unavailable; report:\n" + report); }
                 } catch (e) { log("copy failed:", e && e.message); }
             });
             reg("[jobars2] Reset discovered domains", function() {
@@ -312,6 +400,94 @@
         } catch (e) {}
     }
 
+    // ================= 1b. restart-chain helper =================
+    // When the dead-token loop guard trips below, the chain is a dead end (the
+    // single-use steplink token was already consumed). psa_wf_exe stashes the
+    // psa.wf post URL that started the chain as 'psa_origin'; if present we offer
+    // a one-click restart that clears the jump guards and navigates back so the
+    // user can regenerate fresh links. GM storage is the primary carrier because
+    // sessionStorage cannot cross the psa.wf -> farm origin change in one tab;
+    // the sessionStorage copy is the same-origin fallback.
+    var PSA_ORIGIN_KEY = "psa_origin";
+    var PSA_ORIGIN_MAX_AGE_MS = 12 * 60 * 60 * 1000; // ignore stashes older than 12h
+
+    function readPsaOrigin() {
+        try {
+            var raw = gmGet(PSA_ORIGIN_KEY, "");
+            if (raw) {
+                try {
+                    var obj = JSON.parse(raw);
+                    if (obj && obj.u && Date.now() - (obj.t || 0) < PSA_ORIGIN_MAX_AGE_MS) return String(obj.u);
+                } catch (e) {
+                    if (plausibleLink(String(raw))) return String(raw); // plain sessionStorage-style value
+                }
+            }
+        } catch (e) {}
+        try {
+            var s = W.sessionStorage.getItem(PSA_ORIGIN_KEY) || "";
+            if (s && /^https?:\/\//i.test(s)) return s;
+        } catch (e) {}
+        return "";
+    }
+
+    function clearPsaOrigin() {
+        try { gmSet(PSA_ORIGIN_KEY, ""); } catch (e) {}
+        try { W.sessionStorage.removeItem(PSA_ORIGIN_KEY); } catch (e) {}
+    }
+
+    // Clear our own jump guards plus psa_wf_exe's ('psaWallJump', jump counter and
+    // every 'psa_exe_*' key) so the regenerated chain is allowed to jump again.
+    // Keys on other origins (psa.wf itself) can only be cleared same-origin; the
+    // restart lands on the post page where pathname-specific keys do not block.
+    function clearJumpGuards() {
+        try {
+            var kill = [];
+            for (var i = 0; i < W.sessionStorage.length; i++) {
+                var k = W.sessionStorage.key(i);
+                if (k && (k === LOOP_GUARD_KEY || k === COUNT_GUARD_KEY || k.indexOf("psa_exe_") === 0)) kill.push(k);
+            }
+            kill.forEach(function(k) { try { W.sessionStorage.removeItem(k); } catch (e) {} });
+        } catch (e) {}
+    }
+
+    // Fixed top-bar toast, styled after showNotice(), with a clickable restart
+    // button (and a dismiss x, auto-hides after 30s).
+    function showRestartToast(originUrl) {
+        try {
+            var el = W.document.createElement("div");
+            el.setAttribute("style", [
+                "position:fixed", "top:0", "left:0", "right:0", "z-index:2147483647",
+                "background:#1b8a3f", "color:#fff", "font:600 14px/20px Arial,sans-serif",
+                "text-align:center", "padding:10px 16px", "box-shadow:0 2px 6px rgba(0,0,0,.35)"
+            ].join(";"));
+            var span = W.document.createElement("span");
+            span.textContent = "[Bypass] Link token is dead/expired.";
+            var btn = W.document.createElement("button");
+            btn.textContent = "\u21bb Restart chain";
+            btn.setAttribute("style", "background:#fff;color:#1b8a3f;border:none;border-radius:10px;" +
+                "padding:3px 12px;font:700 13px/18px Arial,sans-serif;cursor:pointer;margin-left:10px");
+            btn.addEventListener("click", function() {
+                try {
+                    clearJumpGuards();
+                    clearPsaOrigin();
+                    log("restarting chain from", originUrl);
+                    W.location.assign(originUrl);
+                } catch (e) { log("restart failed:", e && e.message); }
+            });
+            var x = W.document.createElement("button");
+            x.textContent = "\u00d7";
+            x.setAttribute("style", "background:transparent;color:#fff;border:none;" +
+                "font:700 16px/20px Arial,sans-serif;cursor:pointer;margin-left:12px");
+            x.addEventListener("click", function() { try { el.remove(); } catch (e) {} });
+            el.appendChild(span);
+            el.appendChild(btn);
+            el.appendChild(x);
+            (W.document.body || W.document.documentElement).appendChild(el);
+            setTimeout(function() { try { el.remove(); } catch (e) {} }, 30000);
+            log("dead steplink; restart toast shown for", originUrl);
+        } catch (e) {}
+    }
+
     function jump(target) {
         try {
             // Loop guard 1: tokens are single-use. If the resolver bounces us back
@@ -321,6 +497,12 @@
             try { last = W.sessionStorage.getItem(LOOP_GUARD_KEY) || ""; } catch (e) {}
             if (last && last === target) {
                 log("steplink token already used/failed, leaving page");
+                // RESTART-CHAIN: dead token + stashed psa.wf origin -> offer a
+                // one-click restart so fresh links can be generated.
+                try {
+                    var originUrl = readPsaOrigin();
+                    if (originUrl) showRestartToast(originUrl);
+                } catch (e) {}
                 return;
             }
             // Loop guard 2: hard cap on jumps per tab (covers ping-pong between

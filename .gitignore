@@ -27,3 +27,6 @@ upstream/sync-report.json
 Bypass Shortlinks.md
 INSTRUCTIONS.md
 
+
+# Test harness
+tests/node_modules/

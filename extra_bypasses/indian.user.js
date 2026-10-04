@@ -172,7 +172,12 @@
             } catch(_e) {}
         };
 
-        var showProceedBtn = function(badge, onGo) {
+        // STATE-AWARE PROCEED PILL: with an optional third arg (a selector for the
+        // page's own step/wait control) the pill starts as a disabled-looking
+        // "⏳ wait…" and only turns clickable once that control is enabled/ready
+        // (attribute disabled, .disabled class, or /please wait|wait/i text);
+        // without the arg it stays instant-ready exactly as before.
+        var showProceedBtn = function(badge, onGo, watchSel) {
             if (!badge) return;
             var btn = document.createElement('button');
             btn.textContent = 'Proceed →';
@@ -187,6 +192,45 @@
             badge.style.pointerEvents = 'none';
             btn.style.pointerEvents   = 'all';
             badge.appendChild(btn);
+            if (!watchSel) return;
+            var ready = false, watched = null, obs = null, pollId = null;
+            var _watchReady = function(el) {
+                if (!el) return false;
+                if (el.disabled) return false;
+                var cl = (typeof el.className === 'string') ? el.className : '';
+                if (/\bdisabled\b/.test(cl)) return false;
+                if (/please wait|wait/i.test(el.innerText || el.textContent || '')) return false;
+                return true;
+            };
+            var _stopWatch = function() {
+                if (obs) { try { obs.disconnect(); } catch (_e) {} obs = null; }
+                if (pollId) { clearInterval(pollId); pollId = null; }
+            };
+            var _setReady = function() {
+                if (ready) return;
+                ready = true;
+                _stopWatch();
+                btn.textContent = '✅ Ready! Proceed →';
+                btn.style.opacity = '1';
+                btn.style.cursor  = 'pointer';
+            };
+            var _check = function() {
+                if (ready) return;
+                if (!watched || !watched.isConnected) watched = document.querySelector(watchSel);
+                if (watched && !obs) {
+                    try {
+                        obs = new MutationObserver(_check);
+                        obs.observe(watched, { attributes: true, childList: true, subtree: true });
+                    } catch (_e) { obs = null; }
+                }
+                if (_watchReady(watched)) _setReady();
+            };
+            btn.textContent = '⏳ wait…';
+            btn.style.opacity = '.6';
+            btn.style.cursor  = 'default';
+            pollId = setInterval(_check, 300);
+            _check();
+            setTimeout(_setReady, 15000); // fail-open: never leave the pill stuck on wait
         };
 
         _updateMenu();
@@ -1216,11 +1260,20 @@
             else _BTN.click(dest);
         } else {
             _toast('✅ Ready!', '#4caf50');
+            // STATE-AWARE PILL call site: on generic (non-config) AdLinkFly-style
+            // pages watch the site's own step control so the pill only arms when it
+            // is enabled (no more early clicks that bounce); known per-site configs
+            // and pages without those controls keep instant-ready (null).
+            var _watch = null;
+            if (!_cfg) {
+                var _alfSel = '#before-captcha button, #link-view button, .btn-captcha';
+                try { _watch = document.querySelector(_alfSel) ? _alfSel : null; } catch (_e) {}
+            }
             _SETTINGS.showProceedBtn(_badge, function() {
                 _badge.style.opacity = '0';
                 if (typeof dest === 'string') _goUrl(dest);
                 else _BTN.click(dest);
-            });
+            }, _watch);
         }
     };
 

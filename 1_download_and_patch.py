@@ -26,6 +26,29 @@ UPSTREAM_URL_FALLBACK = (
 RAW_FILE = "upstream_gongchandang49.user.js"
 PATCHED_FILE = "upstream_patched.user.js"
 
+# MISSED-PATCH WARNINGS: surgical patches that must land are run through
+# apply_patch(); failures are collected here and summarised at the end.
+# Exit code stays 0 so CI builds are never broken by a warning.
+_MISSED_PATCHES = []
+
+
+def apply_patch(content, old, new, name):
+    """content.replace() that warns (and records) when the patch did not land."""
+    if old in content:
+        return content.replace(old, new)
+    print(f"WARNING: patch did not apply: {name}")
+    _MISSED_PATCHES.append(name)
+    return content
+
+
+def report_missed_patches():
+    if _MISSED_PATCHES:
+        print(f"SUMMARY: {len(_MISSED_PATCHES)} patch(es) did not apply:")
+        for name in _MISSED_PATCHES:
+            print(f"  - {name}")
+    else:
+        print("SUMMARY: all patches applied.")
+
 
 def fetch(url, destination):
     print(f"Fetching: {url}")
@@ -56,46 +79,56 @@ def apply_our_fixes(src, dst):
         content = f.read()
 
     # gplinks additional domains
-    content = content.replace(
+    content = apply_patch(
+        content,
         "mangareleasedate|sabkiyojana|teqwit|bulkpit|odiafm).com"
         "|(loopmyhub|thepopxp).shop|(cryptoblast|powergam).online",
         "mangareleasedate|sabkiyojana|teqwit|bulkpit|odiafm|qrixpe).com"
-        "|(loopmyhub|thepopxp).shop|(cryptoblast|powergam).online"
+        "|(loopmyhub|thepopxp).shop|(cryptoblast|powergam).online",
+        "gplinks additional domains (qrixpe)",
     )
 
     # exe.io additional domains
-    content = content.replace(
+    content = apply_patch(
+        content,
         "(exeo|exego).app|(falpus|exe-urls|exnion|exe-links|exeygo).com|4ace.online",
-        "(exeo|exego).app|(falpus|exe-urls|exnion|exe-links|exeygo|exeylink).com|4ace.online"
+        "(exeo|exego).app|(falpus|exe-urls|exnion|exe-links|exeygo|exeylink).com|4ace.online",
+        "exe.io additional domains (exeylink)",
     )
 
     # stfly group - trekcheck.net addition
-    content = content.replace(
+    content = apply_patch(
+        content,
         "stfly.(cc|xyz|biz)|(techtrendmakers|gadnest|optimizepics).com"
         "|(blogbux|blogesque|exploreera|explorosity|torovalley).net",
         "stfly.(cc|xyz|biz)|(techtrendmakers|gadnest|optimizepics).com"
-        "|(blogbux|blogesque|exploreera|explorosity|torovalley|trekcheck).net"
+        "|(blogbux|blogesque|exploreera|explorosity|torovalley|trekcheck).net",
+        "stfly group addition (trekcheck.net)",
     )
 
     # indobo group additions
-    content = content.replace(
+    content = apply_patch(
+        content,
         "(aduzz|tutorialsaya|baristakesehatan|merekrut|indobo).com",
-        "(aduzz|tutorialsaya|baristakesehatan|merekrut|indobo|educorp).com"
+        "(aduzz|tutorialsaya|baristakesehatan|merekrut|indobo|educorp).com",
+        "indobo group addition (educorp)",
     )
 
     # lksfy group additions
-    content = content.replace(
+    content = apply_patch(
+        content,
         "(raftarsamachar|gadialert|jobinmeghalaya|raftarwords|sharclub).in",
-        "(raftarsamachar|gadialert|jobinmeghalaya|raftarwords|sharclub|jankaritak).in"
+        "(raftarsamachar|gadialert|jobinmeghalaya|raftarwords|sharclub|jankaritak).in",
+        "lksfy group addition (jankaritak)",
     )
 
     # work.ink still broken - keep disabled
     if "case 'work.ink'" in content and "//case 'work.ink'" not in content:
-        content = content.replace("case 'work.ink'", "//case 'work.ink'")
+        content = apply_patch(content, "case 'work.ink'", "//case 'work.ink'", "disable work.ink case")
 
     # pixeldrain handled by a dedicated separate script
     if "case 'pixeldrain.com'" in content and "//case 'pixeldrain.com'" not in content:
-        content = content.replace("case 'pixeldrain.com'", "//case 'pixeldrain.com'")
+        content = apply_patch(content, "case 'pixeldrain.com'", "//case 'pixeldrain.com'", "disable pixeldrain.com case")
 
     if not content.endswith("\n"):
         content += "\n"
@@ -109,3 +142,4 @@ def apply_our_fixes(src, dst):
 if __name__ == "__main__":
     sync_upstream()
     apply_our_fixes(RAW_FILE, PATCHED_FILE)
+    report_missed_patches()

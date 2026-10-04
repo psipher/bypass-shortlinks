@@ -10,6 +10,8 @@
 // @include      /^https?:\/\/(?!(?:[a-z0-9-]+\.)*(?:psa\.wf|psarips\.com)(?:[\/:]|$))[a-z0-9.-]+\.[a-z]{2,}\/[A-Za-z0-9]{3,12}\?src=PSA(?:&|$)/
 // @run-at       document-start
 // @grant        unsafeWindow
+// @grant        GM_setValue
+// @grant        GM_getValue
 // ==/UserScript==
 
 // ----- Bypass PSA.wf -> exe.io (AdLinkFly) chain ------
@@ -31,6 +33,7 @@
 
     var W = (typeof unsafeWindow !== "undefined") ? unsafeWindow : window;
     var LOG_PREFIX = "[psa-exe]";
+    const BUILD = "psa-exe-v1.1"; // build tag, logged at dispatch for console debugging
 
     function log() {
         try {
@@ -52,11 +55,65 @@
         try { return (W.location && W.location.hostname) || ""; } catch (e) { return ""; }
     }
 
+    // ================= 0. popunder closer (document-start) =================
+    // Ad networks fire window.open popunders from the chain pages; wrap window.open
+    // and drop only KNOWN ad-network URLs (short list on purpose):
+    //  - dampedvisored.com / popcent.net      popunder exchanges observed on this chain
+    //  - /1clkn/ + /ads(/serve)/ paths        generic ad-click/serve endpoints
+    //  - propellerads/monetag/hilltopads/onclickalgo  popunder ad networks
+    // Armed only on chain pages (psa.wf /goto/ + the exe.io AdLinkFly mirrors, both
+    // already restricted by this module's @match/@include flow gates), and any URL
+    // containing one of the chain's own domains is always allowed through, so the
+    // real destinations (final file hosts) can never be blocked.
+    var POPUNDER_RE = /dampedvisored\.com|popcent\.net|\/1clkn\/|\/ads(?:erve)?\/|propellerads\.com|monetag\.|hilltopads\.|onclickalgo\.com/i;
+    var CHAIN_HOST_RE = /psa\.wf|psarips\.com|exe\.io|exeygo\.com|srnky\.com|clksz\.com/i;
+
+    function installPopunderCloser() {
+        try {
+            var realOpen = W.open;
+            if (typeof realOpen !== "function") return;
+            W.open = function(url) {
+                try {
+                    var u = String(url || "");
+                    // non-http targets (about:blank etc.) and chain-own URLs pass through
+                    if (!u || !/^https?:\/\//i.test(u) || CHAIN_HOST_RE.test(u)) {
+                        return realOpen.apply(this, arguments);
+                    }
+                    if (POPUNDER_RE.test(u)) {
+                        log("blocked popup", u.slice(0, 120));
+                        return { closed: true, close: function() {}, focus: function() {}, postMessage: function() {} };
+                    }
+                } catch (e) {}
+                return realOpen.apply(this, arguments);
+            };
+            log("popunder closer armed");
+        } catch (e) { log("window.open wrap failed:", e && e.message); }
+    }
+
     // ================= 1. psa.wf / psarips.com /goto/ interstitial =================
     // The main script already force-submits form[name=redirect] on psa.wf (it shortens all
     // setTimeout to 0). This module only adds value it lacks: psarips.com, the Cloudflare
     // challenge case, a late safety net, and a loop guard. Tolerates missing forms
     // (expired links: no form -> give up quietly).
+    // ================= 1b. restart-chain origin stash =================
+    // RESTART-CHAIN: remember the psa.wf post URL that started this chain (the
+    // /goto/ referrer) so the jobars2 module can offer a one-click "Restart chain"
+    // when a steplink token dies. GM storage is primary because sessionStorage
+    // cannot cross the psa.wf -> farm origin change; sessionStorage is the
+    // same-origin fallback for sandboxes without GM storage.
+    function stashPsaOrigin() {
+        try {
+            var ref = W.document.referrer || "";
+            if (!/^https?:\/\//i.test(ref)) return;
+            try { W.sessionStorage.setItem("psa_origin", ref); } catch (e) {}
+            try {
+                if (typeof GM_setValue === "function") {
+                    GM_setValue("psa_origin", JSON.stringify({ u: ref, t: Date.now() }));
+                }
+            } catch (e) {}
+        } catch (e) {}
+    }
+
     function handlePsaGoto() {
         var started = Date.now();
         var submitKey = "psa_exe_jump:" + W.location.pathname;
@@ -68,7 +125,8 @@
         // again..." (stale link token or per-IP throttle). One automatic retry matches
         // the site's own advice; a second failure means the link is dead - stop there.
         try {
-            var errText = (document.body && document.body.innerText || "");
+            // innerText is not implemented in jsdom/test environments; textContent fallback
+            var errText = (document.body && (document.body.innerText || document.body.textContent) || "");
             var retryKey = "psa_exe_errretry:" + W.location.pathname;
             if (/An error occurred/i.test(errText)) {
                 if (W.sessionStorage.getItem(retryKey) !== "1") {
@@ -99,6 +157,7 @@
                     try {
                         alreadyJumped = true;
                         try { W.sessionStorage.setItem(submitKey, "1"); } catch (e) {}
+                        stashPsaOrigin(); // RESTART-CHAIN: stash post URL (referrer) as chain origin
                         log("submitting /goto/ redirect form to exe.io");
                         form.submit();
                     } catch (e) { log("form.submit failed:", e && e.message); }
@@ -446,13 +505,17 @@
 
     // ================= dispatch =================
     var h = host();
+    log("module build", BUILD);
     if (/(^|\.)psa\.wf$/i.test(h) || /(^|\.)psarips\.com$/i.test(h)) {
         if (/^\/goto\//.test(W.location.pathname)) {
             log("psa.wf /goto/ interstitial:", W.location.pathname);
+            installPopunderCloser(); // POPUNDER CLOSER: chain page only
             handlePsaGoto();
         }
     } else {
-        // exe.io + every mirror (hard-coded or ?src=PSA catch-all)
+        // exe.io + every mirror (hard-coded or ?src=PSA catch-all) — AdLinkFly flow
+        // pages only; the module's @match/@include gating keeps legit sites untouched
+        installPopunderCloser(); // POPUNDER CLOSER: chain page only
         installTraps();
         if (document.readyState === "loading") {
             document.addEventListener("DOMContentLoaded", startAutomation, { once: true, capture: true });

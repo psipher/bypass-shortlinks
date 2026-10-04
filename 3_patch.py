@@ -73,6 +73,42 @@ def does_not_contain_any(text, strings):
     return all(s not in text for s in strings)
 
 
+# MISSED-PATCH WARNINGS: surgical patches that must land are run through
+# apply_patch()/apply_regex(); failures are collected here and summarised at the
+# end of main(). Exit code stays 0 so CI builds are never broken by a warning.
+_MISSED_PATCHES = []
+
+
+def _record_miss(name):
+    print(f"WARNING: patch did not apply: {name}")
+    _MISSED_PATCHES.append(name)
+
+
+def apply_patch(content, old, new, name):
+    """content.replace() that warns when the patch did not change anything."""
+    if old in content:
+        return content.replace(old, new)
+    _record_miss(name)
+    return content
+
+
+def apply_regex(content, pattern, repl, name, count=0, flags=0):
+    """re.sub() variant of apply_patch: warns when nothing changed."""
+    patched = re.sub(pattern, repl, content, count=count, flags=flags)
+    if patched == content:
+        _record_miss(name)
+    return patched
+
+
+def report_missed_patches():
+    if _MISSED_PATCHES:
+        print(f"SUMMARY: {len(_MISSED_PATCHES)} patch(es) did not apply:")
+        for name in _MISSED_PATCHES:
+            print(f"  - {name}")
+    else:
+        print("SUMMARY: all patches applied.")
+
+
 def build_script(input_path, includes_path, output_path):
     with open(input_path, 'r', encoding='utf-8') as f:
         lines = f.readlines()
@@ -145,17 +181,26 @@ def debloat_and_rebrand(file_path, new_version):
 
         # Strip BloggerPemula donation messages
         bp_rant = '''// ================================================================================================================================================================\n//                                          PLEASE READ SCRIPT INFO BEFORE USE\n//                                      PLEASE RESPECT IF MY SCRIPTS USEFUL FOR YOU\n//                      DON'T TRY TO COPY PASTE MY SCRIPTS THEN SHARE TO OTHERS LIKE YOU ARE THE CREATOR\n//                 PLEASE DON'T REMOVE OR CHANGE MY BLOG, DISABLE YOUR ADBLOCK IN MY BLOG , THANKS FOR YOUR SUPPORT\n//              My Blog is Very Important to give some Delay for safe away ,Track New Shortlinks , Broken Bypass etc...\n// Thanks so much to @JustOlaf , @Konf , @hacker09 , @juansi , @NotYou , @cunaqr And @Rust1667 for Helping me , make my script even better\n//                        Thanks so much to @varram for providing a Great Bypass Site bypass.city and adbypass.org\n//                                And also Thank you to everyone who has Contributed with Good Feedback.\n// =================================================================================================================================================================\n// NOTES\n// Change Your Delay in the settings options from 5 to 10 or 20 if you have issues like Your action marked Suspicious,Don't try to bypass ,Don't use Speedster, etc\n// What do you think if I move all the code to my own server, so people who can only duplicate my script and change the code as they wish, will not be able to do it anymore?\n// Say thank you to the donors by leaving good feedback, because of them I am more enthusiastic to improve the quality and add new features to the script.\n// My Scripts Works in All Browsers and All Userscript Extensions , But Better if You Use Firefox Browser and Violentmonkey\n'''
-        content = content.replace(bp_rant, '')
+        content = apply_patch(content, bp_rant, '', "bp_rant rant block removal")
 
         # Strip lazy-update messages
-        content = content.replace("// Try to Enable Fast Timer if My Script not Working on besargaji.com\n", "")
-        content = content.replace(
-            "// Debloated Script from Amm0ni4 Just Make Broken My Script and Made Me Lazy to Update, His Debloated Not Working Correctly and He Don't Know how to Fix it\n",
-            ""
+        content = apply_patch(
+            content,
+            "// Try to Enable Fast Timer if My Script not Working on besargaji.com\n",
+            "",
+            "lazy-update message removal (besargaji)",
         )
-        content = content.replace(
+        content = apply_patch(
+            content,
+            "// Debloated Script from Amm0ni4 Just Make Broken My Script and Made Me Lazy to Update, His Debloated Not Working Correctly and He Don't Know how to Fix it\n",
+            "",
+            "lazy-update message removal (Amm0ni4 jab)",
+        )
+        content = apply_patch(
+            content,
             "Please Wait in @ Seconds , Tell Amm0ni4 to Delete His Debloated if You Want My Script to be Updated Regularly , Thanks",
-            ""
+            "",
+            "lazy-update message removal (Please Wait in @ Seconds)",
         )
 
         # Clean up AJAX submit handler - remove BP branding
@@ -166,23 +211,52 @@ def debloat_and_rebrand(file_path, new_version):
             blogger.replaceWith('<button class="btn btn-default , col-md-12 text-center" onclick="javascript: return false;"><b>Thanks for using Bypass All Shortlinks Scripts and for Donations , Regards : Bloggerpemula</b></button>');
             pemula.replaceWith('<button class="btn btn-default , col-md-12 text-center" onclick="javascript: return false;"><b>Thanks for using Bypass All Shortlinks Scripts and for Donations , Regards : Bloggerpemula</b></button>');},
           success: function(result, status, xhr) {if (xhr.responseText.match('(insfly|Insfly).pw|(freecrypto|freeltc|a-s-cracks).top|mdiskshortner.link|(oscut|exashorts).fun|bigbtc.win|slink.bid|clockads.in')) {location.href = result.url;} else {redirect(result.url);}}});});}\n"""
-        content = content.replace(toremove, "        success: function(data) {redirect(data.url);}});} else if (elementExists('form[id=go-link]')) {}    ")
-
-        # Replace remaining BP text
-        content = content.replace("Bypassed by Bloggerpemula", "Link Bypassed")
-        content = content.replace(
-            "Thanks for using Bypass All Shortlinks Scripts and for Donations , Regards : Bloggerpemula",
-            SCRIPT_NAME
+        content = apply_patch(
+            content, toremove,
+            "        success: function(data) {redirect(data.url);}});} else if (elementExists('form[id=go-link]')) {}    ",
+            "toremove AJAX branding block",
         )
 
+        # Replace remaining BP text
+        content = apply_patch(content, "Bypassed by Bloggerpemula", "Link Bypassed", "replace remaining 'Bypassed by Bloggerpemula' text")
+        content = apply_patch(
+            content,
+            "Thanks for using Bypass All Shortlinks Scripts and for Donations , Regards : Bloggerpemula",
+            SCRIPT_NAME,
+            "replace remaining donation button text",
+        )
+
+        # Upstream's own branding (their AJAX go-link buttons + flicker container header).
+        # Case-sensitive on purpose: 'Bloggerpemula' (lowercase p) is branding text,
+        # 'BloggerPemula' is a function name used across the whole script.
+        content = apply_patch(
+            content,
+            "<b>Bypass All Shortlinks Debloated</b>",
+            "<b>Link Bypassed</b>",
+            "rebrand web1s AJAX branding button",
+        )
+        content = apply_patch(
+            content,
+            "'Bloggerpemula Script'",
+            "'Download Links'",
+            "rebrand flickr container header",
+        )
+        # Final best-effort sweep for any other branding strings upstream may add later
+        # (case-sensitive: never touches the BypassedByBloggerPemula function name).
+        content = content.replace("Bypass All Shortlinks Debloated", SCRIPT_NAME)
+        content = content.replace("Regards : Bloggerpemula", "Regards : " + AUTHOR)
+        content = content.replace("'Bloggerpemula Script'", "'Download Links'")
+
         # Remove features that depend on external BP servers
-        content = content.replace("// @connect    nocaptchaai.com\n", "")
+        content = apply_patch(content, "// @connect    nocaptchaai.com\n", "", "remove @connect nocaptchaai.com")
 
         # Remove YouTube download feature (uses BP's server, disabled by default anyway)
         # Keep YTShort bypass (shorts redirect) — that's useful and has no external deps
-        content = content.replace(
+        content = apply_patch(
+            content,
             "    YTDown: {label: 'Auto Download Youtube Video',type: 'checkbox',default: false,column: 'right'},\n",
-            ""
+            "",
+            "remove YTDown settings entry",
         )
         # Strip the showDownloadDialog block and its YTDown listener
         # (these span a few long lines in the final output file)
@@ -194,18 +268,34 @@ def debloat_and_rebrand(file_path, new_version):
             content = content[:idx_s] + content[idx_e:]
         else:
             # Fallback: remove the pythonanywhere youtube URL lines directly
-            content = content.replace(
+            _record_miss("yt YTDown dialog block removal (main markers missing; fallback attempted)")
+            content = apply_patch(
+                content,
                 "    if (!videoId) return BpNote(\'Invalid video ID\', \'warn\');",
-                "    if (!videoId) return;"
+                "    if (!videoId) return;",
+                "yt fallback: 'Invalid video ID' guard",
             )
-        content = content.replace("let List1 = ['ay.live', 'aylink.co', 'gitlink.pro']", "let List1 = ['ay.live', 'gitlink.pro']")
+        content = apply_patch(
+            content,
+            "let List1 = ['ay.live', 'aylink.co', 'gitlink.pro']",
+            "let List1 = ['ay.live', 'gitlink.pro']",
+            "List1 aylink.co removal",
+        )
 
         # Remove tracking redirects
-        content = content.replace("https://bloggerpemula.pythonanywhere.com/?BypassResults=", "")
+        content = apply_patch(
+            content,
+            "https://bloggerpemula.pythonanywhere.com/?BypassResults=",
+            "",
+            "remove BypassResults tracking prefix",
+        )
 
         # Remove the @match rule for the BP tracking domain
-        content = content.replace(
-            "// @match *://*.bloggerpemula.pythonanywhere.com/*\n", ""
+        content = apply_patch(
+            content,
+            "// @match *://*.bloggerpemula.pythonanywhere.com/*\n",
+            "",
+            "remove pythonanywhere @match rule",
         )
 
         # Remove the BypassResults incoming case handler (layout-robust: the case may
@@ -213,10 +303,12 @@ def debloat_and_rebrand(file_path, new_version):
         # so cut exactly from the case label to its `return result;} break;` marker.
         # Must use a BLOCK comment — a // comment would swallow the rest of the line,
         # which can contain code from the enclosing switch/IIFE.)
-        content = re.sub(
+        content = apply_regex(
+            content,
             r"case 'bloggerpemula\.pythonanywhere\.com':.*?return result;\} break;",
             "/* bp tracking case removed */",
-            content, count=1, flags=re.S
+            "remove BypassResults case handler",
+            count=1, flags=re.S,
         )
 
         # Remove the "Please Wait ... Redirected" notify message that goes with the case
@@ -224,73 +316,94 @@ def debloat_and_rebrand(file_path, new_version):
             "notify(`Please Wait You Will be Redirected to Your Destination in @ Seconds , Thanks`);",
             "notify(`Redirecting...`);"
         )
-        content = re.sub(r"let respect = '(.*?)';", "let respect = '';", content)
-        content = content.replace("blog = true", "blog = false")
+        content = apply_regex(content, r"let respect = '(.*?)';", "let respect = '';", "neutralise 'respect' variable")
+        content = apply_patch(content, "blog = true", "blog = false", "flip blog flag to false")
         content = remove_lines_containing(content, ["https://menrealitycalc.com/"])
-
-        # Remove the @match rule for the BP tracking domain
-        content = content.replace(
-            "// @match *://*.bloggerpemula.pythonanywhere.com/*\n", ""
-        )
 
         # Remove the BypassResults return path in the bas() switch block
         # (same layout-robust regex as above; runs only if any trace survived)
         if "case 'bloggerpemula.pythonanywhere.com':" in content:
-            content = re.sub(
+            content = apply_regex(
+                content,
                 r"case 'bloggerpemula\.pythonanywhere\.com':.*?return result;\} break;",
                 "/* bp tracking path removed */",
-                content, count=1, flags=re.S
+                "remove BypassResults case handler (residual pass)",
+                count=1, flags=re.S,
             )
 
         # Fix redirect() function — strip the tracking server route
-        old_redirect = (
+        content = apply_patch(
+            content,
             "  function redirect(url, blog = true) {location = blog && cfg.get('BlogDelay') ? "
-            "'https://bloggerpemula.pythonanywhere.com/?BypassResults=' + url : url;}\n"
+            "'https://bloggerpemula.pythonanywhere.com/?BypassResults=' + url : url;}\n",
+            "  function redirect(url, blog = false) {location = url;}\n",
+            "redirect() tracking route strip",
         )
-        if old_redirect in content:
-            content = content.replace(old_redirect, "  function redirect(url, blog = false) {location = url;}\n")
 
-        # Point download/update URLs to this repo
-        content = content.replace(
+        # Point download/update URLs to this repo (URL rebranding)
+        content = apply_patch(
+            content,
             "https://update.greasyfork.org/scripts/528923/1599357/MonkeyConfig%20Mod.js",
-            f"{REPO_RAW}/MonkeyConfig-Mod.js"
+            f"{REPO_RAW}/MonkeyConfig-Mod.js",
+            "rebrand MonkeyConfig-Mod URL (greasyfork)",
         )
-        content = content.replace(
+        content = apply_patch(
+            content,
             "https://codeberg.org/gongchandang49/bypass-all-shortlinks-debloated/raw/branch/main/MonkeyConfig-Mod.js",
-            f"{REPO_RAW}/MonkeyConfig-Mod.js"
+            f"{REPO_RAW}/MonkeyConfig-Mod.js",
+            "rebrand MonkeyConfig-Mod URL (codeberg)",
         )
-        content = content.replace(
+        content = apply_patch(
+            content,
             "https://codeberg.org/Amm0ni4/bypass-all-shortlinks-debloated/raw/branch/main/Bypass_All_Shortlinks.user.js",
-            f"{REPO_RAW}/{OUTPUT_FILE}"
+            f"{REPO_RAW}/{OUTPUT_FILE}",
+            "rebrand update URL (codeberg Amm0ni4)",
         )
-        content = content.replace(
+        content = apply_patch(
+            content,
             "https://codeberg.org/gongchandang49/bypass-all-shortlinks-debloated/raw/branch/main/Bypass_All_Shortlinks.user.js",
-            f"{REPO_RAW}/{OUTPUT_FILE}"
+            f"{REPO_RAW}/{OUTPUT_FILE}",
+            "rebrand update URL (codeberg gongchandang49)",
         )
-        content = content.replace(
+        content = apply_patch(
+            content,
             "https://update.greasyfork.org/scripts/431691/Bypass%20All%20Shortlinks.user.js",
-            f"{REPO_RAW}/{OUTPUT_FILE}"
+            f"{REPO_RAW}/{OUTPUT_FILE}",
+            "rebrand update URL (greasyfork)",
         )
-        content = content.replace(
+        content = apply_patch(
+            content,
             "https://codeberg.org/Amm0ni4/bypass-all-shortlinks-debloated/raw/branch/main/Bypass_All_Shortlinks.meta.js",
-            f"{REPO_RAW}/{META_FILE}"
+            f"{REPO_RAW}/{META_FILE}",
+            "rebrand meta URL (codeberg Amm0ni4)",
         )
-        content = content.replace(
+        content = apply_patch(
+            content,
             "https://codeberg.org/gongchandang49/bypass-all-shortlinks-debloated/raw/branch/main/Bypass_All_Shortlinks.meta.js",
-            f"{REPO_RAW}/{META_FILE}"
+            f"{REPO_RAW}/{META_FILE}",
+            "rebrand meta URL (codeberg gongchandang49)",
         )
-        content = content.replace(
+        content = apply_patch(
+            content,
             "https://update.greasyfork.org/scripts/431691/Bypass%20All%20Shortlinks.meta.js",
-            f"{REPO_RAW}/{META_FILE}"
+            f"{REPO_RAW}/{META_FILE}",
+            "rebrand meta URL (greasyfork)",
         )
-        content = content.replace(
+        content = apply_patch(
+            content,
             "https://openuserjs.org/meta/Bloggerpemula/Bypass_All_Shortlinks_Manual_Captcha.meta.js",
-            f"{REPO_RAW}/{META_FILE}"
+            f"{REPO_RAW}/{META_FILE}",
+            "rebrand meta URL (openuserjs)",
         )
 
         # Replace upstream Codeberg references
-        content = content.replace("codeberg.org/Amm0ni4", HOMEPAGE)
-        content = content.replace("https://codeberg.org/gongchandang49/bypass-all-shortlinks-debloated", HOMEPAGE)
+        content = apply_patch(content, "codeberg.org/Amm0ni4", HOMEPAGE, "replace Codeberg references (Amm0ni4)")
+        content = apply_patch(
+            content,
+            "https://codeberg.org/gongchandang49/bypass-all-shortlinks-debloated",
+            HOMEPAGE,
+            "replace Codeberg repo URL (gongchandang49)",
+        )
 
         # Clean up settings menu
         content = content.replace(
@@ -310,9 +423,11 @@ def debloat_and_rebrand(file_path, new_version):
         content = content.replace("ClickIfExists('#slu-continue')", "ClickIfExists('#btn-3')")
 
         # Translate Indonesian log messages to English
-        content = content.replace(
+        content = apply_patch(
+            content,
             """try {element[action]();BpNote(`Aksi "${action}" berhasil dijalankan pada elemen "${query}".`);} catch (error) {console.error(`Aksi "${action}" Gagal pada elemen "${query}":`, error);}}, time * 1000);} else if (timerFuncName === 'setInterval') {const intervalId = timerFunc(() => {try {if (elementExists(query)) {const currentElement = bp(query);currentElement[action]();BpNote(`Aksi "${action}" berhasil dijalankan pada elemen "${query}".`);} else {BpNote(`Elemen "${query}" tidak ditemukan.`,'error');""",
-            """try {element[action]();BpNote(`Action "${action}" executed on "${query}".`);} catch (error) {console.error(`Action "${action}" failed on "${query}":`, error);}}, time * 1000);} else if (timerFuncName === 'setInterval') {const intervalId = timerFunc(() => {try {if (elementExists(query)) {const currentElement = bp(query);currentElement[action]();BpNote(`Action "${action}" executed on "${query}".`);} else {BpNote(`Element "${query}" not found.`,'error');"""
+            """try {element[action]();BpNote(`Action "${action}" executed on "${query}".`);} catch (error) {console.error(`Action "${action}" failed on "${query}":`, error);}}, time * 1000);} else if (timerFuncName === 'setInterval') {const intervalId = timerFunc(() => {try {if (elementExists(query)) {const currentElement = bp(query);currentElement[action]();BpNote(`Action "${action}" executed on "${query}".`);} else {BpNote(`Element "${query}" not found.`,'error');""",
+            "translate Indonesian log messages",
         )
 
         # Ensure @noframes is present
@@ -320,7 +435,12 @@ def debloat_and_rebrand(file_path, new_version):
             content = content.replace("\n// @version", "\n// @noframes\n// @version")
 
         # Stamp the new version
-        content = re.sub(r'@version\s+[\d\.]+-?(?:patch[\d\.]+)?', f'@version    {new_version}', content)
+        content = apply_regex(
+            content,
+            r'@version\s+[\d\.]+-?(?:patch[\d\.]+)?',
+            f'@version    {new_version}',
+            "stamp @version",
+        )
 
         # Sanity-check: make sure tracking is gone
         tracking_strings = [
@@ -380,6 +500,7 @@ def main():
     )
     debloat_and_rebrand(OUTPUT_FILE, new_version)
     extract_metadata(OUTPUT_FILE, META_FILE)
+    report_missed_patches()
 
 
 if __name__ == "__main__":
