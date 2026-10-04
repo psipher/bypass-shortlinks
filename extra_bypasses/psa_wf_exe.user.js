@@ -349,25 +349,37 @@
 
         // step 1: #before-captcha (Continue). Server accepts a tokenless POST here
         // (the turnstile widget is absent on this step); only require patience for the
-        // page's own enable-callback, then force through.
+        // page's own enable-callback, then force through — BUT hands off entirely when
+        // an interactive captcha (puzzle/slider/vial widget) is present and unsolved:
+        // force-clicking mid-solve submits the page and refreshes the captcha.
         var bc = q("#before-captcha");
         if (bc) {
             var tokenInput = q('input[name="cf-turnstile-response"]', bc) || q('[name^="cf-turnstile-response"]');
-            var tokenOk = tokenInput && tokenInput.value;
+            var tokenOk = (tokenInput && tokenInput.value) ||
+                qa("input", bc).some(function (i) {
+                    return /captcha|token|response/i.test(i.name || i.id || "") && (i.value || "").length > 20;
+                });
+            var interactiveCaptcha = q('iframe[src*="recaptcha"], iframe[src*="turnstile"], iframe[title*="captcha" i], .cf-turnstile, [class*="puzzle"], [id*="puzzle"], [class*="slider-captcha"], [id*="captchaShortlink"], [id^="captcha"] canvas, [id^="captcha"] img', bc) ||
+                q('iframe[src*="recaptcha"], iframe[src*="turnstile"], [class*="puzzle"], [id*="puzzle"]');
+            var captchaUnsolved = !!interactiveCaptcha && !tokenOk;
             var btn = q('button[type="submit"]', bc) || q("button", bc) || q('input[type="submit"]', bc);
             if (btn) {
-                if (!isDisabled(btn)) {
+                if (captchaUnsolved) {
+                    // user is (or may be) solving — wait patiently, forever if needed
+                } else if (tokenOk && !isDisabled(btn)) {
+                    clickOnce(btn, "#before-captcha submit button");
+                } else if (tokenOk) {
+                    enableEl(btn);
+                    clickOnce(btn, "#before-captcha submit button (token ready)");
+                } else if (!isDisabled(btn)) {
                     clickOnce(btn, "#before-captcha submit button");
                 } else if (elapsed > 8000) {
                     log("force-enabling gated Continue button");
                     enableEl(btn);
                     clickOnce(btn, "#before-captcha submit button (forced)");
-                } else if (tokenOk) {
-                    enableEl(btn);
-                    clickOnce(btn, "#before-captcha submit button (token ready)");
                 }
             }
-            if (!btn && elapsed > 8000 && !clicked.has(bc)) {
+            if (!btn && elapsed > 8000 && !captchaUnsolved && !clicked.has(bc)) {
                 // no button found at all: submit the form itself (main-script behaviour)
                 if (!clicked.has(bc)) {
                     clicked.add(bc);
