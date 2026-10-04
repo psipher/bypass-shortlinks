@@ -276,20 +276,170 @@
                 set: function(v) { if (v && v !== wrapped && v.__psaExe !== true) realAlert = v; }
             });
         } catch (e) {}
+
+        deepDefeat();
+    }
+
+    // ================= 2b. deep defeat (Adguard exeygo recipe + peers) =================
+    // Sources: AdguardTeam/AdguardFilters antiadblock.txt:5377 (production scriptlet
+    // for the live exe.io 6.x vhit flow), ugibypass (script 584507: counter_value,
+    // netpub faking, jQuery wall-block), PSAbypass (hXHR replay), uBO (blurred lock).
+    // Everything here is per-property try/catch and skips cleanly when the page
+    // realm does not expose the global (test sandboxes).
+    function deepDefeat() {
+        // (a) 6.x vhit verdict neutering: the page resolves adblock-check Promises with
+        // truthy/blocked args; wrap Promise.prototype.then so callbacks whose source
+        // looks like the obfuscated checker get their args rewritten (true->false,
+        // "blocked"->""). Scoped: only callbacks matching the obfuscation-shaped regex.
+        try {
+            if (W.Promise && W.Promise.prototype && !W.Promise.prototype.__psaExe) {
+                var proto = W.Promise.prototype, origThen = proto.then;
+                var looksLikeChecker = /_0x|adblock|detectAdblock|checkAdblockUser|\.offsetHeight/i;
+                var clean = function (v) {
+                    if (v === true) return false;
+                    if (typeof v === "string" && /block/i.test(v)) return "";
+                    return v;
+                };
+                proto.then = function (onF, onR) {
+                    var wrap = function (cb) {
+                        if (typeof cb !== "function") return cb;
+                        if (!looksLikeChecker.test(Function.prototype.toString.call(cb))) return cb;
+                        return function () {
+                            var args = Array.prototype.slice.call(arguments).map(clean);
+                            return cb.apply(this, args);
+                        };
+                    };
+                    return origThen.call(this, wrap(onF), wrap(onR));
+                };
+                proto.then.__psaExe = true;
+                try { W.vhit = true; } catch (e) {} // truthy from the start (Adguard recipe)
+            }
+        } catch (e) {}
+
+        // (b) server-verdict JSON rewrite: any object leaving via stringify with
+        // adblock-verdict fields is reported as clean.
+        try {
+            if (W.JSON && typeof W.JSON.stringify === "function" && !W.JSON.stringify.__psaExe) {
+                var origStr = W.JSON.stringify;
+                W.JSON.stringify = function (v) {
+                    try {
+                        if (v && typeof v === "object" && ("failed_hosts" in v || "blocked" in v)) {
+                            return origStr.call(W.JSON, { failed_hosts: "", blocked: false });
+                        }
+                    } catch (e) {}
+                    return origStr.apply(W.JSON, arguments);
+                };
+                W.JSON.stringify.__psaExe = true;
+            }
+        } catch (e) {}
+
+        // (c) blur-pause defeat: banner-page countdowns stall on visibility in
+        // background tabs (uBO: aii.sh##+js(set, blurred, false)).
+        try {
+            Object.defineProperty(W, "blurred", { value: false, writable: false, configurable: true });
+        } catch (e) {}
+        try { W.onblur = null; } catch (e) {}
+
+        // (d) 5.x-family prevention: pre-set the "adblock verified" cookie and keep the
+        // bait elements the 5.x detector measures alive but tiny.
+        try { document.cookie = "ab=1;path=/;max-age=3600"; } catch (e) {}
+        try {
+            var st = document.createElement("style");
+            st.id = "psa-exe-bait";
+            st.textContent = ".myTestAd,#test-block,.adsbox,ins.adsbygoogle{height:5px!important;min-height:5px!important;visibility:hidden!important;position:absolute!important;left:-9999px!important}";
+            (document.head || document.documentElement).appendChild(st);
+        } catch (e) {}
+
+        // (e) jQuery wall-blocker: newer walls REPLACE #before-captcha/#link-view/
+        // #captchaShortlink contents with a "disable adblock" alert via $.fn.html.
+        // Drop those writes outright — stronger than cleaning up afterwards.
+        function hookJq() {
+            try {
+                var jq = W.jQuery;
+                if (!jq || !jq.fn || jq.fn.html.__psaExe) return false;
+                var wallRe = /please\s+disable\s+adblock|disable\s+adblock\s+to\s+proceed|desactive\s+adblock/i;
+                var origHtml = jq.fn.html;
+                jq.fn.html = function (v) {
+                    try {
+                        if (typeof v === "string" && wallRe.test(v)) {
+                            log("blocked jQuery.html wall write");
+                            return this;
+                        }
+                    } catch (e) {}
+                    return origHtml.apply(this, arguments);
+                };
+                jq.fn.html.__psaExe = true;
+                return true;
+            } catch (e) { return false; }
+        }
+        if (!hookJq()) {
+            try { W.addEventListener("DOMContentLoaded", function () { hookJq(); }, { once: true }); } catch (e) {}
+        }
+
+        // (f) /links/go replay: capture the page's own POST; if it errors once
+        // (stuck queue), replay the identical request exactly once.
+        try {
+            var XHR = W.XMLHttpRequest;
+            if (XHR && XHR.prototype && !XHR.prototype.__psaExe) {
+                var oOpen = XHR.prototype.open, oSend = XHR.prototype.send;
+                var last = null, replayed = false;
+                XHR.prototype.open = function (m, u) { this.__psa = { m: m, u: String(u) }; return oOpen.apply(this, arguments); };
+                XHR.prototype.send = function (body) {
+                    var self = this;
+                    if (this.__psa && /links\/go/.test(this.__psa.u)) {
+                        this.addEventListener("load", function () {
+                            try {
+                                var r = JSON.parse(self.responseText);
+                                if (r && r.url && typeof r.url === "string") { goUrl(r.url); return; }
+                                if (r && r.status === "error" && !replayed) {
+                                    replayed = true;
+                                    log("links/go errored, replaying once");
+                                    setTimeout(function () {
+                                        var x = new XHR();
+                                        x.open("POST", self.__psa.u, true);
+                                        x.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+                                        x.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                                        x.send(body);
+                                    }, 1200);
+                                }
+                            } catch (e) {}
+                        });
+                    }
+                    return oSend.apply(this, arguments);
+                };
+                XHR.prototype.__psaExe = true;
+            }
+        } catch (e) {}
     }
 
     // ================= 3. AdLinkFly flow automation =================
     function looksLikeAdlinkflyStep() {
-        if (q("#before-captcha") || q("#link-view") || q("#go-link")) return true;
+        if (q("#before-captcha") || q("#link-view") || q("#go-link") || q("form#submit-form") || q("input[name='ad_form_data']")) return true;
         try {
             var b = document.body;
-            if (b && b.className && /\bcaptcha-page\b/.test(b.className)) return true;
+            if (b && b.className && /\b(captcha-page|banner-page|interstitial-page)\b/.test(b.className)) return true;
         } catch (e) {}
         // generic fallback: AdLinkFly pages carry app_vars + a short code path (works
         // for rotating mirrors before metadata catches up)
         var av = W.app_vars;
         if (av && typeof av === "object" && av.base_url && /\?[a-z]+=/i.test(W.location.search)) return true;
         return false;
+    }
+
+    // Server-side validation (LinksController::go): an ad_form_data POST earlier than
+    // app_vars.counter_value seconds after page render is rejected with Bad Request.
+    // Derive our waits from the operator's own counter instead of fixed constants.
+    function counterWaitMs() {
+        try {
+            var cv = parseInt(W.app_vars && W.app_vars.counter_value, 10);
+            if (!isNaN(cv) && cv > 0 && cv <= 120) return (cv + 2) * 1000; // +2s safety
+        } catch (e) {}
+        try {
+            var el = q("#timer, #countdown, .skip-ad .counter");
+            var m = el && el.textContent && el.textContent.match(/\d{1,3}/);
+            if (m) { var n = parseInt(m[0], 10); if (n > 0 && n <= 120) return (n + 2) * 1000; }
+        } catch (e) {}
+        return 9000; // previous default
     }
 
     var clicked = new WeakSet();
@@ -417,14 +567,15 @@
 
         try { nukeWall(); } catch (e) {}
 
-        // final destination anchors (FastForward-style exit selectors)
-        var anchors = qa("a.get-link[href], .skip-ad a[href], a#surl[href], a.pnd-submit-button[href]");
+        // final destination anchors (FastForward-style exit selectors, with the
+        // .disabled / javascript: placeholder exclusions FastForward uses)
+        var anchors = qa("a.get-link[href]:not([href='']):not(.disabled), .skip-ad a[href]:not([href='']):not(.disabled), a#surl[href]:not([href='']):not(.disabled), a.pnd-submit-button[href]:not([href^='javascript:']), .banner-page a.get-link[href]");
         for (var i = 0; i < anchors.length; i++) {
             var h = anchors[i].getAttribute("href");
             if (goodDestHref(h)) { goUrl(h); return; }
         }
 
-        // step 1: #before-captcha (Continue). Server accepts a tokenless POST here
+        // step 1a: #before-captcha (Continue). Server accepts a tokenless POST here
         // (the turnstile widget is absent on this step); only require patience for the
         // page's own enable-callback, then force through — BUT hands off entirely when
         // an interactive captcha (puzzle/slider/vial widget) is present and unsolved:
@@ -466,12 +617,36 @@
             }
         }
 
-        // step 2/3: #link-view (countdown) and #go-link (Get Link)
+        // step 1b: 6.x builds (live exeygo) use form#submit-form button#submit-button
+        // as the Continue (Adguard antiadblock.txt:5377). Same token-aware handling.
+        var sf = q("form#submit-form");
+        if (sf) {
+            var sfBtn = q("#submit-button", sf) || q('button[type="submit"]', sf) || q("button", sf);
+            var sfToken = q('input[name="cf-turnstile-response"]', sf);
+            var sfOk = sfToken && sfToken.value;
+            if (sfBtn) {
+                if (!sfOk && isDisabled(sfBtn)) {
+                    // gated; force only after the counter window has certainly passed
+                    if (elapsed > counterWaitMs() + 4000) {
+                        log("force-enabling #submit-form Continue");
+                        enableEl(sfBtn);
+                        clickOnce(sfBtn, "#submit-form button (forced)");
+                    }
+                } else {
+                    try { if (W.vhit && typeof W.vhit.report === "function") W.vhit.report(); } catch (e) {}
+                    clickOnce(sfBtn, "#submit-form Continue button");
+                }
+            }
+        }
+
+        // step 2/3: #link-view (countdown) and #go-link (Get Link).
+        // Waits derive from app_vars.counter_value — the server rejects ad_form_data
+        // POSTs earlier than the operator's counter, so fixed constants can lose.
         var lv = q("#link-view");
-        if (lv && elapsed > 9000) {
+        if (lv && elapsed > counterWaitMs()) {
             if (!clicked.has(lv)) {
                 clicked.add(lv);
-                log("submitting #link-view after countdown");
+                log("submitting #link-view after counter-aware wait");
                 submitFormEl(lv);
             }
         }
@@ -481,7 +656,7 @@
             var gbtn = q("#go-submit", gl) || q("#submit-button", gl) || q('button[type="submit"]', gl) || q("button", gl);
             if (gbtn && !isDisabled(gbtn)) {
                 clickOnce(gbtn, "Get Link button");
-            } else if (elapsed > 25000 && Date.now() - lastNavAttempt > 10000) {
+            } else if (elapsed > counterWaitMs() + 16000 && Date.now() - lastNavAttempt > 10000) {
                 // page's own XHR never ran (stuck queue) -> do the /links/go POST ourselves
                 lastNavAttempt = Date.now();
                 var action = gl.getAttribute("action");

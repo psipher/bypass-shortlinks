@@ -5,7 +5,7 @@
 // @author     psipher
 // @license    Unlicense
 // @noframes
-// @version    96.5-patch0.2.3.20261004.b10
+// @version    96.5-patch0.2.3.20261004.b11
 // @grant      GM_setValue
 // @grant      GM_getValue
 // @grant      GM_addStyle
@@ -306,6 +306,8 @@
 // @grant        GM_registerMenuCommand
 // @grant        GM_setClipboard
 // @grant        unsafeWindow
+// @grant        GM_setValue
+// @grant        GM_getValue
 // @match        https://acortalink.me/*
 // @match         *://linkvertise.com/*
 // @match        *://bstlar.com/*

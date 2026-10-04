@@ -80,7 +80,7 @@
     var gateKnown = false;
     var gatePsaGoto = false;
     try {
-        gateKnown = /(^|\.)(jobars2\.com|configfiles\.in|internshipshub\.in|iflylink\.com|mahitimananch\.in|aii\.sh|shrinkbixby\.com|lnbz\.la|shrink\.pe|financeguidz\.com)$/i.test(W.location.hostname || "");
+        gateKnown = /(^|\.)(jobars2\.com|configfiles\.in|internshipshub\.in|iflylink\.com|mahitimananch\.in|aii\.sh|shrinkbixby\.com|lnbz\.la|shrink\.pe|financeguidz\.com|techbixby\.com|loanbixby\.com|financeehelp\.com|cloudhostt\.com|intercelestial\.com)$/i.test(W.location.hostname || "");
         gatePsaGoto = /(^|\.)(psa\.wf|psarips\.com)$/i.test(W.location.hostname || "") && /^\/goto\//.test(W.location.pathname || "");
     } catch (e) {}
 
@@ -117,7 +117,7 @@
 
     function isKnownFarmHost(host) {
         try {
-            return /(^|\.)(jobars2\.com|configfiles\.in|internshipshub\.in|iflylink\.com|mahitimananch\.in|aii\.sh|shrinkbixby\.com|lnbz\.la|shrink\.pe|financeguidz\.com)$/i.test(host || W.location.hostname || "");
+            return /(^|\.)(jobars2\.com|configfiles\.in|internshipshub\.in|iflylink\.com|mahitimananch\.in|aii\.sh|shrinkbixby\.com|lnbz\.la|shrink\.pe|financeguidz\.com|techbixby\.com|loanbixby\.com|financeehelp\.com|cloudhostt\.com|intercelestial\.com)$/i.test(host || W.location.hostname || "");
         } catch (e) { return false; }
     }
 
@@ -584,10 +584,10 @@
     var finished = false;
 
     function looksLikeAdlinkflyStep() {
-        if (q("#before-captcha") || q("#link-view") || q("#go-link")) return true;
+        if (q("#before-captcha") || q("#link-view") || q("#go-link") || q("form#submit-form") || q("input[name='ad_form_data']")) return true;
         try {
             var b = document.body;
-            if (b && b.className && /\bcaptcha-page\b/.test(b.className)) return true;
+            if (b && b.className && /\b(captcha-page|banner-page|interstitial-page)\b/.test(b.className)) return true;
         } catch (e) {}
         try {
             var av = W.app_vars;
@@ -601,6 +601,13 @@
     // the site honours); fall back to removing the whole overlay container.
     function findModalContainers() {
         var out = [];
+        // fast paths first: SweetAlert2 containers and the Adguard-documented
+        // `body > script + div:not([class])` first-party wall signature
+        // (AdguardFilters antiadblock issues #239607/#239992/#241577)
+        qa(".swal2-container, body > script + div:not([class])").forEach(function(el) {
+            if (el && out.indexOf(el) === -1) out.push(el);
+        });
+        if (out.length) return out;
         qa("div,section,aside").forEach(function(el) {
             try {
                 if (!el || el === document.body || el === document.documentElement) return;
@@ -737,6 +744,37 @@
         try { W.location.assign(u); } catch (e) {}
     }
 
+    function submitFormEl(f) {
+        // form.submit() breaks when the form contains an element named "submit"
+        // (property shadowing, common in AdLinkFly forms). requestSubmit() also
+        // runs the page's own bound handlers, which the flow expects.
+        try {
+            if (f && typeof f.requestSubmit === "function") { f.requestSubmit(); return true; }
+        } catch (e) {}
+        try {
+            var b = f && (f.querySelector('button[type="submit"], input[type="submit"]'));
+            if (b) { b.click(); return true; }
+        } catch (e) {}
+        try { if (f) f.submit(); } catch (e) {}
+        return false;
+    }
+
+    function counterWaitMs() {
+        // Server-side validation (AdLinkFly LinksController::go) rejects
+        // ad_form_data POSTs earlier than app_vars.counter_value seconds after
+        // render, so our waits must derive from the operator's own counter.
+        try {
+            var cv = parseInt(W.app_vars && W.app_vars.counter_value, 10);
+            if (!isNaN(cv) && cv > 0 && cv <= 120) return (cv + 2) * 1000;
+        } catch (e) {}
+        try {
+            var el = q("#timer, #countdown, .skip-ad .counter");
+            var m = el && el.textContent && el.textContent.match(/\d{1,3}/);
+            if (m) { var n = parseInt(m[0], 10); if (n > 0 && n <= 120) return (n + 2) * 1000; }
+        } catch (e) {}
+        return 9000;
+    }
+
     function submitFormDirect(form, label) {
         // direct POST of #go-link via fetch, mirrors AdLinkFly's own
         // $.post(form.action, form.serialize()) -> {status, url} JSON
@@ -773,20 +811,32 @@
             }
         } catch (e) {}
 
-        // final destination anchors (FastForward-style exit selectors)
+        // final destination anchors (FastForward-style exit selectors incl. the
+        // .disabled / javascript: placeholder exclusions)
         try {
-            qa("a.get-link[href], .skip-ad a[href], a#surl[href], a.pnd-submit-button[href]").forEach(function(a) {
+            qa("a.get-link[href]:not([href='']):not(.disabled), .skip-ad a[href]:not([href='']):not(.disabled), a#surl[href]:not([href='']):not(.disabled), a.pnd-submit-button[href]:not([href^='javascript:']), .banner-page a.get-link[href]").forEach(function(a) {
                 var h = a.getAttribute("href");
                 if (goodDestHref(h)) goUrl(h);
             });
         } catch (e) {}
 
-        // step 1: #before-captcha (Continue) - submit when enabled, when the
-        // turnstile token is present, or force after 8s
+        // PAHE-style hosting walls (financeguidz rota & siblings): the wall's own
+        // progression buttons - click them in order as they become actionable
+        try {
+            var paheBtn = q("#startButton") || q("#getnewlink") || q("a[href='#getmylink']");
+            if (paheBtn && !isDisabled(paheBtn)) clickOnce(paheBtn, "PAHE wall button");
+        } catch (e) {}
+
+        // step 1: #before-captcha (Continue) - submit when enabled, when a captcha
+        // token is present, or force after 8s
         var bc = q("#before-captcha");
         if (bc) {
             var tokenInput = q('input[name="cf-turnstile-response"]', bc) || q('[name^="cf-turnstile-response"]');
-            var tokenOk = tokenInput && tokenInput.value;
+            var tokenOk = (tokenInput && tokenInput.value) ||
+                q(".iconcaptcha-modal__body-checkmark", bc) ||
+                qa("input", bc).some(function (i) {
+                    return /captcha|token|response/i.test(i.name || i.id || "") && (i.value || "").length > 20;
+                });
             var btn = q('button[type="submit"]', bc) || q("button", bc) || q('input[type="submit"]', bc);
             if (btn) {
                 if (!isDisabled(btn)) clickOnce(btn, "#before-captcha submit button");
@@ -798,27 +848,45 @@
                 }
             }
             if (!btn && elapsed > 8000 && !clicked.has(bc)) {
-                try { clicked.add(bc); log("submitting #before-captcha directly"); bc.submit(); } catch (e) {}
+                try { clicked.add(bc); log("submitting #before-captcha directly"); submitFormEl(bc); } catch (e) {}
             }
         }
 
-        // step 2: #link-view (countdown)
+        // step 2: #link-view (countdown) - wait the operator's own counter (+2s
+        // margin); the server rejects ad_form_data POSTs that come too early
         var lv = q("#link-view");
-        if (lv && elapsed > 9000) {
-            try {
-                if (!clicked.has(lv)) { clicked.add(lv); log("submitting #link-view after countdown"); lv.submit(); }
-            } catch (e) {}
+        if (lv && elapsed > counterWaitMs()) {
+            if (!clicked.has(lv)) { clicked.add(lv); log("submitting #link-view after counter-aware wait"); submitFormEl(lv); }
         }
 
-        // step 3: #go-link (Get Link)
+        // step 3: #go-link (Get Link) + the 6.x form#submit-form Continue
         var gl = q("#go-link");
         if (gl) {
             var gbtn = q("#go-submit", gl) || q("#submit-button", gl) || q('button[type="submit"]', gl) || q("button", gl);
             if (gbtn && !isDisabled(gbtn)) clickOnce(gbtn, "Get Link button");
-            else if (elapsed > 25000 && Date.now() - lastNavAttempt > 10000) {
+            else if (elapsed > counterWaitMs() + 16000 && Date.now() - lastNavAttempt > 10000) {
                 // page's own XHR never ran (stuck queue) -> do the /links/go POST ourselves
                 lastNavAttempt = Date.now();
                 submitFormDirect(gl, gl.getAttribute("action") || "links/go");
+            }
+        }
+
+        // 6.x builds (live exeygo per Adguard) use form#submit-form button#submit-button
+        var sf = q("form#submit-form");
+        if (sf) {
+            var sfBtn = q("#submit-button", sf) || q('button[type="submit"]', sf) || q("button", sf);
+            var sfTok = q('input[name="cf-turnstile-response"]', sf);
+            var sfOk = sfTok && sfTok.value;
+            if (sfBtn) {
+                if (!sfOk && isDisabled(sfBtn)) {
+                    if (elapsed > counterWaitMs() + 4000) {
+                        enableEl(sfBtn);
+                        clickOnce(sfBtn, "#submit-form button (forced)");
+                    }
+                } else {
+                    try { if (W.vhit && typeof W.vhit.report === "function") W.vhit.report(); } catch (e) {}
+                    clickOnce(sfBtn, "#submit-form Continue button");
+                }
             }
         }
     }
