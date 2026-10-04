@@ -64,6 +64,24 @@
         try { alreadyJumped = W.sessionStorage.getItem(submitKey) === "1"; } catch (e) {}
         if (alreadyJumped) { log("interstitial already submitted earlier, not re-submitting"); return; }
 
+        // psa.wf sometimes renders the interstitial with "An error occurred. Please try
+        // again..." (stale link token or per-IP throttle). One automatic retry matches
+        // the site's own advice; a second failure means the link is dead - stop there.
+        try {
+            var errText = (document.body && document.body.innerText || "");
+            var retryKey = "psa_exe_errretry:" + W.location.pathname;
+            if (/An error occurred/i.test(errText)) {
+                if (W.sessionStorage.getItem(retryKey) !== "1") {
+                    W.sessionStorage.setItem(retryKey, "1");
+                    log("goto interstitial error shown - retrying once in 2.5s");
+                    setTimeout(function () { W.location.reload(); }, 2500);
+                } else {
+                    log("goto error persists after retry - link token is stale; reload the psa.wf post page to get fresh links");
+                }
+                return;
+            }
+        } catch (e) {}
+
         function cfChallengeUp() {
             return qa('iframe[src*="challenges.cloudflare.com"]').some(function(f) {
                 return !f.width || String(f.width) !== "0";
