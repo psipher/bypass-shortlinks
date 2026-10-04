@@ -2,10 +2,10 @@
 // @name       Bypass Shortlinks
 // @namespace  Violentmonkey Scripts
 // @run-at     document-start
-// @author     nOneCode4u
+// @author     psipher
 // @license    Unlicense
 // @noframes
-// @version    96.5-patch0.2.3.20261004.b8
+// @version    96.5-patch0.2.3.20261004.b9
 // @grant      GM_setValue
 // @grant      GM_getValue
 // @grant      GM_addStyle
@@ -15,7 +15,7 @@
 // @grant      window.onurlchange
 // @grant      GM_registerMenuCommand
 // @icon       https://cdn-icons-png.flaticon.com/512/14025/14025295.png
-// @require    https://github.com/nOneCode4u/bypass-shortlinks/raw/main/MonkeyConfig-Mod.js
+// @require    https://github.com/psipher/bypass-shortlinks/raw/main/MonkeyConfig-Mod.js
 // @description    Automatically bypass many link shorteners. Originally by BloggerPemula.
 // @include /^(?:https?:\/\/)?(?:www\.)?(?:google\.com|recaptcha\.net)\/recaptcha\/api2\/.*$/
 // @match *://*/recaptcha/api2/*
@@ -293,8 +293,8 @@
 // @match *://*.gamezigg.com/*
 // @match *://*.shrs.link/*
 // @match *://*.shareus.io/*
-// @homepageURL    https://github.com/nOneCode4u/bypass-shortlinks
-// @supportURL     https://github.com/nOneCode4u/bypass-shortlinks/issues
+// @homepageURL    https://github.com/psipher/bypass-shortlinks
+// @supportURL     https://github.com/psipher/bypass-shortlinks/issues
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_registerMenuCommand
@@ -432,6 +432,6 @@
 // @exclude /^(https?:\/\/)([^\/]+\.)?((cloudflare|github|aliyun|reddit|bing|yahoo|microsoft|whatsapp|amazon|ebay|payoneer|paypal|skrill|stripe|stripecdn|tipalti|wise|discord|tokopedia|taobao|taboola|aliexpress|netflix|citigroup|spotify|bankofamerica|hsbc|blogger|(accounts|studio).youtube|atlassian|pinterest|twitter|x|live|linkedin|fastbull|tradingview|deepseek|chatgpt|openai|grok|bilibili|indodax|bmcdn6|fbsbx|googlesyndication|amazon-adsystem|pubmatic|gstatic).com|(greasyfork|openuserjs|telegram|wikipedia|lichess).org|(doubleclick|yahoo).net|proton.me|stripe.network|meta.ai|codepen.io|(shopee|lazada|rakuten|maybank|binance).*|(dana|ovo|bca.co|bri.co|bni.co|bankmandiri.co|desa|(.*).go).id|(.*).(edu|gov))(\/.*)/
 // @exclude /^https?:\/\/(?!(www\.google\.com\/(recaptcha\/|url)|docs\.google\.com\/|drive\.google\.com\/)).*google\..*/
 // @exclude /^https?:\/\/([a-z0-9]+\.)*(facebook|instagram|tiktok)\.com\/(?!(flx\/warn\/|linkshim\/|link\/v2)).*/
-// @downloadURL https://github.com/nOneCode4u/bypass-shortlinks/raw/main/Bypass_Shortlinks.user.js
-// @updateURL https://github.com/nOneCode4u/bypass-shortlinks/raw/main/Bypass_Shortlinks.meta.js
+// @downloadURL https://github.com/psipher/bypass-shortlinks/raw/main/Bypass_Shortlinks.user.js
+// @updateURL https://github.com/psipher/bypass-shortlinks/raw/main/Bypass_Shortlinks.meta.js
 // ==/UserScript==

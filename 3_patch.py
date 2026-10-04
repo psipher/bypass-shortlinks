@@ -1,10 +1,10 @@
 import re
 
-REPO_RAW = "https://github.com/nOneCode4u/bypass-shortlinks/raw/main"
+REPO_RAW = "https://github.com/psipher/bypass-shortlinks/raw/main"
 SCRIPT_NAME = "Bypass Shortlinks"
-AUTHOR = "nOneCode4u"
-HOMEPAGE = "https://github.com/nOneCode4u/bypass-shortlinks"
-SUPPORT_URL = "https://github.com/nOneCode4u/bypass-shortlinks/issues"
+AUTHOR = "psipher"
+HOMEPAGE = "https://github.com/psipher/bypass-shortlinks"
+SUPPORT_URL = "https://github.com/psipher/bypass-shortlinks/issues"
 OUTPUT_FILE = "Bypass_Shortlinks.user.js"
 META_FILE = "Bypass_Shortlinks.meta.js"
 ICON_URL = "https://cdn-icons-png.flaticon.com/512/14025/14025295.png"
