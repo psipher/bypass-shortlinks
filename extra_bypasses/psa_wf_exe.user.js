@@ -286,6 +286,21 @@
         } catch (e) {}
     }
 
+    function submitFormEl(f) {
+        // form.submit() breaks when the form contains an element named "submit"
+        // (property shadowing) — common in AdLinkFly forms. requestSubmit() runs
+        // the page's own bound handlers first, which is what the flow expects.
+        try {
+            if (f && typeof f.requestSubmit === "function") { f.requestSubmit(); return true; }
+        } catch (e) {}
+        try {
+            var b = f && (f.querySelector('button[type="submit"], input[type="submit"]'));
+            if (b) { b.click(); return true; }
+        } catch (e) {}
+        try { if (f) f.submit(); } catch (e) {}
+        return false;
+    }
+
     function nukeWall() {
         var msgs = [];
         try {
@@ -354,20 +369,22 @@
             }
             if (!btn && elapsed > 8000 && !clicked.has(bc)) {
                 // no button found at all: submit the form itself (main-script behaviour)
-                try {
+                if (!clicked.has(bc)) {
                     clicked.add(bc);
                     log("submitting #before-captcha directly");
-                    bc.submit();
-                } catch (e) {}
+                    submitFormEl(bc);
+                }
             }
         }
 
         // step 2/3: #link-view (countdown) and #go-link (Get Link)
         var lv = q("#link-view");
         if (lv && elapsed > 9000) {
-            try {
-                if (!clicked.has(lv)) { clicked.add(lv); log("submitting #link-view after countdown"); lv.submit(); }
-            } catch (e) {}
+            if (!clicked.has(lv)) {
+                clicked.add(lv);
+                log("submitting #link-view after countdown");
+                submitFormEl(lv);
+            }
         }
 
         var gl = q("#go-link");

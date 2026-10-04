@@ -5,7 +5,7 @@
 // @author     nOneCode4u
 // @license    Unlicense
 // @noframes
-// @version    96.5-patch0.2.3.20261004.b4
+// @version    96.5-patch0.2.3.20261004.b5
 // @grant      GM_setValue
 // @grant      GM_getValue
 // @grant      GM_addStyle
@@ -301,11 +301,21 @@
 // @grant       GM_unregisterMenuCommand
 // @grant       unsafeWindow
 // @grant        unsafeWindow
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_setClipboard
+// @grant        unsafeWindow
 // @match        https://acortalink.me/*
 // @match         *://linkvertise.com/*
 // @match        *://bstlar.com/*
 // @match        https://bypass.city/bypass?bypass=*
 // @match        https://adbypass.org/bypass?bypass=*
+// @match        *://*/*
+// @match        *://*.aii.sh/*
+// @match        *://*.shrinkbixby.com/*
+// @match        *://*.lnbz.la/*
+// @match        *://*.shrink.pe/*
 // @match        https://paster.so/*
 // @match        *://*.psa.wf/*
 // @match        *://*.psarips.com/*
