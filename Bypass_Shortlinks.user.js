@@ -5,7 +5,7 @@
 // @author     nOneCode4u
 // @license    Unlicense
 // @noframes
-// @version    96.5-patch0.2.3.20261004.b7
+// @version    96.5-patch0.2.3.20261004.b8
 // @grant      GM_setValue
 // @grant      GM_getValue
 // @grant      GM_addStyle
@@ -506,7 +506,7 @@
     const expires = days ? `; expires=${date.toUTCString()}` : '';document.cookie = `${name}=${value}${expires}; path=/`;BpNote(`Cookie "${name}" telah diatur dengan nilai "${value}".`);} else if (action === 'read') {
     if (!name) {BpNote('Nama cookie harus disediakan untuk mode "read".', 'error');return;}const cookieName = name + "=";const decodedCookie = decodeURIComponent(document.cookie);const cookieArray = decodedCookie.split(';');
     for (let i = 0; i < cookieArray.length; i++) {let cookie = cookieArray[i];while (cookie.charAt(0) === ' ') {cookie = cookie.substring(1);}if (cookie.indexOf(cookieName) === 0) {return cookie.substring(cookieName.length, cookie.length);}}return "";} else {BpNote('Mode tidak valid. Gunakan "set" atau "read".', 'error');}}
-  function CloudPS(checkFrames = false, captchaSite = false, checkFlare = true) {if (checkFrames && window.self !== window.top) {BpNote('Bypass Function Canceled Because Iframe Detected ', 'info');return true;}if (checkFlare && document.title === 'Just a moment...' || elementExists(['.sp','ace','r-t','op','.s','pace','r.','cor','e-ms','g'].join(''))) {BpNote("Bypass Function Canceled on Cloudflare Page ", 'info');return true;}
+  function CloudPS(checkFrames = false, captchaSite = false, checkFlare = true) {if (checkFrames && window.self !== window.top) {BpNote('Bypass Function Canceled Because Iframe Detected ', 'info');return true;}if (checkFlare && document.title === 'Just a moment...' || elementExists(['.sp','ac','er-','to','p.','spa','cer.','cor','e-ms','g'].join(''))) {BpNote("Bypass Function Canceled on Cloudflare Page ", 'info');return true;}
     if (captchaSite) {const captchaDomains = [/\.google\.com$/,/\.recaptcha\.net$/,/\.hcaptcha\.com$/,/\.cloudflare\.com$/];const host = location.host.toLowerCase();if (captchaDomains.some(regex => regex.test(host))) {BpNote(`Bypass Function Canceled on This Sites`, 'info');return true;}}return false;}
   function notify(txt, clicktocopy = false, clicktoclose = false, duration = cfg.get('SetDelay')) {const m = document.createElement('div');m.style.padding = '10px 20px';m.style.zIndex = 10000;m.style.position = 'fixed';m.style.width = `970px`;m.style.top = '10px';m.style.transform = 'translateX(-50%)';
     m.style.left = '50%';m.style.fontFamily = 'Arial, sans-serif';m.style.fontSize = '16px';m.style.color = 'white';m.style.textAlign = 'center';m.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';m.style.boxSizing = 'border-box';m.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.5)';m.style.cursor = 'pointer';
@@ -517,7 +517,7 @@
     if (!Object.getOwnPropertyDescriptor(document, 'visibilityState')?.get) {Object.defineProperty(document, 'visibilityState', {get: () => 'visible',configurable: true});}if (!Object.getOwnPropertyDescriptor(document, 'hidden')?.get) {Object.defineProperty(document, 'hidden', {get: () => false,configurable: true});}
     const eventOptions = {capture: true,passive: true};const ensureVisibility = () => {if (document.hidden !== false) {Object.defineProperty(document, 'hidden', {get: () => false,configurable: true});}};ensureVisibility();window.addEventListener('focus', e => e.stopImmediatePropagation(), eventOptions);window.addEventListener('blur', e => e.stopImmediatePropagation(), eventOptions);}
   function CaptchaDone(callback, checkInterval = 1000) {if (CloudPS()) return;const window = unsafeWindow;if (typeof callback !== 'function') {BpNote('Callback harus berupa fungsi', 'error');return;}let intervalId;
-    const checkCaptcha = () => {try {if (elementExists(['.ic','onca','ptc','ha','-mod','al_','_b','ody','-c','he','ckm','ark'].join(''))) {clearInterval(intervalId);callback();return;}
+    const checkCaptcha = () => {try {if (elementExists(['.ico','nca','ptch','a-','mo','dal_','_b','ody-','ch','eck','mark'].join(''))) {clearInterval(intervalId);callback();return;}
     if (elementExists("iframe[src^='https://newassets.hcaptcha.com']")) {if (window.hcaptcha && typeof window.hcaptcha.getResponse === 'function') {const response = window.hcaptcha.getResponse();if (response && response.length > 0) {clearInterval(intervalId);callback();return;}}}
     if (elementExists("input[name='cf-turnstile-response']")) {if (window.turnstile && typeof window.turnstile.getResponse === 'function') {const response = window.turnstile.getResponse();if (response && response.length > 0) {clearInterval(intervalId);callback();return;}}}
     if (elementExists("iframe[title='reCAPTCHA']")) {if (window.grecaptcha && typeof window.grecaptcha.getResponse === 'function') {const response = window.grecaptcha.getResponse();if (response && response.length > 0) {clearInterval(intervalId);callback();return;}}}} catch (error) {console.error('Error checking captcha:', error);}};intervalId = setInterval(checkCaptcha, checkInterval);}
@@ -571,18 +571,18 @@
   function BlockPopup() {const window = unsafeWindow;const originalOpen = window.open;function createNotification(url, callback) {const div = document.createElement('div');div.className = 'popup-notification';const shadow = div.attachShadow({mode: 'open'});
       shadow.innerHTML = `<style>:host { position: fixed; top: 15px; right: 15px; z-index: 9999; font-family: Arial, sans-serif; }.popup { background: #fff; border: 2px solid #333; padding: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); max-width: 350px; border-radius: 5px; }.title { font: bold 16px Arial; color: #000; margin-bottom: 10px; padding-right: 20px; position: relative; }.url { font-size: 14px; color: #222; word-break: break-all; background: #f5f5f5; padding: 8px; border-radius: 3px; margin-bottom: 15px; }.buttons { display: flex; gap: 10px; }
       button { font: bold 14px Arial; padding: 8px 15px; cursor: pointer; border: none; border-radius: 3px; transition: background 0.2s; }.allow { background: #4CAF50; color: #fff; } .allow:hover { background: #45a049; }.block { background: #f44336; color: #fff; } .block:hover { background: #da190b; }.whitelist { background: #2196F3; color: #fff; opacity: 0.6; cursor: not-allowed; }.reload { background: #FFC107; color: #000; } .reload:hover { background: #FFB300; }.close { position: absolute; top: 0; right: 0; background: none; border: none; font-size: 16px; cursor: pointer; color: #333; }.close:hover { color: #f44336; }
-      </style><div class="popup"><div class="title">Popup Request<button class="close">✕</button></div><div class="url">${url || 'about:blank'}</div><div class="buttons"><button class="allow">Open</button><button class="whitelist" title="Sementara Belum Bisa di Gunakan">Whitelist</button><button class="block">Block</button><button class="reload">Reload</button></div></div>`;const remove = () => div.remove();shadow.querySelector(['.a','llow'].join('')).onclick = () => {callback(true);remove();};shadow.querySelector(['.b','lo','ck'].join('')).onclick = () => {callback(false);remove();};shadow.querySelector(['.r','eloa','d'].join('')).onclick = () => {window.location.reload();remove();};
-      shadow.querySelector(['.cl','ose'].join('')).onclick = () => {callback(false);remove();};bp(['.po','pup-','not','if','ica','ti','on'].join(''))?.remove();document.body.appendChild(div);}window.open = (url, name, features) => new Promise(resolve => createNotification(url, shouldOpen => resolve(shouldOpen ? originalOpen(url, name, features) : (BpNote(`Blocked popup to: ${url}`), null))));document.addEventListener('click', e => {const target = e.target;if (target.tagName === 'A' && target.target === '_blank' && target.href) {e.preventDefault();createNotification(target.href, shouldOpen => shouldOpen ? originalOpen(target.href) : BpNote(`Blocked onclick popup to: ${target.href}`));}}, true);
+      </style><div class="popup"><div class="title">Popup Request<button class="close">✕</button></div><div class="url">${url || 'about:blank'}</div><div class="buttons"><button class="allow">Open</button><button class="whitelist" title="Sementara Belum Bisa di Gunakan">Whitelist</button><button class="block">Block</button><button class="reload">Reload</button></div></div>`;const remove = () => div.remove();shadow.querySelector(['.al','low'].join('')).onclick = () => {callback(true);remove();};shadow.querySelector(['.bl','oc','k'].join('')).onclick = () => {callback(false);remove();};shadow.querySelector(['.re','loa','d'].join('')).onclick = () => {window.location.reload();remove();};
+      shadow.querySelector(['.c','lose'].join('')).onclick = () => {callback(false);remove();};bp(['.po','pu','p-no','tifi','cati','on'].join(''))?.remove();document.body.appendChild(div);}window.open = (url, name, features) => new Promise(resolve => createNotification(url, shouldOpen => resolve(shouldOpen ? originalOpen(url, name, features) : (BpNote(`Blocked popup to: ${url}`), null))));document.addEventListener('click', e => {const target = e.target;if (target.tagName === 'A' && target.target === '_blank' && target.href) {e.preventDefault();createNotification(target.href, shouldOpen => shouldOpen ? originalOpen(target.href) : BpNote(`Blocked onclick popup to: ${target.href}`));}}, true);
       document.addEventListener('submit', e => {const form = e.target;if (form.target === '_blank' && form.action) {e.preventDefault();createNotification(form.action, shouldOpen => shouldOpen ? originalOpen(form.action) : BpNote(`Blocked form popup to: ${form.action}`));}}, true);}
 
-  BypassedByBloggerPemula(['goc','mo','d.c','om'].join(''), null, 'urls', '');
+  BypassedByBloggerPemula(['go','cmod','.co','m'].join(''), null, 'urls', '');
   BypassedByBloggerPemula('api.gplinks.com', null, 'url', '');
-  BypassedByBloggerPemula(['rfau','cet','.c','om'].join(''), null, 'linkAlias', '');
+  BypassedByBloggerPemula(['rfa','uce','t.c','om'].join(''), null, 'linkAlias', '');
   BypassedByBloggerPemula('maloma3arbi.blogspot.com', null, 'link', '');
-  BypassedByBloggerPemula(['fina','nc','en','uz.','co','m'].join(''), null, 'url', 'https://financenuz.com/?web=');
+  BypassedByBloggerPemula(['fi','nan','cen','uz.','co','m'].join(''), null, 'url', 'https://financenuz.com/?web=');
   BypassedByBloggerPemula(/coinilium.net/, () => {if (BpParams.has('id')) {location = atob(BpParams.get('id'));}});
   BypassedByBloggerPemula('(inshort|youlinks|adrinolinks).in|(linkcents|nitro-link).com|clk.sh', null, 'url+2', '');
-  BypassedByBloggerPemula(['the','pr','ag','at','ishi','lcl','ass','es.','com'].join(''), null, 'url', 'https://thepragatishilclasses.com/?adlinkfly=');
+  BypassedByBloggerPemula(['the','pra','gat','is','hil','cla','sse','s.co','m'].join(''), null, 'url', 'https://thepragatishilclasses.com/?adlinkfly=');
   BypassedByBloggerPemula(/blog.klublog.com/, () => {if (BpParams.has('safe')) {location = atob(BpParams.get('safe'));}});
   BypassedByBloggerPemula(/t.me/, () => {if (BpParams.has('url')) {location = decodeURIComponent(BpParams.get('url'));}});
   BypassedByBloggerPemula(/dutchycorp.space/, () => {if (BpParams.has('code')) {location = BpParams.getAll('code') + '?verif=0';}});
@@ -609,59 +609,59 @@
   BypassedByBloggerPemula(/modsfire.com/, () => { if (!location.pathname.startsWith('/download')) { console.log("ONLY solve Cloudflare captcha and DO NOT click anything else!!!"); CaptchaDone(() => { modsfireDownload(); }); } else { modsfireDownload(); } });
   function modsfireDownload() { DoIfExists([97,46,100,111,119,110,108,111,97,100,45,98,117,116,116,111,110].map(function(_c){return String.fromCharCode(_c)}).join(''), 3); waitForElm("a.download-button[href]", safe => { redirect(safe.href, false); DoIfExists("a[href*='/d/']", safe => { fetch(safe.href).then(response => { if (!response.ok) throw new Error('Network response was not ok'); return response.text(); }).then(data => {}).catch(error => {}); }); }); }
 
-  const sl = (h => {switch (h.host) {case 'go.paylinks.cloud': if (/^\/([a-zA-Z0-9]{10,12})$/.test(h.pathname)) {return 'https://paylinks.cloud/' + RegExp.$1;} break;case ['mult','iup.','io'].join(''): if (h.href.includes('/download/')) return h.href.replace('download/', 'en/mirror/'); break;
+  const sl = (h => {switch (h.host) {case 'go.paylinks.cloud': if (/^\/([a-zA-Z0-9]{10,12})$/.test(h.pathname)) {return 'https://paylinks.cloud/' + RegExp.$1;} break;case ['mult','iu','p.io'].join(''): if (h.href.includes('/download/')) return h.href.replace('download/', 'en/mirror/'); break;
       case 'www.google.com': if (h.pathname === '/url' && h.searchParams.has('q')) {return h.searchParams.get('q');} else if (h.pathname === '/url' && h.searchParams.has('url')) {return h.searchParams.get('url');}break;default: break;}})(new URL(location.href));if (sl) {location.href = sl;}
 
   if (['interactive', 'complete'].includes(document.readyState)) {onHtmlLoaded();} else {document.addEventListener('DOMContentLoaded', onHtmlLoaded);}
   function onHtmlLoaded() {
     const bas = (h => {const b = h.pathname === '/verify/' && /^\?([^&]+)/.test(h.search); const result = {isNotifyNeeded: false,redirectDelay: 0,link: undefined};
-    switch (h.host) {case ['game','zig','g.','co','m'].join(''): if (b) {meta('https://get.megafly.in/' + RegExp.$1);} break;case 'shrs.link': case ['shar','eus','.io'].join(''):if (/^\/old\/([^\/]+)/.test(h.pathname)) {return 'https://jobform.in/?link=' + RegExp.$1;} break;
+    switch (h.host) {case ['gam','ezi','gg','.co','m'].join(''): if (b) {meta('https://get.megafly.in/' + RegExp.$1);} break;case 'shrs.link': case ['sh','areu','s.io'].join(''):if (/^\/old\/([^\/]+)/.test(h.pathname)) {return 'https://jobform.in/?link=' + RegExp.$1;} break;
        default: break;}})(new URL(location.href)); if (bas) {const {isNotifyNeeded, redirectDelay, link} = bas;
       if (isNotifyNeeded) {notify(`Redirecting...`);}setTimeout(() => {location.href = link;}, redirectDelay * 1000);}
 
-    BypassedByBloggerPemula(/the2.link/, () => {DoIfExists(['#get','-li','nk-b','tn'].join(''),3);});
-    BypassedByBloggerPemula(/keeplinks.org/, () => {DoIfExists(['#btn','cha','nge'].join(''), 2);});
-    BypassedByBloggerPemula(/forex-22.com/, () => {DoIfExists(['#co','nti','nu','ebu','tton'].join(''),3);});
-    BypassedByBloggerPemula(/1shortlink.com/, () => {DoIfExists(['#red','ir','ect-','li','nk'].join(''), 3);});
-    BypassedByBloggerPemula(/1ink.cc|cuturl.cc/, () => {DoIfExists(['#cou','nti','ngb','tn'].join(''), 1);});
-    BypassedByBloggerPemula(/1short.io/, () => {DoIfExists(['#cou','nt','Down','For','m'].join(''), 'submit', 7);});
-    BypassedByBloggerPemula(/disheye.com/, () => {DoIfExists(['#re','di','re','ctFo','rm'].join(''), 'submit', 3);});
-    BypassedByBloggerPemula(/aysodamag.com/, () => {DoIfExists(['#l','ink1','s-fo','rm'].join(''), 'submit',3);});
+    BypassedByBloggerPemula(/the2.link/, () => {DoIfExists(['#ge','t-li','nk-','btn'].join(''),3);});
+    BypassedByBloggerPemula(/keeplinks.org/, () => {DoIfExists(['#bt','ncha','nge'].join(''), 2);});
+    BypassedByBloggerPemula(/forex-22.com/, () => {DoIfExists(['#c','on','ti','nueb','utt','on'].join(''),3);});
+    BypassedByBloggerPemula(/1shortlink.com/, () => {DoIfExists(['#r','edi','rec','t-l','ink'].join(''), 3);});
+    BypassedByBloggerPemula(/1ink.cc|cuturl.cc/, () => {DoIfExists(['#c','ou','nti','ngbt','n'].join(''), 1);});
+    BypassedByBloggerPemula(/1short.io/, () => {DoIfExists(['#c','ount','Do','wnF','orm'].join(''), 'submit', 7);});
+    BypassedByBloggerPemula(/disheye.com/, () => {DoIfExists(['#re','di','re','ctF','orm'].join(''), 'submit', 3);});
+    BypassedByBloggerPemula(/aysodamag.com/, () => {DoIfExists(['#li','nk','1s-','for','m'].join(''), 'submit',3);});
     BypassedByBloggerPemula(/cryptonewssite.rf.gd/, () => {DoIfExists('#dynamic-button a', 2);});
-    BypassedByBloggerPemula(/1bitspace.com/, () => {DoIfExists(['.but','to','n-e','leme','nt-v','eri','fic','at','io','n'].join(''),3);});
-    BypassedByBloggerPemula(/cshort.org/, () => {DoIfExists(['.tim','er.r','ed','ir','ect'].join(''), 3, 'setInterval');});
+    BypassedByBloggerPemula(/1bitspace.com/, () => {DoIfExists(['.bu','tto','n-','el','emen','t-v','eri','fic','ati','on'].join(''),3);});
+    BypassedByBloggerPemula(/cshort.org/, () => {DoIfExists(['.t','imer','.red','ire','ct'].join(''), 3, 'setInterval');});
     BypassedByBloggerPemula(/revlink.pro/, () => {DoIfExists('#main-content-wrapper > button',2);});
     BypassedByBloggerPemula(/panyhealth.com/, () => {DoIfExists("form[method='get']", 'submit',3);});
-    BypassedByBloggerPemula(/minhapostagem.top/, () => {ReadytoClick(['#a','lf_','co','nt','inu','e.','alf','_b','utt','on'].join(''), 3);});
+    BypassedByBloggerPemula(/minhapostagem.top/, () => {ReadytoClick(['#al','f_','co','nti','nue.','alf','_bu','tton'].join(''), 3);});
     BypassedByBloggerPemula(/playpaste.com/, () => {CaptchaDone(() => {DoIfExists('button.btn');});});
     BypassedByBloggerPemula(/sfl.gl/, () => {if (BpParams.has('u')) {meta(atob(BpParams.get('u')));}; DoIfExists('button:innerText("OPEN LINK")', 2);});
     BypassedByBloggerPemula(/lanza.me/, () => waitForElm('a#botonGo', lz => redirect(lz.href, false)));
-    BypassedByBloggerPemula(/jioupload.icu/, () => {CaptchaDone(() => {DoIfExists(['#con','ti','nueB','tn'].join(''));});});
+    BypassedByBloggerPemula(/jioupload.icu/, () => {CaptchaDone(() => {DoIfExists(['#co','nti','nue','Btn'].join(''));});});
     BypassedByBloggerPemula(/lolinez.com/, () => waitForElm('p#url a', lol => redirect(lol.href, false)));
-    BypassedByBloggerPemula(/(fc-lc|thotpacks).xyz/, () => {DoIfExists(['#in','vis','ib','leCa','ptch','aSho','rtl','ink'].join(''), 3);});
-    BypassedByBloggerPemula(/offerwall.me|ewall.biz/, () => {CaptchaDone(() => {DoIfExists(['#s','ub','mitB','tn'].join(''));});});
-    BypassedByBloggerPemula(/shortlinks2btc.somee.com/, () => {CaptchaDone(() => {DoIfExists(['#bt','Lo','gin'].join(''));});});
+    BypassedByBloggerPemula(/(fc-lc|thotpacks).xyz/, () => {DoIfExists(['#in','visi','bleC','aptc','ha','Sho','rt','li','nk'].join(''), 3);});
+    BypassedByBloggerPemula(/offerwall.me|ewall.biz/, () => {CaptchaDone(() => {DoIfExists(['#su','bmi','tB','tn'].join(''));});});
+    BypassedByBloggerPemula(/shortlinks2btc.somee.com/, () => {CaptchaDone(() => {DoIfExists(['#bt','Lo','gi','n'].join(''));});});
     BypassedByBloggerPemula(/kisalt.digital/, () => {if (BpParams.has('u')) {meta(atob(BpParams.get('u')));}});
     BypassedByBloggerPemula(/linksly.co/, () => waitForElm('div.col-md-12 a', lsl => redirect(lsl.href, false)));
-    BypassedByBloggerPemula(/surl.li|surl.gd/, () => waitForElm(['#r','ed','ire','ct','-bu','tto','n'].join(''), surl => redirect(surl.href)));
-    BypassedByBloggerPemula(/dogefury.com|thanks.tinygo.co/, () => {DoIfExists(['#fo','rm-c','onti','nue'].join(''), 'submit', 2);});
-    BypassedByBloggerPemula(/lksfy.com/, () => {CaptchaDone(() => {DoIfExists(['.g','et','-li','nk.','btn-','pri','ma','ry','.bt','n'].join(''),1);});});
-    BypassedByBloggerPemula(/almontsf.com/, () => {ReadytoClick(['#n','extB','tn'].join(''),2);ReadytoClick([97,46,98,116,110,45,109,111,111,98,105,101,100,97,116].map(function(_c){return String.fromCharCode(_c)}).join(''), 3);});
+    BypassedByBloggerPemula(/surl.li|surl.gd/, () => waitForElm(['#red','ire','ct','-bu','tt','on'].join(''), surl => redirect(surl.href)));
+    BypassedByBloggerPemula(/dogefury.com|thanks.tinygo.co/, () => {DoIfExists(['#for','m-c','onti','nue'].join(''), 'submit', 2);});
+    BypassedByBloggerPemula(/lksfy.com/, () => {CaptchaDone(() => {DoIfExists(['.g','et-','lin','k.b','tn-','pr','im','ar','y.b','tn'].join(''),1);});});
+    BypassedByBloggerPemula(/almontsf.com/, () => {ReadytoClick(['#nex','tB','tn'].join(''),2);ReadytoClick([97,46,98,116,110,45,109,111,111,98,105,101,100,97,116].map(function(_c){return String.fromCharCode(_c)}).join(''), 3);});
     BypassedByBloggerPemula(/rotizer.net/, () => {CaptchaDone(() => {DoIfExists('button:innerText("Confirm")');});});
-    BypassedByBloggerPemula(/(blogsward|coinjest).com|coinsimulator.(io|online)/, () => {waitForElm(['#con','ti','nueB','tn'].join(''), afBtn => afBtn.click());});
+    BypassedByBloggerPemula(/(blogsward|coinjest).com|coinsimulator.(io|online)/, () => {waitForElm(['#con','tin','ueBt','n'].join(''), afBtn => afBtn.click());});
     BypassedByBloggerPemula(/render-state.to/, () => {SameTab();if (BpParams.has('link')) {unsafeWindow.goToLink();}});
     BypassedByBloggerPemula(/linkforearn.com/, () => waitForElm('#shortLinkSection a', linkf => redirect(linkf.href)));
-    BypassedByBloggerPemula(/downfile.site/, () => {DoIfExists('button.h-captcha', 2);DoIfExists(['#m','ega','url','-su','bmi','t'].join(''), 3);});
+    BypassedByBloggerPemula(/downfile.site/, () => {DoIfExists('button.h-captcha', 2);DoIfExists(['#m','eg','aur','l-','su','bmi','t'].join(''), 3);});
     BypassedByBloggerPemula(/enlacito.com/, () => {setTimeout(() => {redirect(unsafeWindow.DYykkzwP,false);}, 2 * 1000);});
     BypassedByBloggerPemula(/adtival.network/, () => {if (BpParams.has('shortid')) {meta(atob(BpParams.get('shortid')));}});
-    BypassedByBloggerPemula(/imagereviser.com/, () => {CheckVisibility(['.tic','k.w','gic','on'].join(''), () => {DoIfExists(['.bo','ttom','_bt','n'].join(''));});});
+    BypassedByBloggerPemula(/imagereviser.com/, () => {CheckVisibility(['.ti','ck','.wg','ic','on'].join(''), () => {DoIfExists(['.bo','ttom','_bt','n'].join(''));});});
     BypassedByBloggerPemula(/amanguides.com/, () => waitForElm('#wpsafe-link > .bt-success', ag => redirect(ag.href, false)));
-    BypassedByBloggerPemula(/stockmarg.com/, () => {DoIfExists(['#cod','exa'].join(''), 'submit', 3);DoIfExists(['#op','en-c','onti','nu','e-b','tn'].join(''), 4);});
+    BypassedByBloggerPemula(/stockmarg.com/, () => {DoIfExists(['#co','de','xa'].join(''), 'submit', 3);DoIfExists(['#o','pen-','cont','inu','e-bt','n'].join(''), 4);});
     BypassedByBloggerPemula(/michaelemad.com|7misr4day.com/, () => waitForElm([97,46,115,45,98,116,110,45,102].map(function(_c){return String.fromCharCode(_c)}).join(''), mld => redirect(mld.href, false)));
-    BypassedByBloggerPemula(/(dramaticqueen|emubliss).com/, () => {DoIfExists(['#not','aro','bot','.bu','tto','n'].join(''),3);DoIfExists(['#b','tn7'].join(''),4);});
+    BypassedByBloggerPemula(/(dramaticqueen|emubliss).com/, () => {DoIfExists(['#no','tar','ob','ot','.bu','tton'].join(''),3);DoIfExists(['#b','tn','7'].join(''),4);});
     BypassedByBloggerPemula(/(grtjobs|jksb).in/, () => {CheckVisibility(['.s','te','p'].join(''), () => {unsafeWindow.handleContinueClick();});});
-    BypassedByBloggerPemula(/tii.la|oei.la|iir.la|tvi.la|oii.la|tpi.li|lnbz.la/, () => {CaptchaDone(() => {DoIfExists(['#co','ntin','ue'].join(''));});});
-    BypassedByBloggerPemula(/(bnbfree|freeth|freebitco).in/, () => {CaptchaDone(() => {DoIfExists(['#fr','ee_p','la','y_f','or','m_','but','ton'].join(''));});});
+    BypassedByBloggerPemula(/tii.la|oei.la|iir.la|tvi.la|oii.la|tpi.li|lnbz.la/, () => {CaptchaDone(() => {DoIfExists(['#co','nti','nue'].join(''));});});
+    BypassedByBloggerPemula(/(bnbfree|freeth|freebitco).in/, () => {CaptchaDone(() => {DoIfExists(['#f','ree_','pla','y_','fo','rm_b','utto','n'].join(''));});});
     BypassedByBloggerPemula(/8tm.net/, () => waitForElm('a.btn.btn-secondary.btn-block.redirect', tm => redirect(tm.href, false)));
     BypassedByBloggerPemula(/bestfonts.pro/, () => waitForElm('.download-font-button > a:nth-child(1)', pro => redirect(pro.href)));
     BypassedByBloggerPemula(/ouo.io|ouo.press/, async function() {await sleep(4000);ReadytoClick('button#btn-main.btn.btn-main');});
@@ -669,81 +669,81 @@
     BypassedByBloggerPemula(/noodlemagazine.com/, () => waitForElm('a#downloadLink.downloadBtn', mag => redirect(mag.href, false)));
     BypassedByBloggerPemula(/paycut.pro/, () => {if (location.href.includes('/ad/')) {location = location.href.replace('ad/', '');}});
     BypassedByBloggerPemula(/askpaccosi.com|cryptomonitor.in/, () => {CaptchaDone(() => {DoIfExists('form[name="dsb"]', 'submit');});});
-    BypassedByBloggerPemula(/forex-trnd.com/, () => {elementReady(['#exf','oa','ry-','snp'].join('')).then(() => DoIfExists(['#e','xfo','ary-','form'].join(''), 'submit', 3));});
+    BypassedByBloggerPemula(/forex-trnd.com/, () => {elementReady(['#e','xfoa','ry','-s','np'].join('')).then(() => DoIfExists(['#e','xf','oa','ry-f','orm'].join(''), 'submit', 3));});
     BypassedByBloggerPemula(/(kongutoday|proappapk|hipsonyc).com/, () => {if (BpParams.has('safe')) {meta(atob(BpParams.get('safe')));}});
     BypassedByBloggerPemula(/mohtawaa.com/, () => waitForElm('a.btn.btn-success.btn-lg.get-link.enabled', moht => redirect(moht.href, false)));
-    BypassedByBloggerPemula(/knowiz0.blogspot.com/, () => {CheckVisibility(['.po','stB','od','y.','pos','t-','bod','y.pS'].join(''), () => {DoIfExists('button#nextBtn',2);});});
+    BypassedByBloggerPemula(/knowiz0.blogspot.com/, () => {CheckVisibility(['.po','st','Bo','dy','.p','os','t-bo','dy.','pS'].join(''), () => {DoIfExists('button#nextBtn',2);});});
 
-    BypassedByBloggerPemula(/(viralxns|uploadsoon).com/, function(){DoIfExists(['#t','p-s','np','2.tp','-bl','ue.','tp-','btn'].join(''), 2);DoIfExists(['.tp-','whi','te.','tp','-bt','n'].join(''), 3);});
+    BypassedByBloggerPemula(/(viralxns|uploadsoon).com/, function(){DoIfExists(['#t','p-','snp2','.tp','-blu','e.','tp-b','tn'].join(''), 2);DoIfExists(['.tp','-wh','it','e.tp','-btn'].join(''), 3);});
     BypassedByBloggerPemula(/(techleets|bonloan).xyz|sharphindi.in|nyushuemu.com/, () => waitForElm('a#tp-snp2', tle => redirect(tle.href, false)));
     BypassedByBloggerPemula(/(jobmatric|carjankaari).com|techsl.online/, () => {DoIfExists("form[name='rtg']", 'submit', 3);DoIfExists(['#bt','n6'].join(''), 4);});
     BypassedByBloggerPemula(/sharetext.me/, () => {if (location.href.includes('/redirect') && BpParams.has('url')) {meta(atob(BpParams.get('url')));}});
-    BypassedByBloggerPemula(/usersdrive.com|ddownload.com/, () => {CaptchaDone(() => {DoIfExists(['#do','wn','load','btn'].join(''));});DoIfExists(['.b','tn','-do','wnl','oad','.bt','n'].join(''), 1);});
+    BypassedByBloggerPemula(/usersdrive.com|ddownload.com/, () => {CaptchaDone(() => {DoIfExists(['#dow','nloa','dbt','n'].join(''));});DoIfExists(['.b','tn','-d','ownl','oa','d.bt','n'].join(''), 1);});
     BypassedByBloggerPemula(/apkw.ru/, () => {if (location.href.includes('/away')) {let apkw = location.href.split('/').slice(-1);redirect(atob(apkw));}});
-    BypassedByBloggerPemula(/(devnote|formshelp|rcccn).in|djbassking.live/, () => {CheckVisibility(['.t','op','.s','tep'].join(''), () => {DoIfExists(['#get','link','s.b','tn'].join(''), 2);});});
+    BypassedByBloggerPemula(/(devnote|formshelp|rcccn).in|djbassking.live/, () => {CheckVisibility(['.to','p.','ste','p'].join(''), () => {DoIfExists(['#ge','tli','nks','.b','tn'].join(''), 2);});});
     BypassedByBloggerPemula(/comohoy.com/, () => {if (location.href.includes('/view/out.html') && BpParams.has('url')) {meta(atob(BpParams.get('url')));}});
     BypassedByBloggerPemula(/cutnet.net|(cutyion|cutynow|cuttlinks|cuttty).com|(exego|cety).app|(jixo|jizo|gamco).online/, () => {ReadytoClick("#submit-button:not([disabled])",0);CaptchaDone(() => {DoIfExists('#submit-button:not([disabled])');});});
     BypassedByBloggerPemula(/xonnews.net|toilaquantri.com|share4u.men|camnangvay.com/, () => waitForElm('div#traffic_result a', xon => redirect(xon.href, false)));
     BypassedByBloggerPemula(/4fnet.org/, () => {if (location.href.includes('/goto')) {let fnet = location.href.split('/').slice(-1);redirect(atob(fnet),false);}});
-    BypassedByBloggerPemula(/oxy\.*/, () => {if (elementExists(['#div','down','lo','ad'].join(''))) {let oxy = bp(['.o','cds','f2','33'].join('')).getAttribute('data-source_url');redirect(oxy, false);}});
+    BypassedByBloggerPemula(/oxy\.*/, () => {if (elementExists(['#di','vd','ownl','oa','d'].join(''))) {let oxy = bp(['.oc','dsf2','33'].join('')).getAttribute('data-source_url');redirect(oxy, false);}});
     BypassedByBloggerPemula(/alorra.com/, () => {CheckVisibility('.ast-post-format- > button', () => {DoIfExists('.single-layout-1.ast-post-format- > button');});});
-    BypassedByBloggerPemula(/largestpanel.in|(djremixganna|financebolo|emubliss).com|(earnme|usanewstoday).club|earningtime.in/, () => {DoIfExists(['#tp','-snp','2'].join(''), 1);});
-    BypassedByBloggerPemula(/adoc.pub/, () => {DoIfExists(['.b','tn-b','lock','.btn','-s','ucc','es','s.','btn'].join(''), 2);CaptchaDone(() => {DoIfExists(['.mt-','15','.b','tn-','blo','ck','.btn','-suc','cess','.btn','-lg.','bt','n'].join(''));});});
+    BypassedByBloggerPemula(/largestpanel.in|(djremixganna|financebolo|emubliss).com|(earnme|usanewstoday).club|earningtime.in/, () => {DoIfExists(['#t','p-','snp','2'].join(''), 1);});
+    BypassedByBloggerPemula(/adoc.pub/, () => {DoIfExists(['.bt','n-bl','ock.','btn','-s','ucce','ss.','btn'].join(''), 2);CaptchaDone(() => {DoIfExists(['.mt','-1','5.b','tn','-bl','oc','k.bt','n-','suc','ce','ss.b','tn-l','g.','btn'].join(''));});});
     BypassedByBloggerPemula(/programasvirtualespc.net/, () => {if (location.href.includes('out/')) {const pvc = location.href.split('?')[1]; redirect(atob(pvc),false);}});
-    BypassedByBloggerPemula(/pdfcoffee.com/, () => {DoIfExists(['.bt','n-','blo','ck.b','tn-s','ucc','es','s.','btn'].join(''), 2);CaptchaDone(() => {DoIfExists(['.m','y-','2.b','tn','-bl','ock.','btn-','pri','mary','.bt','n-l','g.b','tn'].join(''));});});
+    BypassedByBloggerPemula(/pdfcoffee.com/, () => {DoIfExists(['.btn','-b','lock','.bt','n-su','cce','ss.b','tn'].join(''), 2);CaptchaDone(() => {DoIfExists(['.m','y-2','.b','tn-','bl','ock','.b','tn-','prim','ary.','btn-','lg','.b','tn'].join(''));});});
     BypassedByBloggerPemula(/(zygina|jansamparks).com|(loanifyt|getknldgg).site|topshare.in|btcon.online/, () => {DoIfExists("form[name='tp']", 'submit', 3);DoIfExists(['#bt','n6'].join(''), 4);});
     BypassedByBloggerPemula(/(financewada|utkarshonlinetest).com|financenova.online/, () => {DoIfExists('.get_btn.step_box > .btn', 2);ReadytoClick('.get_btn a[href]', 3);});
     BypassedByBloggerPemula(/boost.ink/, () => fetch(location.href).then(bo => bo.text()).then(html => redirect(atob(html.split('bufpsvdhmjybvgfncqfa="')[1].split('"')[0]))));
     BypassedByBloggerPemula(/setroom.biz.id|travelinian.com/, () => {DoIfExists("form[name='dsb']", 'submit', 3);waitForElm(' a:nth-child(1) > button', setr => setr.click());});
     BypassedByBloggerPemula(/fansonlinehub.com/, async function() {setInterval(() => {window.scrollBy(0, 1);window.scrollTo(0,-1);ReadytoClick('.active.btn > span');}, 3 * 1000);});
     BypassedByBloggerPemula(/wp.thunder-appz.eu.org|blog.adscryp.com/, () => {DoIfExists("form[name='dsb']", 'submit', 3);waitForElm('#button3 > a', thun => redirect(thun.href, false));});
-    BypassedByBloggerPemula(/(howifx|vocalley|financerites|yogablogfit|healthfirstweb|junkyponk|mythvista|blog-myst|webhostsec).com|ss7.info|sololevelingmanga.pics/, () => {DoIfExists(['#ge','tli','nk'].join(''), 3);});
+    BypassedByBloggerPemula(/(howifx|vocalley|financerites|yogablogfit|healthfirstweb|junkyponk|mythvista|blog-myst|webhostsec).com|ss7.info|sololevelingmanga.pics/, () => {DoIfExists(['#get','li','nk'].join(''), 3);});
     BypassedByBloggerPemula(/mirrored.to/, () => {waitForElm('div.col-sm.centered.extra-top a', mirr => redirect(mirr.href, false)); waitForElm('div.centerd > a', mir => redirect(mir.href, false));});
-    BypassedByBloggerPemula(/(fourlinez|newsonnline|phonesparrow|creditcarred|stockmarg).com|(alljntuworld|updatewallah|vyaapaarguru|viralmp3.com|sarkarins).in/, () => {ReadytoClick(['#c','on','tinu','e-s','how'].join(''), 3);});
+    BypassedByBloggerPemula(/(fourlinez|newsonnline|phonesparrow|creditcarred|stockmarg).com|(alljntuworld|updatewallah|vyaapaarguru|viralmp3.com|sarkarins).in/, () => {ReadytoClick(['#c','on','tin','ue','-sh','ow'].join(''), 3);});
     BypassedByBloggerPemula(/(financenube|mixrootmods|pastescript|trimorspacks).com/, () => {waitForElm('#wpsafe-link a', cdr => redirect(strBetween(cdr.onclick.toString(), `window.open('`, `', '_self')`), false));});
-    BypassedByBloggerPemula(/(keedabankingnews|aceforce2apk).com|themezon.net|healthvainsure.site|rokni.xyz|bloggingwow.store|dsmusic.in|vi-music.app/, () => {DoIfExists("form[name='tp']", 'submit', 3);DoIfExists(['#tp','-s','np','2'].join(''),4);});
-    BypassedByBloggerPemula(/mboost.me/, () => {if (elementExists(['#f','irst','sect','ion'].join(''))){let mbo = bp('#__NEXT_DATA__');let mbm = JSON.parse(mbo.textContent).props.pageProps.data.targeturl;setTimeout(() => {redirect(mbm,false);}, 2 * 1000);}});
+    BypassedByBloggerPemula(/(keedabankingnews|aceforce2apk).com|themezon.net|healthvainsure.site|rokni.xyz|bloggingwow.store|dsmusic.in|vi-music.app/, () => {DoIfExists("form[name='tp']", 'submit', 3);DoIfExists(['#t','p-','sn','p2'].join(''),4);});
+    BypassedByBloggerPemula(/mboost.me/, () => {if (elementExists(['#fi','rsts','ec','tio','n'].join(''))){let mbo = bp('#__NEXT_DATA__');let mbm = JSON.parse(mbo.textContent).props.pageProps.data.targeturl;setTimeout(() => {redirect(mbm,false);}, 2 * 1000);}});
     BypassedByBloggerPemula(/(aduzz|tutorialsaya|baristakesehatan|merekrut|indobo|educorp).com|deltabtc.xyz|bit4me.info/, () => {waitForElm("div[id^=wpsafe] > a[rel=nofollow]", tiny => redirect(strBetween(tiny.onclick.toString(), `window.open('`, `', '_self')`), false));});
     BypassedByBloggerPemula(/karyawan.co.id/, () => {
       DoIfExists('button#btn.bg-blue-100.text-blue-600', 3);});
     BypassedByBloggerPemula(/yoshare.net|olhonagrana.com/, () => {
-      DoIfExists(['#y','uid','ea'].join(''), 'submit', 2);DoIfExists(['#b','tn','6'].join(''), 2);});
+      DoIfExists(['#y','uid','ea'].join(''), 'submit', 2);DoIfExists(['#btn','6'].join(''), 2);});
     BypassedByBloggerPemula(/slink.bid/, () => {
-      DoIfExists(['#bt','n-ge','nera','te'].join(''), 1);DoIfExists(['.b','tn','-s','ucce','ss.','bt','n'].join(''), 5);});
+      DoIfExists(['#btn','-gen','era','te'].join(''), 1);DoIfExists(['.btn','-s','uc','ce','ss.','bt','n'].join(''), 5);});
     BypassedByBloggerPemula(/blog.yurasu.xyz/, () => {
-      DoIfExists(['#wcG','etLi','nk'].join(''), 2);DoIfExists(['#got','olin','k'].join(''), 3);});
+      DoIfExists(['#w','cG','et','Lin','k'].join(''), 2);DoIfExists(['#got','oli','nk'].join(''), 3);});
     BypassedByBloggerPemula(/coincroco.com|surflink.tech|cointox.net/, () => {
-      waitForElm(['.mb-','sm-0','.mt','-3','.btn','BgRe','d'].join(''), ccBtn => ccBtn.click());});
+      waitForElm(['.mb','-s','m-0.','mt-','3.b','tnB','gRed'].join(''), ccBtn => ccBtn.click());});
     BypassedByBloggerPemula(/solidcoins.net|fishingbreeze.com/, () => {
       CaptchaDone(() => {DoIfExists('form[action]', 'submit');});
-      if (!elementExists(['.g-','rec','aptc','ha'].join(''))) {DoIfExists('mdn', 'submit', 17);}});
+      if (!elementExists(['.g-r','ec','aptc','ha'].join(''))) {DoIfExists('mdn', 'submit', 17);}});
     BypassedByBloggerPemula(/creditsgoal.com/, () => {
-      DoIfExists(['#tp','-s','np2'].join(''), 3);DoIfExists('button:innerText("Continue")', 4);});
+      DoIfExists(['#tp-','snp','2'].join(''), 3);DoIfExists('button:innerText("Continue")', 4);});
     BypassedByBloggerPemula(/adfoc.us/, () => {
-      if (elementExists(['#s','kip'].join(''))) {let adf = bp(['.sk','ip'].join('')).href; redirect(adf);}});
+      if (elementExists(['#s','kip'].join(''))) {let adf = bp(['.ski','p'].join('')).href; redirect(adf);}});
     BypassedByBloggerPemula(/zegtrends.com/, () => {DoIfExists('#cln', 'submit', 5);
       DoIfExists('#bt1', 5);DoIfExists('#go', 5);});
     BypassedByBloggerPemula(/ac.totsugeki.com/, () => {let $ = unsafeWindow.jQuery;
-      $("a[target='_blank']").removeAttr("target");DoIfExists(['.b','tn-','lg.','bt','n-','suc','ce','ss.b','tn'].join(''), 2);});
+      $("a[target='_blank']").removeAttr("target");DoIfExists(['.btn','-l','g.b','tn','-suc','ce','ss.b','tn'].join(''), 2);});
     BypassedByBloggerPemula(/newassets.hcaptcha.com/, async function() {
-      if (!cfg.get('hCaptcha')) return;await sleep(2000);ReadytoClick(['#che','ckbo','x'].join(''));});
-    BypassedByBloggerPemula(/bigbtc.win/, () => {CaptchaDone(() => {DoIfExists(['#c','laim','butn'].join(''));});
-      if (location.href.includes('/bonus')) {DoIfExists(['#c','lick','her','e'].join(''), 2);}});
+      if (!cfg.get('hCaptcha')) return;await sleep(2000);ReadytoClick(['#c','hec','kbo','x'].join(''));});
+    BypassedByBloggerPemula(/bigbtc.win/, () => {CaptchaDone(() => {DoIfExists(['#cl','ai','mbu','tn'].join(''));});
+      if (location.href.includes('/bonus')) {DoIfExists(['#c','lic','kher','e'].join(''), 2);}});
     BypassedByBloggerPemula(/linkspy.cc/, () => {
-      if (elementExists(['.sk','ipBu','tto','n'].join(''))) {let lsp = bp(['.s','kip','But','ton'].join('')).href;redirect(lsp, false);}});
+      if (elementExists(['.sk','ip','Butt','on'].join(''))) {let lsp = bp(['.s','kipB','ut','ton'].join('')).href;redirect(lsp, false);}});
     BypassedByBloggerPemula(/(superheromaniac|spatsify|mastkhabre|ukrupdate).com/, () => {
-      DoIfExists(['#tp9','8'].join(''), 10);DoIfExists(['#bt','n6'].join(''), 12);DoIfExists("form[name='tp']", 'submit', 11);});
+      DoIfExists(['#t','p98'].join(''), 10);DoIfExists(['#b','tn','6'].join(''), 12);DoIfExists("form[name='tp']", 'submit', 11);});
     BypassedByBloggerPemula(/(bestloansoffers|worldzc).com|earningtime.in/, () => {
-      DoIfExists('#rtg', 'submit', 2);DoIfExists(['#rtg','-for','m'].join(''), 'submit', 3);
-      DoIfExists(['.rtg','-b','lue','.r','tg-','btn'].join(''), 4);DoIfExists('#rtg-snp21 > button', 5);});
+      DoIfExists('#rtg', 'submit', 2);DoIfExists(['#rtg','-fo','rm'].join(''), 'submit', 3);
+      DoIfExists(['.rt','g-bl','ue','.rt','g-','btn'].join(''), 4);DoIfExists('#rtg-snp21 > button', 5);});
     BypassedByBloggerPemula(/(exeo|exego).app|(falpus|exe-urls|exnion|exe-links|exeygo|exeylink).com|4ace.online/, () => {
-      DoIfExists(['#i','nvi','si','bleC','apt','ch','aS','hor','tli','nk'].join(''), 1);DoIfExists(['#be','fore','-c','apt','cha'].join(''), 'submit', 1);CaptchaDone(() => {
-        DoIfExists('#submit-button:not([disabled])'); DoIfExists(['#inv','isi','ble','Capt','cha','Sho','rtli','nk'].join(''), 0); }); ReadytoClick('#go-submit:not([disabled])', 6); });
+      DoIfExists(['#inv','is','ib','leC','apt','ch','aS','hor','tl','ink'].join(''), 1);DoIfExists(['#bef','or','e-ca','pt','cha'].join(''), 'submit', 1);CaptchaDone(() => {
+        DoIfExists('#submit-button:not([disabled])'); DoIfExists(['#in','vis','ibl','eCap','tcha','Sh','ort','link'].join(''), 0); }); ReadytoClick('#go-submit:not([disabled])', 6); });
     BypassedByBloggerPemula(/dinheiromoney.com/, () => {DoIfExists("div[id^='button'] form", 'submit', 3);
       waitForElm("div[id^='button'] center a", postazap => redirect(postazap.href, false));});
     BypassedByBloggerPemula(/writedroid.eu.org|modmania.eu.org|writedroid.in/, () => {
-      DoIfExists(['#s','ho','rtP','os','tL','ink'].join(''), 3);waitForElm("#shortGoToLink", dro => redirect(dro.href, false));});
-    BypassedByBloggerPemula(/flamebook.eu.org/, async () => {const flame = [['#bu','tt','on1'].join(''), ['#bu','tt','on','2'].join(''), ['#bu','tto','n3'].join('')];
+      DoIfExists(['#sho','rt','Post','Lin','k'].join(''), 3);waitForElm("#shortGoToLink", dro => redirect(dro.href, false));});
+    BypassedByBloggerPemula(/flamebook.eu.org/, async () => {const flame = [['#bu','tt','on1'].join(''), ['#but','ton','2'].join(''), ['#but','ton','3'].join('')];
       for (const fbook of flame) {await sleep(3000);ReadytoClick(fbook);}});
     BypassedByBloggerPemula(/techkhulasha.com|itijobalert.in/, () => {
       ReadytoClick('#waiting > div > .bt-success', 2);DoIfExists('button:innerText("Open-Continue")', 3);});
@@ -752,69 +752,69 @@
     BypassedByBloggerPemula(/rekonise.com/, () => {let xhr = new XMLHttpRequest();
       xhr.onload = () => redirect(JSON.parse(xhr.responseText).url);
       xhr.open("GET", "https://api.rekonise.com/social-unlocks" + location.pathname, true);xhr.send();});
-    BypassedByBloggerPemula(/vosan.co/, () => {bp(['.ele','men','tor','-s','iz','e-lg'].join('')).removeAttribute('target');
-      DoIfExists(['.e','le','me','ntor','-si','ze-l','g'].join(''), 2);DoIfExists(['.w','pd','m-d','ownl','oad-','link'].join(''), 2);});
+    BypassedByBloggerPemula(/vosan.co/, () => {bp(['.e','lem','ent','or-s','ize','-l','g'].join('')).removeAttribute('target');
+      DoIfExists(['.el','eme','nt','or','-si','ze-','lg'].join(''), 2);DoIfExists(['.wpd','m-','do','wnlo','ad-l','ink'].join(''), 2);});
     BypassedByBloggerPemula(/exblog.jp/, () => {AIORemover('removeAttr', 'div.post-main div a', 'target');
       DoIfExists('a:innerText("NEST ARTICLE")', 3);DoIfExists('a:innerText("Continue To")', 4);});
     BypassedByBloggerPemula(/modcombo.com/, () => {
       if (location.href.includes('download/')) {waitForElm('div.item.item-apk a', mc => redirect(mc.href, false));
         DoIfExists('a.btn.btn-submit', 6);} else {DoIfExists('a.btn.btn-red.btn-icon.btn-download.br-50', 2);}});
-    BypassedByBloggerPemula(/autodime.com|cryptorex.net/, () => {CaptchaDone(() => {DoIfExists(['#but','ton1'].join(''));});
-      elementReady(['#fex','kom','in','hid','de','n2'].join('')).then(() => ReadytoClick(['.mb','-sm','-0.','mt-','3.bt','nB','gRe','d'].join(''), 2));});
-    BypassedByBloggerPemula(/(bchlink|usdlink).xyz/, () => {AIORemover('removeAttr', ['#an','tiBo','tBtn','Beta'].join(''), 'onclick');
-      DoIfExists('#antiBotBtnBeta > strong', 2);CaptchaDone(() => {DoIfExists(['#i','nv','isib','le','Cap','tc','ha','Shor','tli','nk'].join(''));});});
+    BypassedByBloggerPemula(/autodime.com|cryptorex.net/, () => {CaptchaDone(() => {DoIfExists(['#b','utto','n1'].join(''));});
+      elementReady(['#fex','komi','nh','id','den2'].join('')).then(() => ReadytoClick(['.mb-','sm-','0.mt','-3.','btnB','gRe','d'].join(''), 2));});
+    BypassedByBloggerPemula(/(bchlink|usdlink).xyz/, () => {AIORemover('removeAttr', ['#a','nt','iBo','tBt','nBet','a'].join(''), 'onclick');
+      DoIfExists('#antiBotBtnBeta > strong', 2);CaptchaDone(() => {DoIfExists(['#i','nvis','ib','le','Cap','tcha','Sho','rt','li','nk'].join(''));});});
     BypassedByBloggerPemula(/pubghighdamage.com|anmolbetiyojana.in/, () => {SameTab();
-      DoIfExists(['#ro','bot'].join(''), 2);DoIfExists(['#no','tar','ob','ot.b','ut','ton'].join(''), 2);ReadytoClick(['#got','ol','ink','.b','t-','suc','ces','s.b','tn'].join(''), 3);});
-    BypassedByBloggerPemula(/aylink.co|cpmlink.pro/, () => {DoIfExists(['.btn','.b','tn-g','o'].join(''), 2);ReadytoClick(['.btn','-go'].join(''), 3);
+      DoIfExists(['#ro','bo','t'].join(''), 2);DoIfExists(['#not','aro','bo','t.','but','ton'].join(''), 2);ReadytoClick(['#got','olin','k.bt','-s','ucc','es','s.b','tn'].join(''), 3);});
+    BypassedByBloggerPemula(/aylink.co|cpmlink.pro/, () => {DoIfExists(['.btn','.b','tn-','go'].join(''), 2);ReadytoClick(['.b','tn-g','o'].join(''), 3);
       waitForElm("#main", Aylink => redirect(strBetween(Aylink.onclick.toString(), 'window.open("', '"'), false));});
     BypassedByBloggerPemula(/sub2get.com/, () => {
-      if (elementExists(['#but','unlo','ck'].join(''))) {let subt = bp('#butunlock > a:nth-child(1)').href;redirect(subt);}});
+      if (elementExists(['#b','utu','nloc','k'].join(''))) {let subt = bp('#butunlock > a:nth-child(1)').href;redirect(subt);}});
     BypassedByBloggerPemula(/o-pro.online/, () => {waitForElm('#newbutton > a', opo => redirect(opo.href, false));
       waitForElm('a.btn.btn-default.btn-sm', opo2 => redirect(opo2.href, false));});
-    BypassedByBloggerPemula(/jobzhub.store/, () => {DoIfExists(['#su','rl'].join(''), 5);
-      if (elementExists(['#n','ex','t'].join(''))) {unsafeWindow.startCountdown();DoIfExists('form.text-center', 'submit', 15);}});
-    BypassedByBloggerPemula(/curto.win/, () => {DoIfExists(['#get','-li','nk'].join(''), 2);
-      CheckVisibility('span:contains("Your link is ready")', () => {let curto = bp(['#ge','t-','link'].join('')).href;redirect(curto);});});
+    BypassedByBloggerPemula(/jobzhub.store/, () => {DoIfExists(['#sur','l'].join(''), 5);
+      if (elementExists(['#nex','t'].join(''))) {unsafeWindow.startCountdown();DoIfExists('form.text-center', 'submit', 15);}});
+    BypassedByBloggerPemula(/curto.win/, () => {DoIfExists(['#get','-l','ink'].join(''), 2);
+      CheckVisibility('span:contains("Your link is ready")', () => {let curto = bp(['#get','-lin','k'].join('')).href;redirect(curto);});});
     BypassedByBloggerPemula(/nishankhatri.xyz|(bebkub|owoanime|hyperkhabar).com/, () => {
-      DoIfExists(['#pro','-c','onti','nue'].join(''), 3);waitForElm('a#pro-btn', vnshort => redirect(vnshort.href));DoIfExists(['#my-','bt','n'].join(''), 5);});
+      DoIfExists(['#pr','o-','cont','in','ue'].join(''), 3);waitForElm('a#pro-btn', vnshort => redirect(vnshort.href));DoIfExists(['#my','-btn'].join(''), 5);});
     BypassedByBloggerPemula(/infonerd.org/, () => {EnableRCF();
-      CheckVisibility(['#r','edi','rec','tBut','ton'].join(''), '||', "bp('#countdown').innerText == '0'", () => {unsafeWindow.redirectToUrl();});});
+      CheckVisibility(['#re','dir','ect','Bu','tton'].join(''), '||', "bp('#countdown').innerText == '0'", () => {unsafeWindow.redirectToUrl();});});
     BypassedByBloggerPemula(/(blogmado|kredilerim|insuranceleadsinfo).com/, () => {
       CaptchaDone(() => {DoIfExists('button.btn');});waitForElm('a.get-link.disabled a', cho => redirect(cho.href, false));});
     BypassedByBloggerPemula(/litecoin.host|cekip.site/, () => {CaptchaDone(() => {DoIfExists(['#ibt','n'].join(''));});
-      if (elementExists(['.pt','-5','.car','d-he','ader'].join(''))) {CheckVisibility(['.b','tn','-pr','im','ary','.bt','n'].join(''), () => {DoIfExists(['.bt','n-','pr','imar','y.bt','n'].join(''));});}});
+      if (elementExists(['.pt-','5.','card','-hea','der'].join(''))) {CheckVisibility(['.b','tn-','prim','ary.','bt','n'].join(''), () => {DoIfExists(['.bt','n-','pr','imar','y.bt','n'].join(''));});}});
     BypassedByBloggerPemula(/gocmod.com/, () => {
-      if (elementExists(['.vie','w-','app'].join(''))) {bp(['#n','o-li','nk'].join('')).removeAttribute('target');DoIfExists(['.d','own','load','-l','in','e-ti','tle'].join(''), 2);}});
+      if (elementExists(['.vi','ew','-ap','p'].join(''))) {bp(['#n','o-','li','nk'].join('')).removeAttribute('target');DoIfExists(['.d','own','load','-lin','e-t','it','le'].join(''), 2);}});
     BypassedByBloggerPemula(/yitarx.com/, () => {if (location.href.includes('enlace/')) {let yitar = location.href.split('#!')[1];
       let arxUrl = DecodeBase64(yitar,3);redirect(arxUrl);}});
     BypassedByBloggerPemula(/(travelironguide|businesssoftwarehere|softwaresolutionshere|freevpshere|masrawytrend).com/, () => {
       CaptchaDone(() => {DoIfExists('#lview > form', 'submit');});waitForElm('.get-link > a', tig => redirect(tig.href, false));});
     BypassedByBloggerPemula(/videolyrics.in/, () => {ReadytoClick('a:contains("Continue")', 3);
       CheckVisibility("button[class^='py-2 px-4 font-semibold']", () => {DoIfExists('div[x-html="isTCompleted"] button');});});
-    BypassedByBloggerPemula(/(tmail|labgame).io|(gamezizo|fitdynamos).com/, () => {DoIfExists(['#su','rl'].join(''), 5);
-      if (elementExists(['#n','ext'].join(''))) {DoIfExists('form.text-center', 'submit', 3);DoIfExists(['#ne','xt'].join(''), 2);DoIfExists(['#gl','in','k'].join(''), 15);}});
+    BypassedByBloggerPemula(/(tmail|labgame).io|(gamezizo|fitdynamos).com/, () => {DoIfExists(['#sur','l'].join(''), 5);
+      if (elementExists(['#ne','xt'].join(''))) {DoIfExists('form.text-center', 'submit', 3);DoIfExists(['#nex','t'].join(''), 2);DoIfExists(['#gli','nk'].join(''), 15);}});
     BypassedByBloggerPemula(/f2h.io/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      if (elementExists(['.do','wnl','oad','-b','utt','on'].join(''))) {DoIfExists(['.bt','n-s','ucce','ss'].join(''), 2);}});
+      if (elementExists(['.do','wnl','oad-','bu','tt','on'].join(''))) {DoIfExists(['.btn','-su','cces','s'].join(''), 2);}});
     BypassedByBloggerPemula(/dbree.me/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists(['.c','ent','er-b','lock','.b','tn','-def','ault','.btn'].join(''), 2);});
+      DoIfExists(['.cen','te','r-bl','ock','.b','tn','-de','fa','ult.','btn'].join(''), 2);});
     BypassedByBloggerPemula(/upload.ee/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
       DoIfExists('#d_l', 2);});
     BypassedByBloggerPemula(/gofile.io/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      elementReady(['#fi','lem','an','age','r'].join('')).then(() => ReadytoClick('button.item_download', 2));});
+      elementReady(['#fil','ema','nag','er'].join('')).then(() => ReadytoClick('button.item_download', 2));});
     BypassedByBloggerPemula(/dddrive.me/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists(['.btn','-ou','tl','ine-','pr','im','ar','y'].join(''), 2);});
+      DoIfExists(['.btn','-o','utl','ine-','pr','imar','y'].join(''), 2);});
     BypassedByBloggerPemula(/1fichier.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      if (elementExists(['#pas','s'].join(''))) {} else {DoIfExists(['.bt','n-','or','ang','e.b','tn-g','ene','ral','.ok'].join(''), 1);DoIfExists('.alc', 'submit', 1);}});
+      if (elementExists(['#p','as','s'].join(''))) {} else {DoIfExists(['.btn','-or','ang','e.','bt','n-g','ene','ra','l.ok'].join(''), 1);DoIfExists('.alc', 'submit', 1);}});
     BypassedByBloggerPemula(/mp4upload.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists(['#t','odl'].join(''), 2);DoIfExists("form[name='F1']", 'submit', 1);});
+      DoIfExists(['#to','dl'].join(''), 2);DoIfExists("form[name='F1']", 'submit', 1);});
     BypassedByBloggerPemula(/takefile.link/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
       if (elementExists('#F1')) {DoIfExists('div.no-gutter:nth-child(2) > form:nth-child(1)', 'submit', 1);}});
     BypassedByBloggerPemula(/drop.download/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists(['#m','etho','d_','fre','e'].join(''), 2);DoIfExists(['.btn','-do','wn','load'].join(''), 2);});
+      DoIfExists(['#met','hod_','free'].join(''), 2);DoIfExists(['.btn','-dow','nloa','d'].join(''), 2);});
     BypassedByBloggerPemula(/easyupload.io/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      if (elementExists(['#dow','nloa','d-b','ox'].join(''))) {DoIfExists(['.sta','rt','-dow','nloa','d.di','v'].join(''), 2);}});
+      if (elementExists(['#d','ownl','oad-','box'].join(''))) {DoIfExists(['.sta','rt-','do','wnlo','ad','.di','v'].join(''), 2);}});
     BypassedByBloggerPemula(/rapidgator.net/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists(['.bt','n-','fre','e.','act-','li','nk','.lin','k'].join(''), 2);});
+      DoIfExists(['.bt','n-fr','ee.','ac','t-l','in','k.','li','nk'].join(''), 2);});
     BypassedByBloggerPemula(/coinsrev.com/, () => {parent.open = BpBlock();CaptchaDone(() => {DoIfExists('#wpsafelinkhuman > input');});
       DoIfExists('#wpsafe-generate > a > img', 3);DoIfExists('input#image3', 13);});
     BypassedByBloggerPemula(/dropgalaxy.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
@@ -822,29 +822,29 @@
     BypassedByBloggerPemula(/dayuploads.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
       DoIfExists(['#ad-','link','2'].join(''), 2);});
     BypassedByBloggerPemula(/workupload.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      if (elementExists(['#d','ow','nloa','d'].join(''))) {DoIfExists(['.bt','n-','pri','o.bt','n'].join(''), 2);}});
+      if (elementExists(['#d','ow','nloa','d'].join(''))) {DoIfExists(['.b','tn','-pri','o.b','tn'].join(''), 2);}});
     BypassedByBloggerPemula(/freepreset.net/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      if (elementExists(['#bu','tto','n_do','wnlo','ad'].join(''))) {waitForElm('a#button_download', fpr => redirect(fpr.href, false));}});
+      if (elementExists(['#but','ton','_d','own','load'].join(''))) {waitForElm('a#button_download', fpr => redirect(fpr.href, false));}});
     BypassedByBloggerPemula(/krakenfiles.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists(['.do','wnl','oad','-no','w-t','ex','t'].join(''), 2);});
+      DoIfExists(['.dow','nloa','d-n','ow-t','ext'].join(''), 2);});
     BypassedByBloggerPemula(/file-upload.net/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists(['#d','ownb','ild','.g-r','eca','ptc','ha'].join(''), 2);});
+      DoIfExists(['#do','wnb','ild','.g-r','eca','pt','ch','a'].join(''), 2);});
     BypassedByBloggerPemula(/docs.google.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      if (elementExists(['#uc','-d','l-ic','on'].join(''))) {DoIfExists(['#do','wnl','oa','dFo','rm'].join(''), 'submit', 1);}});
+      if (elementExists(['#uc-','dl','-ic','on'].join(''))) {DoIfExists(['#do','wnl','oa','dF','orm'].join(''), 'submit', 1);}});
     BypassedByBloggerPemula(/uploadhaven.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists('.alert > a:nth-child(1)', 2);DoIfExists(['#fo','rm','-do','wnlo','ad'].join(''), 'submit', 1);});
+      DoIfExists('.alert > a:nth-child(1)', 2);DoIfExists(['#fo','rm','-d','ow','nloa','d'].join(''), 'submit', 1);});
     BypassedByBloggerPemula(/fileresources.net/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      if (elementExists(['.do','wn','load','-tim','er'].join(''))) {waitForElm('a.btn.btn-default', fpr => redirect(fpr.href, false));}});
+      if (elementExists(['.dow','nl','oad-','ti','me','r'].join(''))) {waitForElm('a.btn.btn-default', fpr => redirect(fpr.href, false));}});
     BypassedByBloggerPemula(/indobo.com/, () => {const scriptElement = bp('#wpsafegenerate > script:nth-child(4)');if (scriptElement) {
       const scriptContent = scriptElement.textContent;const url = strBetween(scriptContent, 'window.location.href = "', '";', true);
         if (url && url.startsWith('https://indobo.com?safelink_redirect=')) {setTimeout(() => redirect(url), 2000);}}});
-    BypassedByBloggerPemula(/techxploitz.eu.org/, () => {CheckVisibility(['#h','mV','rfy'].join(''), () => {DoIfExists(['.p','stL.','bu','tto','n'].join(''), 2);});
-      CheckVisibility(['#a','SlCn','t'].join(''), () => {DoIfExists(['.pst','L.','but','ton'].join(''), 2);ReadytoClick(['.s','afeG','oL.','but','ton'].join(''), 3);});});
-    BypassedByBloggerPemula(/jobinmeghalaya.in/, () => {DoIfExists(['#bot','tom','But','ton'].join(''),2);DoIfExists('a#btn7', 3);
-      DoIfExists(['#wp','saf','elin','k-','land','ing'].join(''), 'submit', 2);ReadytoClick('#open-link > .pro_btn',3);DoIfExists('#wpsafe-link > .bt-success', 3);});
-    BypassedByBloggerPemula(/playnano.online/, () => {DoIfExists(['#w','at','ch-','link'].join(''), 2);
-      DoIfExists(['.wa','tc','h-','next','-btn','.b','tn-','pr','im','ary.','butt','on'].join(''), 2);DoIfExists('button.button.btn-primary.watch-next-btn', 5, 'setInterval');});
-    BypassedByBloggerPemula(/2linkes.com/, () => {if (elementExists(['#lin','k-v','iew'].join(''))) {CaptchaDone(() => {DoIfExists(['#l','in','k-vi','ew'].join(''), 'submit');});}
+    BypassedByBloggerPemula(/techxploitz.eu.org/, () => {CheckVisibility(['#hmV','rfy'].join(''), () => {DoIfExists(['.ps','tL.','butt','on'].join(''), 2);});
+      CheckVisibility(['#a','SlCn','t'].join(''), () => {DoIfExists(['.p','st','L.b','utt','on'].join(''), 2);ReadytoClick(['.saf','eGoL','.bu','tto','n'].join(''), 3);});});
+    BypassedByBloggerPemula(/jobinmeghalaya.in/, () => {DoIfExists(['#bo','ttom','Butt','on'].join(''),2);DoIfExists('a#btn7', 3);
+      DoIfExists(['#w','ps','afel','ink','-la','nd','ing'].join(''), 'submit', 2);ReadytoClick('#open-link > .pro_btn',3);DoIfExists('#wpsafe-link > .bt-success', 3);});
+    BypassedByBloggerPemula(/playnano.online/, () => {DoIfExists(['#w','atc','h-li','nk'].join(''), 2);
+      DoIfExists(['.w','atch','-ne','xt','-bt','n.b','tn','-pr','imar','y.','bu','tton'].join(''), 2);DoIfExists('button.button.btn-primary.watch-next-btn', 5, 'setInterval');});
+    BypassedByBloggerPemula(/2linkes.com/, () => {if (elementExists(['#lin','k-','vie','w'].join(''))) {CaptchaDone(() => {DoIfExists(['#li','nk','-vi','ew'].join(''), 'submit');});}
       else if (elementExists('button.btn.btn-primary')) {DoIfExists('.box-body > form:nth-child(2)', 'submit', 2);}});
     BypassedByBloggerPemula(/ify.ac|go.linkify.ru/, () => {
       let $ = unsafeWindow.jQuery; unsafeWindow.offerClicked = true; if (typeof unsafeWindow.countdown !== 'undefined') unsafeWindow.countdown = 0;
@@ -852,10 +852,10 @@
     });
     BypassedByBloggerPemula(/(financedoze|topjanakri|stockbhoomi).com|techhype.in|getpdf.net|cryptly.site/, () => {
       CheckVisibility('p:contains("Step")', () => {DoIfExists('#rtg', 'submit', 3);DoIfExists('button:innerText("Open-Continue")', 4);});});
-    BypassedByBloggerPemula(/(importantclass|hamroguide).com/, () => {DoIfExists(['#p','ro-c','ont','inu','e'].join(''), 4);
-      CheckVisibility(['#p','ro-','bt','n'].join(''), () => {DoIfExists('#pro-link a', 2);});waitForElm(['#my-','btn.','pro','_b','tn'].join(''), vnshor => redirect(vnshor.href));});
+    BypassedByBloggerPemula(/(importantclass|hamroguide).com/, () => {DoIfExists(['#pr','o-co','nt','inu','e'].join(''), 4);
+      CheckVisibility(['#pro','-bt','n'].join(''), () => {DoIfExists('#pro-link a', 2);});waitForElm(['#m','y-','bt','n.','pro','_btn'].join(''), vnshor => redirect(vnshor.href));});
     BypassedByBloggerPemula(/mazen-ve3.com/, () => {EnableRCF();let maze = setInterval(() => {
-        if (bp(['.fi','ll','er'].join('')).innerText == 'Wait 0 s') {clearInterval(maze);ReadytoClick(['#bt','n6'].join(''));ReadytoClick(['.btn','-suc','ce','ss','.btn'].join(''), 1);}}, 2 * 1000);});
+        if (bp(['.f','ill','er'].join('')).innerText == 'Wait 0 s') {clearInterval(maze);ReadytoClick(['#btn','6'].join(''));ReadytoClick(['.bt','n-su','cc','es','s.b','tn'].join(''), 1);}}, 2 * 1000);});
     BypassedByBloggerPemula(/apkadmin.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
       waitForElm('div.text.text-center a', apk => redirect(apk.href));});
     BypassedByBloggerPemula(/filemoon.sx/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
@@ -863,9 +863,9 @@
     BypassedByBloggerPemula(/files.fm/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
       waitForElm('#head_download__all-files > div > div > a:nth-child(1)', flBtn => flBtn.click());});
     BypassedByBloggerPemula(/k2s.cc/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists(['.b','utto','n-d','own','loa','d-','slow'].join(''), 2);waitForElm([97,46,108,105,110,107,45,116,111,45,102,105,108,101].map(function(_c){return String.fromCharCode(_c)}).join(''), k2s => redirect(k2s.href));});
+      DoIfExists(['.bu','tt','on','-dow','nlo','ad-s','low'].join(''), 2);waitForElm([97,46,108,105,110,107,45,116,111,45,102,105,108,101].map(function(_c){return String.fromCharCode(_c)}).join(''), k2s => redirect(k2s.href));});
     BypassedByBloggerPemula(/katfile.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      CaptchaDone(() => {DoIfExists(['#d','ow','nlo','adbt','n'].join(''));});DoIfExists(['#fbt','n1'].join(''), 2);waitForElm(['#d','link'].join(''), katf => redirect(katf.href));});
+      CaptchaDone(() => {DoIfExists(['#do','wnlo','adb','tn'].join(''));});DoIfExists(['#fbt','n1'].join(''), 2);waitForElm(['#d','link'].join(''), katf => redirect(katf.href));});
     BypassedByBloggerPemula(/udrop.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
       waitForElm('.responsiveMobileMargin > button:nth-child(1)', udr => redirect(strBetween(udr.onclick.toString(), `openUrl('`, `')`)));});
     BypassedByBloggerPemula(/megaupto.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
@@ -873,120 +873,120 @@
     BypassedByBloggerPemula(/karanpc.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
       DoIfExists('#downloadButton > form', 'submit', 2);});
     BypassedByBloggerPemula(/douploads.net/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists(['.b','tn-','pr','im','ar','y.b','tn','-lg','.btn','-b','lock','.b','tn'].join(''), 2);});
+      DoIfExists(['.bt','n-p','ri','mar','y.','bt','n-lg','.btn','-b','lo','ck.b','tn'].join(''), 2);});
     BypassedByBloggerPemula(/send.now/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists(['#dow','nl','oa','dbtn'].join(''), 2);});
+      DoIfExists(['#dow','nl','oad','btn'].join(''), 2);});
     BypassedByBloggerPemula(/dataupload.net/, async () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      await sleep(5000);ReadytoClick(['.do','wnl','oad','bt','n'].join(''));});
+      await sleep(5000);ReadytoClick(['.dow','nl','oad','btn'].join(''));});
     BypassedByBloggerPemula(/buzzheavier.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      waitForElm(['#dow','nloa','d-li','nk'].join(''), bhvBtn => bhvBtn.click());});
+      waitForElm(['#d','ow','nloa','d-','link'].join(''), bhvBtn => bhvBtn.click());});
     BypassedByBloggerPemula(/bowfile.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
       ReadytoClick('.download-timer > .btn--primary.btn > .btn__text', 2);});
     BypassedByBloggerPemula(/dailyuploads.net/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      CaptchaDone(() => {DoIfExists(['#d','ow','nlo','adbt','n'].join(''));});DoIfExists(['#fb','tn1'].join(''), 2);});
+      CaptchaDone(() => {DoIfExists(['#d','own','lo','adb','tn'].join(''));});DoIfExists(['#fb','tn1'].join(''), 2);});
     BypassedByBloggerPemula(/uploadev.org/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      CaptchaDone(() => {DoIfExists(['#do','wn','load','bt','n'].join(''));});DoIfExists('#direct_link > a', 2);});
+      CaptchaDone(() => {DoIfExists(['#do','wnlo','ad','btn'].join(''));});DoIfExists('#direct_link > a', 2);});
     BypassedByBloggerPemula(/megaup.net/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      waitForElm('a.btn.btn-default', muBtn => muBtn.click());DoIfExists(['#b','tndo','wnl','oad'].join(''), 7);});
+      waitForElm('a.btn.btn-default', muBtn => muBtn.click());DoIfExists(['#b','tnd','own','lo','ad'].join(''), 7);});
     BypassedByBloggerPemula(/gdflix.dad/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      elementReady(['#cf_','capt','ch','a.ca','rd'].join('')).then(() => ReadytoClick('a.btn.btn-outline-success', 2));});
+      elementReady(['#cf_','ca','ptch','a.','ca','rd'].join('')).then(() => ReadytoClick('a.btn.btn-outline-success', 2));});
     BypassedByBloggerPemula(/mega4upload.net/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists("input[name=mega_free]", 2);CaptchaDone(() => {DoIfExists(['#do','wn','lo','adb','tn'].join(''));});});
+      DoIfExists("input[name=mega_free]", 2);CaptchaDone(() => {DoIfExists(['#dow','nlo','adbt','n'].join(''));});});
     BypassedByBloggerPemula(/filespayouts.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists("input[name='method_free']", 2);CaptchaDone(() => {ReadytoClick(['#do','wnlo','adbt','n'].join(''));});});
+      DoIfExists("input[name='method_free']", 2);CaptchaDone(() => {ReadytoClick(['#do','wnlo','ad','btn'].join(''));});});
     BypassedByBloggerPemula(/uploady.io/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      CaptchaDone(() => {DoIfExists(['#dow','nlo','ad','bt','n'].join(''));});DoIfExists(['#fr','ee_d','wn'].join(''), 2);DoIfExists(['.rou','nded','.bt','n-','pr','imar','y.b','tn'].join(''), 2);});
+      CaptchaDone(() => {DoIfExists(['#do','wnlo','adbt','n'].join(''));});DoIfExists(['#fre','e_d','wn'].join(''), 2);DoIfExists(['.rou','nde','d.','btn-','pri','mar','y.','btn'].join(''), 2);});
     BypassedByBloggerPemula(/file-upload.org/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists("button[name='method_free']", 2);DoIfExists(['.do','wnl','oad','-bt','n'].join(''), 2);CaptchaDone(() => {DoIfExists(['#d','ow','nlo','adb','tn'].join(''));});});
+      DoIfExists("button[name='method_free']", 2);DoIfExists(['.do','wn','load','-b','tn'].join(''), 2);CaptchaDone(() => {DoIfExists(['#d','own','lo','adbt','n'].join(''));});});
     BypassedByBloggerPemula(/mexa.sh/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists(['#D','ownl','oad','fre'].join(''), 2);DoIfExists(['#di','rec','t_li','nk'].join(''), 2);CaptchaDone(() => {DoIfExists(['#do','wnlo','adb','tn'].join(''));});});
+      DoIfExists(['#D','own','loa','dfre'].join(''), 2);DoIfExists(['#di','rec','t_li','nk'].join(''), 2);CaptchaDone(() => {DoIfExists(['#d','own','lo','adbt','n'].join(''));});});
     BypassedByBloggerPemula(/up-4ever.net/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists("input[name='method_free']", 2);DoIfExists(['#d','own','Load','Link','Butt','on'].join(''), 5);CaptchaDone(() => {DoIfExists(['#d','own','lo','ad','bt','n'].join(''));});});
+      DoIfExists("input[name='method_free']", 2);DoIfExists(['#d','ow','nLo','ad','Link','Bu','tto','n'].join(''), 5);CaptchaDone(() => {DoIfExists(['#dow','nloa','dbtn'].join(''));});});
     BypassedByBloggerPemula(/up-load.io|downloadani.me/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists("input[name='method_free']", 2);DoIfExists(['.bt','n-do','w.','btn'].join(''), 1);CaptchaDone(() => {DoIfExists(['#d','own','loa','dbtn'].join(''));});});
+      DoIfExists("input[name='method_free']", 2);DoIfExists(['.btn','-dow','.btn'].join(''), 1);CaptchaDone(() => {DoIfExists(['#do','wnlo','adb','tn'].join(''));});});
     BypassedByBloggerPemula(/hitfile.net/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      CaptchaDone(() => {DoIfExists(['#su','bmit'].join(''));});DoIfExists(['.no','pay','-btn','.btn','-gr','ey'].join(''), 2);waitForElm(['#pop','unde','r2'].join(''), hfl2 => redirect(hfl2.href), 37);});
+      CaptchaDone(() => {DoIfExists(['#su','bm','it'].join(''));});DoIfExists(['.nop','ay','-b','tn.b','tn-g','rey'].join(''), 2);waitForElm(['#pop','und','er','2'].join(''), hfl2 => redirect(hfl2.href), 37);});
     BypassedByBloggerPemula(/servicemassar.ma/, () => {CaptchaDone(() => {unsafeWindow.linromatic();});
       CheckVisibility('button:contains("Click here")', () => {DoIfExists('button:innerText("Next")', 2);DoIfExists('button:innerText("Redirect")', 2);});});
     BypassedByBloggerPemula(/upfion.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      if (elementExists(['.fil','e-ma','in.f','orm-','mai','n'].join(''))) {DoIfExists('.my-2.text-center > .btn-primary.btn', 2);CaptchaDone(() => {DoIfExists(['#lin','k-b','ut','ton'].join(''));});}});
+      if (elementExists(['.f','il','e-','ma','in.','for','m-m','ain'].join(''))) {DoIfExists('.my-2.text-center > .btn-primary.btn', 2);CaptchaDone(() => {DoIfExists(['#l','ink','-bu','tt','on'].join(''));});}});
     BypassedByBloggerPemula(/(forexrw7|forex-articles|3rabsports|fx-22|watchtheeye).com|(offeergames|todogame).online|whatgame.xyz|gold-24.net/, () => {
       DoIfExists('.oto > a:nth-child(1)', 1); waitForElm('.oto > a', linkjust => redirect(linkjust.href, false));});
     BypassedByBloggerPemula(/m.flyad.vip/, () => {
-      waitForElm(['#ca','pt','chaD','ispl','ay'].join(''), (display) => {const number = display.textContent.trim();waitForElm(['#cap','tch','aIn','put'].join(''), (input) => {input.value = number;
+      waitForElm(['#ca','pt','cha','Dis','pla','y'].join(''), (display) => {const number = display.textContent.trim();waitForElm(['#cap','tcha','Inp','ut'].join(''), (input) => {input.value = number;
       waitForElm('button[onclick="validateCaptcha()"]', (button) => {sleep(1000).then(() => button.click());}, 15, 1);}, 15, 1);}, 15, 1);});
-    BypassedByBloggerPemula(/easylink.gamingwithtr.com/, () => {DoIfExists(['#co','untd','own'].join(''), 2);
+    BypassedByBloggerPemula(/easylink.gamingwithtr.com/, () => {DoIfExists(['#cou','ntdo','wn'].join(''), 2);
       waitForElm('a#pagelinkhref.btn.btn-lg.btn-success.my-4.px-3.text-center', gtr => redirect(gtr.href, false));});
     BypassedByBloggerPemula(/mediafire.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
       if (location.href.includes('file/')) {let mf = bp('.download_link .input').getAttribute('href');BpNote(mf);location.replace(mf);}});
     BypassedByBloggerPemula(/(tejtime24|drinkspartner|sportswordz|newspute).com|(raftarsamachar|gadialert|jobinmeghalaya|raftarwords|sharclub|jankaritak).in/, () => {
-      window.scrollTo(0, 9999);DoIfExists(['#top','But','ton.','pro','_btn'].join(''), 2);DoIfExists(['#b','ot','to','mB','ut','ton'].join(''),3);ReadytoClick('#open-link > .pro_btn', 4);});
+      window.scrollTo(0, 9999);DoIfExists(['#to','pBu','tton','.pr','o_b','tn'].join(''), 2);DoIfExists(['#b','ott','omBu','tt','on'].join(''),3);ReadytoClick('#open-link > .pro_btn', 4);});
     BypassedByBloggerPemula(/downloader.tips/, () => {CaptchaDone(() => {DoIfExists('button.btn.btn-primary');});
-      let downloader = setInterval(() => {if (bp(['#cou','nt'].join('')).innerText == '0') {clearInterval(downloader);DoIfExists(['.btn','-pri','mary','.btn'].join(''));}}, 1 * 1000);});
+      let downloader = setInterval(() => {if (bp(['#c','ount'].join('')).innerText == '0') {clearInterval(downloader);DoIfExists(['.bt','n-pr','im','ary.','btn'].join(''));}}, 1 * 1000);});
     BypassedByBloggerPemula(/modsbase.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      if (elementExists(['.fi','le-p','ane','l'].join(''))) {DoIfExists(['.do','wn','lo','ad-f','il','e-bt','n'].join(''), 2);waitForElm('#downloadbtn > a', mba => redirect(mba.href, false));}});
+      if (elementExists(['.fi','le','-p','anel'].join(''))) {DoIfExists(['.d','ownl','oad','-fi','le-','bt','n'].join(''), 2);waitForElm('#downloadbtn > a', mba => redirect(mba.href, false));}});
     BypassedByBloggerPemula(/trangchu.news|downfile.site|(techacode|expertvn|ziggame|gamezigg).com|azmath.info|aztravels.net|handydecor.com.vn/, () => {
-      AIORemover('removeAttr', ['#mo','neti','za'].join(''), 'onclick');CheckVisibility(['#m','onet','iza'].join(''), () => {ReadytoClick(['#mo','ne','ti','za.b','tn-','prim','ar','y.b','tn'].join(''));});
-      elementReady(['#m','one','ti','za-','ge','ner','ate'].join('')).then(() => setTimeout(() => {unsafeWindow.monetizago();}, 3 * 1000));});
+      AIORemover('removeAttr', ['#m','onet','iza'].join(''), 'onclick');CheckVisibility(['#mon','eti','za'].join(''), () => {ReadytoClick(['#mon','et','iz','a.bt','n-p','rim','ary','.b','tn'].join(''));});
+      elementReady(['#mon','et','iza','-g','ener','ate'].join('')).then(() => setTimeout(() => {unsafeWindow.monetizago();}, 3 * 1000));});
     BypassedByBloggerPemula(/filedm.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      if (elementExists(['#dl','bu','tt','on'].join(''))) {waitForElm(['#dl','bu','tto','n'].join(''), fdm => redirect('http://cdn.directfiledl.com/getfile?id=' + fdm.href.split('_')[1], false));}});
+      if (elementExists(['#dl','bu','tton'].join(''))) {waitForElm(['#d','lbut','ton'].join(''), fdm => redirect('http://cdn.directfiledl.com/getfile?id=' + fdm.href.split('_')[1], false));}});
     BypassedByBloggerPemula(/anonymfile.com|sharefile.co|gofile.to/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      if (elementExists(['#do','wnl','oa','d'].join(''))) {waitForElm([97,46,98,116,110,45,105,110,102,111].map(function(_c){return String.fromCharCode(_c)}).join(''), anon => redirect(anon.href),8,3);}});
+      if (elementExists(['#dow','nlo','ad'].join(''))) {waitForElm([97,46,98,116,110,45,105,110,102,111].map(function(_c){return String.fromCharCode(_c)}).join(''), anon => redirect(anon.href),8,3);}});
     BypassedByBloggerPemula(/anonym.ninja/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
       if (location.href.includes('download/')) {var fd = window.location.href.split('/').slice(-1)[0];redirect(`https://anonym.ninja/download/file/request/${fd}`);}});
-    BypassedByBloggerPemula(/(carbikesupdate|carbikenation).com/, () => {parent.open = BpBlock();CheckVisibility(['#v','er','ify','Bt','n'].join(''), () => {DoIfExists(['#get','Li','nk','Bt','n'].join(''), 2);});
-      CheckVisibility(['.t','op','.ste','p'].join(''), () => {DoIfExists(['#get','link','s.bt','n'].join(''), 2);});});
+    BypassedByBloggerPemula(/(carbikesupdate|carbikenation).com/, () => {parent.open = BpBlock();CheckVisibility(['#ver','ify','Bt','n'].join(''), () => {DoIfExists(['#ge','tLi','nkBt','n'].join(''), 2);});
+      CheckVisibility(['.top','.s','te','p'].join(''), () => {DoIfExists(['#ge','tli','nks.','btn'].join(''), 2);});});
     BypassedByBloggerPemula(/oydir.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      if (elementExists(['.dow','nl','oad-','now'].join(''))) {unsafeWindow.triggerFreeDownload();waitForElm('.text-center.download-now > .w-100.btn-blue.btn', oydir => redirect(oydir.href));}});
+      if (elementExists(['.do','wnl','oad','-no','w'].join(''))) {unsafeWindow.triggerFreeDownload();waitForElm('.text-center.download-now > .w-100.btn-blue.btn', oydir => redirect(oydir.href));}});
     BypassedByBloggerPemula(/doodrive.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists(['.t','m-bu','tton','-dow','nlo','ad.u','k-b','utt','on-p','rim','ary','.u','k-','bu','tto','n'].join(''), 3);waitForElm('.uk-container > div > .uk-button-primary.uk-button', ddr => redirect(ddr.href));});
+      DoIfExists(['.tm','-b','utt','on-d','ow','nl','oad.','uk-','but','ton','-pr','ima','ry.u','k-bu','tton'].join(''), 3);waitForElm('.uk-container > div > .uk-button-primary.uk-button', ddr => redirect(ddr.href));});
     BypassedByBloggerPemula(/(uploadrar|fingau|getpczone|wokaz).com|uptomega.me/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists(['.mng','ez','-f','ree-','down','loa','d'].join(''), 2);let $ = unsafeWindow.jQuery;DoIfExists('#direct_link > a:nth-child(1)', 2);$(['#dow','nlo','adbt','n'].join('')).click();});
+      DoIfExists(['.mng','ez-f','re','e-','down','load'].join(''), 2);let $ = unsafeWindow.jQuery;DoIfExists('#direct_link > a:nth-child(1)', 2);$(['#dow','nlo','adb','tn'].join('')).click();});
     BypassedByBloggerPemula(/(ez4mods|game5s|sharedp|fastcars1|carbikenation).com|tech5s.co|a4a.site|rcccn.in/, () => {DoIfExists('div.text-center form', 'submit', 2);
-      ReadytoClick(['#g','o_','d'].join(''), 1);waitForElm('a#go_d.submitBtn.btn.btn-primary', ez => redirect(ez.href));waitForElm('a#go_d2.submitBtn.btn.btn-primary', ez2 => redirect(ez2.href));});
+      ReadytoClick(['#go_','d'].join(''), 1);waitForElm('a#go_d.submitBtn.btn.btn-primary', ez => redirect(ez.href));waitForElm('a#go_d2.submitBtn.btn.btn-primary', ez2 => redirect(ez2.href));});
     BypassedByBloggerPemula(/firefaucet.win/, () => {ReadytoClick('button:innerText("Continue")', 2);ReadytoClick('button:innerText("Go Home")', 2);
       CaptchaDone(() => {waitForElm('button[type=submit]:not([disabled]):innerText("Get Reward")', (element) => {ReadytoClick('button[type=submit]:not([disabled])',1);},10,1);});});
     BypassedByBloggerPemula(/drive.google.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}var dg = window.location.href.split('/').slice(-2)[0];
       if (window.location.href.includes('drive.google.com/file/d/')) {redirect(`https://drive.usercontent.google.com/download?id=${dg}&export=download`, false).replace('<br />', '');
-      } else if (window.location.href.includes('drive.google.com/u/0/uc?id')) {DoIfExists(['#d','ow','nloa','d-','form'].join(''), 'submit', 1);}});
+      } else if (window.location.href.includes('drive.google.com/u/0/uc?id')) {DoIfExists(['#do','wn','loa','d-fo','rm'].join(''), 'submit', 1);}});
     BypassedByBloggerPemula(/4hi.in|(10short|animerigel|encurt4|encurtacash).com|finish.wlink.us|passivecryptos.xyz|fbol.top|kut.li|shortie.sbs|zippynest.online|faucetsatoshi.site|tfly.link|oii.si/, () => {
-      DoIfExists(['#for','m-co','ntin','ue'].join(''), 'submit', 2);CaptchaDone(() => {DoIfExists(['#l','ink','-vi','ew'].join(''), 'submit');});});
+      DoIfExists(['#for','m-co','nti','nue'].join(''), 'submit', 2);CaptchaDone(() => {DoIfExists(['#lin','k-','view'].join(''), 'submit');});});
     BypassedByBloggerPemula(/cryptorotator.website/, () => {DoIfExists('div.btn:contains("Click here to unlock")', 2);
-      CheckVisibility(['#al','f_co','nti','nue'].join(''), () => {ReadytoClick("#alf_continue:not([disabled])");});CaptchaDone(() => {DoIfExists(['#i','nv','isi','bl','eC','ap','tcha','Sh','ortl','ink'].join(''));});});
+      CheckVisibility(['#alf','_co','nt','in','ue'].join(''), () => {ReadytoClick("#alf_continue:not([disabled])");});CaptchaDone(() => {DoIfExists(['#inv','is','ib','leC','ap','tch','aS','hor','tli','nk'].join(''));});});
     BypassedByBloggerPemula(/qiwi.gg/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
       if (elementExists("div [class^='page_DownloadPage']")) {DoIfExists("button[class^='DownloadButton_ButtonSoScraperCanTakeThisName']", 2);
       let qiwi = bp("a[class^='DownloadButton_DownloadButton']");setTimeout(() => {redirect(qiwi.href);}, 3 * 1000);}});
     BypassedByBloggerPemula(/turbobit.net/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      if (elementExists(['#t','urbo','-t','able'].join(''))) {let tb = bp(['#no','pay-','btn'].join('')).href;redirect(tb);}CaptchaDone(() => {DoIfExists(['#su','bmi','t'].join(''));});
-      waitForElm(['#fr','ee','-d','own','loa','d-','fil','e-l','ink'].join(''), tur => redirect(tur.href));});
+      if (elementExists(['#tur','bo','-t','ab','le'].join(''))) {let tb = bp(['#n','opay','-btn'].join('')).href;redirect(tb);}CaptchaDone(() => {DoIfExists(['#s','ub','mit'].join(''));});
+      waitForElm(['#fr','ee-','dow','nl','oad-','file','-l','ink'].join(''), tur => redirect(tur.href));});
     BypassedByBloggerPemula(/sharemods.com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists(['#dF','or','m'].join(''), 'submit', 2);if (elementExists(['.do','wn','loa','d-fi','le-','hold','er'].join(''))) {waitForElm('a#downloadbtn.btn.btn-primary', smd => redirect(smd.href));}});
+      DoIfExists(['#dFo','rm'].join(''), 'submit', 2);if (elementExists(['.d','ow','nloa','d-','fi','le-','hol','der'].join(''))) {waitForElm('a#downloadbtn.btn.btn-primary', smd => redirect(smd.href));}});
     BypassedByBloggerPemula('(on-scroll|diudemy|maqal360).com', () => {
-      if (elementExists(['.a','ler','tAd'].join(''))) {notify('BloggerPemula : Try to viewing another tab if the countdown does not work');}
-      ReadytoClick('#append a', 2);ReadytoClick('#_append a', 3);elementReady(['.a','le','rt','Ad'].join('')).then(function() {setActiveElement('[data-placement-id="revbid-leaderboard"]');fakeHidden();});});
+      if (elementExists(['.al','ert','Ad'].join(''))) {notify('BloggerPemula : Try to viewing another tab if the countdown does not work');}
+      ReadytoClick('#append a', 2);ReadytoClick('#_append a', 3);elementReady(['.al','ertA','d'].join('')).then(function() {setActiveElement('[data-placement-id="revbid-leaderboard"]');fakeHidden();});});
     BypassedByBloggerPemula(/onlinetechsolution.link/, () => {let Thunder = bp("input[name=newwpsafelink]");setTimeout(() => {redirect(JSON.parse(atob(Thunder.value)).linkr);}, 5 * 1000);});
     BypassedByBloggerPemula(/(ecryptly|equickle).com/, () => {if (BpParams.has('id')) {meta(atob(BpParams.get('id')));}waitForElm('#open-continue-form > input:nth-child(3)', Chain => redirect(atob(Chain.value)));
-      elementReady(['#op','en','-c','ont','inue','-bt','n'].join('')).then(button => {sleep(3000).then(() => {window.location.href = strBetween(button.getAttribute('onclick'), "window.location.href='", "';", false);});});DoIfExists(['#rt','g-sn','p2'].join(''), 2);});
+      elementReady(['#op','en-c','onti','nue','-btn'].join('')).then(button => {sleep(3000).then(() => {window.location.href = strBetween(button.getAttribute('onclick'), "window.location.href='", "';", false);});});DoIfExists(['#rt','g-','snp2'].join(''), 2);});
     BypassedByBloggerPemula(/(down.fast-down|down.mdiaload).com/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      elementReady('input.btn-info.btn').then(() => DoIfExists("input[name='method_free']", 2));elementReady(['.l','ft.','file','pan','el'].join('')).then(() => ReadytoClick('a:innerText("Download")', 2));
+      elementReady('input.btn-info.btn').then(() => DoIfExists("input[name='method_free']", 2));elementReady(['.lft','.f','il','ep','anel'].join('')).then(() => ReadytoClick('a:innerText("Download")', 2));
       const captchaCode = BpAnswer(null, 'captcha');if (captchaCode) {const captchaInput = bp('input.captcha_code');if (captchaInput) {captchaInput.value = captchaCode;ReadytoClick('button:innerText("Create Download")', 30);}}});
     BypassedByBloggerPemula(/(horoscop|videoclip|newscrypto).info|article24.online|writeprofit.org|docadvice.eu|trendzilla.club|worldwallpaper.top/, () => {CaptchaDone(() => {unsafeWindow.wpsafehuman();});
       CheckVisibility('center > .wpsafelink-button', () => {DoIfExists('center > .wpsafelink-button', 1);});CheckVisibility('#wpsafe-generate > a', '||', "bp('.base-timer').innerText == '0:00'", () => {unsafeWindow.wpsafegenerate();
-        if (location.href.includes(['ar','ticl','e24','.on','li','ne'].join(''))) {DoIfExists('#wpsafelink-landing > .wpsafelink-button', 1);} else {DoIfExists('#wpsafelink-landing2 > .wpsafelink-button', 1);}});});
+        if (location.href.includes(['arti','cle2','4.on','li','ne'].join(''))) {DoIfExists('#wpsafelink-landing > .wpsafelink-button', 1);} else {DoIfExists('#wpsafelink-landing2 > .wpsafelink-button', 1);}});});
     BypassedByBloggerPemula(/revly.click|(clikern|kiddyshort|adsssy).com|mitly.us|link.whf.bz|shortex.in|(easyshort|shorturlearn).xyz/, () => {
-      if (elementExists(['#lin','k-vi','ew'].join(''))) {CaptchaDone(() => {DoIfExists(['#lin','k-v','ie','w'].join(''), 'submit');});} else if (elementExists('button.btn.btn-primary')){DoIfExists('div.col-md-12 form', 'submit', 2);}});
+      if (elementExists(['#lin','k-vi','ew'].join(''))) {CaptchaDone(() => {DoIfExists(['#l','ink-','vie','w'].join(''), 'submit');});} else if (elementExists('button.btn.btn-primary')){DoIfExists('div.col-md-12 form', 'submit', 2);}});
     BypassedByBloggerPemula(/(wellness4live|akash.classicoder).com|2the.space|inicerita.online/, () => {
-      var tform = bp(['#la','ndi','ng'].join('')); redirect(JSON.parse(atob(tform.newwpsafelink.value)).linkr, false);});
+      var tform = bp(['#la','ndin','g'].join('')); redirect(JSON.parse(atob(tform.newwpsafelink.value)).linkr, false);});
     BypassedByBloggerPemula(/(hosttbuzz|policiesreview|blogmystt|wp2hostt|advertisingcamps|healthylifez|insurancemyst).com|clk.kim|dekhe.click/, () => {DoIfExists('button.btn.btn-primary', 2);
-      AIORemover('removeAttr', ['.btn','-ca','ptch','a.b','tn','-pr','im','ary','.bt','n'].join(''), 'onclick');DoIfExists(['#ne','xtp','ag','e'].join(''), 'submit', 2);DoIfExists(['#get','myli','nk'].join(''), 'submit', 3);CaptchaDone(() => {DoIfExists(['.btn','-ca','pt','cha','.bt','n-pr','im','ary.','bt','n'].join(''));});});
+      AIORemover('removeAttr', ['.btn','-c','ap','tch','a.b','tn-p','rima','ry','.bt','n'].join(''), 'onclick');DoIfExists(['#ne','xt','page'].join(''), 'submit', 2);DoIfExists(['#ge','tmyl','in','k'].join(''), 'submit', 3);CaptchaDone(() => {DoIfExists(['.btn','-ca','ptch','a.bt','n-','pri','ma','ry.','bt','n'].join(''));});});
     BypassedByBloggerPemula(/desiupload.co/, () => {if (!cfg.get('AutoDL')) {BpNote('Auto Download Feature Not Yet Activated!');return;}
-      DoIfExists(['.d','ow','nloa','dbtn','.b','tn','-b','lo','ck.','btn','-pri','ma','ry','.b','tn'].join(''), 2);waitForElm('a.btn.btn-primary.btn-block.mb-4', rex => redirect(rex.href, false));});
-    BypassedByBloggerPemula(/exactpay.online|neverdims.com|sproutworkers.co/, () => {let $ = unsafeWindow.jQuery;window.onscroll = BpBlock();unsafeWindow.check2();if (elementExists(['#ve','rify'].join(''))) {
-        $(['.bl','og-','deta','ils'].join('')).text('Please Answer the Maths Questions First ,Wait until Progress bar end, then Click the Red X Manually');
+      DoIfExists(['.do','wnl','oad','btn','.b','tn','-b','lock','.btn','-pr','imar','y.bt','n'].join(''), 2);waitForElm('a.btn.btn-primary.btn-block.mb-4', rex => redirect(rex.href, false));});
+    BypassedByBloggerPemula(/exactpay.online|neverdims.com|sproutworkers.co/, () => {let $ = unsafeWindow.jQuery;window.onscroll = BpBlock();unsafeWindow.check2();if (elementExists(['#ve','ri','fy'].join(''))) {
+        $(['.b','lo','g-','de','ta','ils'].join('')).text('Please Answer the Maths Questions First ,Wait until Progress bar end, then Click the Red X Manually');
         elementReady('[name="answer"]').then(function(element) {element.addEventListener('change', unsafeWindow.check3);});}});
     BypassedByBloggerPemula(/(fitnesswifi|earnmoneyyt|thardekho|dinoogaming|pokoarcade|hnablog|orbitlo|finquizy|indids|redfea|financenuz|pagalworldsong).com|(ddieta|lmktec).net|(bankshiksha|odiadjremix).in|vbnmx.online/, () => {
       waitForElm("div[id^='rtg-'] > a:nth-child(1)", Linkpays => redirect(Linkpays.href, false));DoIfExists('#rtg', 'submit', 2);
-      DoIfExists('#rtg-snp21 .rtg_btn', 3);DoIfExists(['#r','tg-','snp','2'].join(''), 3);DoIfExists('#rtg-snp21 > button', 4);});
+      DoIfExists('#rtg-snp21 .rtg_btn', 3);DoIfExists(['#rt','g-sn','p2'].join(''), 3);DoIfExists('#rtg-snp21 > button', 4);});
     BypassedByBloggerPemula(/tempatwisata.pro/, async () => {
       const buttons = ['button:innerText("Generate Link")', 'button:innerText("Continue")', 'button span:innerText("Continue")', 'button:innerText("Get Link")', 'button span:innerText("Get Link")', 'button:innerText("Next")'];
       for (const selector of buttons) {await sleep(2000);ReadytoClick(selector);}});
@@ -1004,54 +1004,54 @@
     BypassedByBloggerPemula(/(admediaflex|cdrab|financekita|jobydt|foodxor|mealcold|newsobjective|gkvstudy|mukhyamantriyojanadoot|thepragatishilclasses|indobo|pdfvale|templeshelp).com|(ecq|cooklike).info|(wpcheap|bitwidgets|newsamp|coinilium).net|atomicatlas.xyz|gadifeed.in|thecryptoworld.site|skyfreecoins.top|petly.lat|techreviewhub.store|mbantul.my.id/, () => {
       elementReady('#wpsafe-link a[onclick*="window.open"]').then((link) => {const onclick = link.getAttribute('onclick');const urlMatch = onclick.match(/window\.open\('([^']+)'/);if (urlMatch && urlMatch[1]) {const targetUrl = urlMatch[1];sleep(5000).then(() => redirect(targetUrl));}});});
     BypassedByBloggerPemula(/jioupload.com/, () => {function calculateAnswer(text) {const parts = text.replace("Solve:", "").replace(/[=?]/g, "").trim().split(/\s+/);const [num1, op, num2] = [parseInt(parts[0]), parts[1], parseInt(parts[2])];return op === "+" ? num1 + num2 : num1 - num2;}
-      elementReady(['.f','ile-','de','tai','ls'].join('')).then(() => {DoIfExists('form button.btn-secondary', 'click', 2);waitForElm('a.btn.btn-secondary[href*="/file/"]', (jiou) => redirect(jiou.href, false));});
+      elementReady(['.fi','le-d','et','ails'].join('')).then(() => {DoIfExists('form button.btn-secondary', 'click', 2);waitForElm('a.btn.btn-secondary[href*="/file/"]', (jiou) => redirect(jiou.href, false));});
       elementReady("#challenge").then((challenge) => {const answer = calculateAnswer(challenge.textContent);BpNote(`Solved captcha: ${challenge.textContent} Answer: ${answer}`);elementReady("#captcha").then((input) => {input.value = answer;elementReady("button[type='submit']").then((button) => sleep(3000).then(() => button.click()));});});});
     BypassedByBloggerPemula(/teknoasian.com/, () => {CheckVisibility('h4 > b', () => {DoIfExists('button:innerText("Continue")', 1);});CheckVisibility('.Skipper > h4 > b', () => {DoIfExists('button:innerText("Get Link")', 1);});
       CheckVisibility('.humanVerify button', '||', "bp('.humanVerify button').innerText == 'Click To'", () => {DoIfExists('button:innerText("Click To Verify")', 1);DoIfExists('button:innerText("Generate Link")', 2);});});
-    BypassedByBloggerPemula(/tutwuri.id|(besargaji|link2unlock).com|app.khaddavi.net/, () => {ReadytoClick(['#s','ub','mi','t-b','utto','n'].join(''),2);ReadytoClick(['#bt','n-','2'].join(''), 3);ReadytoClick('#verify > a ', 2);ReadytoClick('#verify > a ', 2);ReadytoClick('#second_open_placeholder > a ', 2);ReadytoClick('#verify > a ', 2);ReadytoClick('a:innerText("Go to Link")', 2);});
-    BypassedByBloggerPemula(/(lyricsbaazaar|ezeviral).com/, () => {CaptchaDone(() => {DoIfExists(['#bt','n6'].join(''));});
+    BypassedByBloggerPemula(/tutwuri.id|(besargaji|link2unlock).com|app.khaddavi.net/, () => {ReadytoClick(['#s','ubmi','t-bu','tton'].join(''),2);ReadytoClick(['#btn','-2'].join(''), 3);ReadytoClick('#verify > a ', 2);ReadytoClick('#verify > a ', 2);ReadytoClick('#second_open_placeholder > a ', 2);ReadytoClick('#verify > a ', 2);ReadytoClick('a:innerText("Go to Link")', 2);});
+    BypassedByBloggerPemula(/(lyricsbaazaar|ezeviral).com/, () => {CaptchaDone(() => {DoIfExists(['#btn','6'].join(''));});
       waitForElm('div.modal-content a', lyri => redirect(lyri.href, false));});
     BypassedByBloggerPemula(/(mangareleasedate|sabkiyojana|teqwit|bulkpit|odiafm|qrixpe).com|(loopmyhub|thepopxp).shop|(cryptoblast|powergam).online/, () => {const GPlinks = 2 / (24 * 60);RSCookie('set', 'adexp', '1', GPlinks);
-      CheckVisibility(['.Ver','if','yB','tn'].join(''), () => {DoIfExists(['#V','erif','yBt','n'].join(''), 2);ReadytoClick(['#Ne','xtBt','n'].join(''), 3);});if (elementExists(['#Smi','leyB','an','ner'].join(''))) {setActiveElement('[id="div-gpt-ad"]');fakeHidden();}});
+      CheckVisibility(['.Ve','rify','Bt','n'].join(''), () => {DoIfExists(['#Ve','ri','fyB','tn'].join(''), 2);ReadytoClick(['#Nex','tBt','n'].join(''), 3);});if (elementExists(['#Sm','ile','yB','ann','er'].join(''))) {setActiveElement('[id="div-gpt-ad"]');fakeHidden();}});
     BypassedByBloggerPemula(/socialwolvez.com/, () => {let xhr = new XMLHttpRequest();xhr.onload = () => redirect(JSON.parse(xhr.responseText).link.url);
       xhr.open("GET", "https://us-central1-social-infra-prod.cloudfunctions.net/linksService/link/guid/" + location.pathname.substr(7), true);xhr.send();});
-    BypassedByBloggerPemula(/bitcotasks.com/, () => {if (location.href.includes('/firewall')) {CheckVisibility(['#c','ap','tc','ha','-c','onta','ine','r'].join(''), '&&', "bp('.mb-2').innerText == 'Verified'", () => {DoIfExists('button:contains("Validate")');});}
-      if (location.href.includes('/lead')) {CheckVisibility('#status .btn', () => {DoIfExists('button:contains("Start View")');});}CheckVisibility(['#c','apt','ch','a-','cont','ai','ne','r'].join(''), '&&', "bp('.mb-2').innerText == 'Verified'", () => {unsafeWindow.continueClicked();});
-      CheckVisibility(['.al','er','t-','succ','ess','.al','er','t'].join(''), '||', "bp('.alert-success').innerText == 'This offer was successfully'", () => {unsafeWindow.close();});});
-    BypassedByBloggerPemula(/shortit.pw/, () => {if (elementExists(['#ca','pt','cha','box'].join(''))) {
+    BypassedByBloggerPemula(/bitcotasks.com/, () => {if (location.href.includes('/firewall')) {CheckVisibility(['#ca','ptch','a-co','ntai','ne','r'].join(''), '&&', "bp('.mb-2').innerText == 'Verified'", () => {DoIfExists('button:contains("Validate")');});}
+      if (location.href.includes('/lead')) {CheckVisibility('#status .btn', () => {DoIfExists('button:contains("Start View")');});}CheckVisibility(['#ca','ptc','ha-c','ont','aine','r'].join(''), '&&', "bp('.mb-2').innerText == 'Verified'", () => {unsafeWindow.continueClicked();});
+      CheckVisibility(['.a','lert','-su','cces','s.al','ert'].join(''), '||', "bp('.alert-success').innerText == 'This offer was successfully'", () => {unsafeWindow.close();});});
+    BypassedByBloggerPemula(/shortit.pw/, () => {if (elementExists(['#c','apt','ch','abo','x'].join(''))) {
         notify('IMPORTANT Note By BloggerPemula : Please Solve the Hcaptcha for Automatically , Dont Solve the Solvemedia . Regards...');}
-      DoIfExists(['.p','ulse','.bt','n-','prim','ar','y.','bt','n'].join(''), 3);CaptchaDone(() => {DoIfExists(['#btn','2'].join(''));});});
+      DoIfExists(['.pul','se','.btn','-pri','ma','ry.b','tn'].join(''), 3);CaptchaDone(() => {DoIfExists(['#b','tn2'].join(''));});});
     BypassedByBloggerPemula(/short.croclix.me|adz7short.space/, () => {let $ = unsafeWindow.jQuery;setInterval(() => {if ($("#link").length > 0) {ReadytoClick("#link");}}, 500);
       setInterval(() => {if ($("input#continue").length > 0) {ReadytoClick("input#continue");} if ($("a#continue.button").length > 0) {ReadytoClick("a#continue.button");}}, 9000);
       setTimeout(() => {if ($("#btn-main").length < 0) return;ReadytoClick("#btn-main");}, 5000);});
     BypassedByBloggerPemula(/crypto-fi.net|claimcrypto.cc|xtrabits.click|(web9academy|bioinflu|bico8).com|(ourcoincash|studyis).xyz/, () => {
       var bypasslink = atob(`aH${bp("#landing [name='go']").value.split("aH").slice(1).join("aH")}`); redirect(bypasslink, false);});
     BypassedByBloggerPemula(/dutchycorp.ovh|(encurt4|10short).com|seulink.digital|oii.io|hamody.pro|metasafelink.site|wordcounter.icu|pwrpa.cc|flyad.vip|seulink.online|pahe.plus|beinglink.in/, () => {if (cfg.get('Audio') && !/dutchycorp.ovh|encurt4.com/.test(window.location.host)) return;
-      if (elementExists(['.gre','cap','tch','a-','ba','dg','e'].join('')) || elementExists(['#cap','tc','haSh','ort','link'].join(''))) {var ticker = setInterval(() => {try {clearInterval(ticker);unsafeWindow.grecaptcha.execute();} catch (e) {BpNote(`reCAPTCHA execution failed: ${e.message}`, 'error');}}, 3000);}});
-    BypassedByBloggerPemula(/(remixsounds|helpdeep|thinksrace).com|(techforu|studywithsanjeet).in|uprwssp.org|gkfun.xyz/, () => {DoIfExists(['.m-','2.','btn-','capt','cha','.b','tn-','out','lin','e-p','ri','mar','y.b','tn'].join(''), 2);DoIfExists(['.tpd','ev','-b','tn'].join(''), 3);DoIfExists("#tp98 button[class^='bt']", 3);DoIfExists("form[name='tp']", 'submit', 3);
-      DoIfExists(['#bt','n6'].join(''), 4);var wssp = bp('body > center:nth-child(6) > center:nth-child(4) > center:nth-child(2) > center:nth-child(4) > center:nth-child(3) > center:nth-child(4) > center:nth-child(2) > center:nth-child(4) > script:nth-child(5)');
+      if (elementExists(['.gre','ca','ptch','a-b','adge'].join('')) || elementExists(['#cap','tc','ha','Shor','tli','nk'].join(''))) {var ticker = setInterval(() => {try {clearInterval(ticker);unsafeWindow.grecaptcha.execute();} catch (e) {BpNote(`reCAPTCHA execution failed: ${e.message}`, 'error');}}, 3000);}});
+    BypassedByBloggerPemula(/(remixsounds|helpdeep|thinksrace).com|(techforu|studywithsanjeet).in|uprwssp.org|gkfun.xyz/, () => {DoIfExists(['.m-2','.bt','n-c','ap','tc','ha.','bt','n-o','ut','li','ne','-pri','mary','.bt','n'].join(''), 2);DoIfExists(['.t','pd','ev-b','tn'].join(''), 3);DoIfExists("#tp98 button[class^='bt']", 3);DoIfExists("form[name='tp']", 'submit', 3);
+      DoIfExists(['#btn','6'].join(''), 4);var wssp = bp('body > center:nth-child(6) > center:nth-child(4) > center:nth-child(2) > center:nth-child(4) > center:nth-child(3) > center:nth-child(4) > center:nth-child(2) > center:nth-child(4) > script:nth-child(5)');
       if (wssp) {var scriptContent = wssp.textContent;var Linkc = scriptContent.match(/var\s+currentLink\s*=\s*["'](.*?)["']/);if (Linkc && Linkc[1]) {var CLink = Linkc[1];redirect(CLink);} else {BpNote("currentLink Not Found.");}} else {BpNote("Element Not Found.");}});
     BypassedByBloggerPemula(/adshnk.com|adshrink.it/, () => {const window = unsafeWindow;let adsh = setInterval(() => {if (typeof window._sharedData == "object" && 0 in window._sharedData && "destination" in window._sharedData[0]) {clearInterval(adsh);document.write(window._sharedData[0].destination);
       redirect(document.body.textContent);} else if (typeof window.___reactjsD != "undefined" && typeof window[window.___reactjsD.o] == "object" && typeof window[window.___reactjsD.o].dest == "string") {clearInterval(adsh);redirect(window[window.___reactjsD.o].dest);}});});
-    BypassedByBloggerPemula(/newsminer.uno/, () => {const window = unsafeWindow;CheckVisibility(['#c','li','ck','Mes','sa','ge'].join(''), '&&', "bp('#clickMessage').innerText == 'Click any ad'", () => {setActiveElement('[data-placement-id="revbid-leaderboard"]');fakeHidden();});
+    BypassedByBloggerPemula(/newsminer.uno/, () => {const window = unsafeWindow;CheckVisibility(['#cl','ickM','essa','ge'].join(''), '&&', "bp('#clickMessage').innerText == 'Click any ad'", () => {setActiveElement('[data-placement-id="revbid-leaderboard"]');fakeHidden();});
       if (elementExists('input.form-control')) {notify('Please Answer the Maths Questions First ,Wait until Progress bar end, then Click the Red X Manually', false, true);window.onscroll = BpBlock();window.check2();elementReady('[name="answer"]').then(function(element) {element.addEventListener('change', window.check3);});}});
     BypassedByBloggerPemula(/(suaurl|lixapk|reidoplacar|lapviral|minhamoto).com/, () => {if (!cfg.get('SameTab')) {SameTab();BpNote('SameTab activated to prevent new tabs');}waitForElm('button[type="submit"]:contains("FETCH LINK")', Btn1 => Btn1.click(), 10, 2);
       waitForElm('button:contains("START")', Btn2 => Btn2.click(), 10, 2);waitForElm('button:contains("PULAR CAPTCHA")', Btn3 => Btn3.click(), 10, 3);waitForElm('button:contains("FINAL LINK")', Btn4 => Btn4.click(), 10, 2);CheckVisibility('button:contains("CONTINUAR")', () => {ReadytoClick('button:contains("CONTINUAR")');});
       CheckVisibility('button:contains("DESBLOQUEAR")', () => {ReadytoClick('button:contains("DESBLOQUEAR")');});CheckVisibility('button[type="submit"]:contains("DESBLOQUEAR")', () => {ReadytoClick('button[type="submit"]:contains("DESBLOQUEAR")');});});
     BypassedByBloggerPemula(/autofaucet.dutchycorp.space/, function () {let autoRoll = false;if (window.location.href.includes('/roll_game.php')) {window.scrollTo(0, 9999);
-    if (!bp(['#ti','mer'].join(''))) {CaptchaDone(() => {if (bp(['.b','oo','st-b','tn.','unlo','ck','but','to','n'].join('')) && autoRoll === false) {bp(['.b','oo','st-','btn','.u','nlo','ckb','utt','on'].join('')).click();autoRoll = true;}CheckVisibility(['#cla','im_','bo','ost','ed'].join(''), () => {bp(['#cla','im_b','oos','ted'].join('')).click();});});} else {
+    if (!bp(['#tim','er'].join(''))) {CaptchaDone(() => {if (bp(['.boo','st-b','tn','.unl','ockb','utt','on'].join('')) && autoRoll === false) {bp(['.boo','st-','btn.','un','lock','bu','tto','n'].join('')).click();autoRoll = true;}CheckVisibility(['#cla','im_','boos','te','d'].join(''), () => {bp(['#c','la','im_b','oos','ted'].join('')).click();});});} else {
       setTimeout(() => {window.location.replace('https://autofaucet.dutchycorp.space/coin_roll.php');}, 3 * 1000);}}if (window.location.href.includes('/coin_roll.php')) {window.scrollTo(0, 9999);
-    if (!bp("#timer")) {CaptchaDone(() => {if (bp(['.bo','os','t-b','tn.u','nl','oc','kb','utt','on'].join('')) && autoRoll === false) {bp(['.b','oost','-b','tn','.un','loc','kb','utto','n'].join('')).click();autoRoll = true;}CheckVisibility(['#c','laim','_bo','ost','ed'].join(''), () => {bp(['#cla','im_b','oos','ted'].join('')).click();});});} else {setTimeout(() => {window.location.replace('https://autofaucet.dutchycorp.space/ptc/wall.php');}, 3 * 1000);}}
+    if (!bp("#timer")) {CaptchaDone(() => {if (bp(['.b','oos','t-b','tn','.u','nloc','kbut','to','n'].join('')) && autoRoll === false) {bp(['.bo','os','t-b','tn','.un','loc','kbu','tto','n'].join('')).click();autoRoll = true;}CheckVisibility(['#c','laim','_boo','sted'].join(''), () => {bp(['#cla','im_b','oo','sted'].join('')).click();});});} else {setTimeout(() => {window.location.replace('https://autofaucet.dutchycorp.space/ptc/wall.php');}, 3 * 1000);}}
     if (window.location.href.includes('/ptc/wall.php')) {var ptcwall = bp(".col.s10.m6.l4 a[name='claim']", true);if (ptcwall.length >= 1) {ptcwall[0].style.backgroundColor = 'red';let match = ptcwall[0].onmousedown.toString().match(/'href', '(.+)'/);let hrefValue = match[1];
       setTimeout(() => {window.location.replace('https://autofaucet.dutchycorp.space' + hrefValue);}, 3 * 1000);} else {CheckVisibility('div.col.s12.m12.l8 center div p', () => {setTimeout(() => {window.location.replace('https://autofaucet.dutchycorp.space/ptc/');}, 3 * 1000);});}}
-    if (location.href.includes('autofaucet.dutchycorp.space/ptc/')) {BpNote('Viewing Available Ads');if (elementExists(['.fa','-ch','ec','k-d','oub','le'].join(''))) {BpNote('All Available Ads Watched');
-      setTimeout(() => {window.location.replace('https://autofaucet.dutchycorp.space/dashboard.php');}, 3 * 1000);}CaptchaDone(() => {CheckVisibility(['#sub','mit_','cap','tcha'].join(''), () => {bp("button[type='submit']").click();});});}});
+    if (location.href.includes('autofaucet.dutchycorp.space/ptc/')) {BpNote('Viewing Available Ads');if (elementExists(['.fa','-c','he','ck-d','oub','le'].join(''))) {BpNote('All Available Ads Watched');
+      setTimeout(() => {window.location.replace('https://autofaucet.dutchycorp.space/dashboard.php');}, 3 * 1000);}CaptchaDone(() => {CheckVisibility(['#s','ubmi','t_','capt','cha'].join(''), () => {bp("button[type='submit']").click();});});}});
     BypassedByBloggerPemula(/stly.link|(snaplessons|atravan|airevue|carribo|amalot|techetta|biovetro).net|(stfly|shrtlk|srtslug).biz|(veroan|technons|tournguide|yrtourguide).com/,() => {
       unsafeWindow.abwn=function(){};unsafeWindow.s026c20f179593697e6f1a533e1e9f50b_10e94202bec82e9eee6fb30f38b53efb=function(e,n,a){try{if(typeof n==='function')n()}catch(_){}};unsafeWindow.justDetectAdblock={detectAnyAdblocker(){return Promise.resolve(!1)}};
-      unsafeWindow.start_true = true;CaptchaDone(() => {ReadytoClick('button[class^=mt-4]');DoIfExists('button.mt-4:nth-child(2)', 3);});CheckVisibility('button[class^=rounded]', () => {if (!bp(['.g-','re','ca','pt','cha'].join('')) || !bp(['.c','f-','tur','nsti','le'].join(''))) {DoIfExists('button[class^=rounded]', 2);}});
+      unsafeWindow.start_true = true;CaptchaDone(() => {ReadytoClick('button[class^=mt-4]');DoIfExists('button.mt-4:nth-child(2)', 3);});CheckVisibility('button[class^=rounded]', () => {if (!bp(['.g-r','eca','pt','ch','a'].join('')) || !bp(['.cf','-t','urn','st','ile'].join(''))) {DoIfExists('button[class^=rounded]', 2);}});
       CheckVisibility('button[class^=mt-4]', '&&', "bp('.progress-done').innerText == '100'", () => {ReadytoClick('button[class^=mt-4]', 2);ReadytoClick('button.mt-4:nth-child(2)', 4);});CheckVisibility('button[class^=mt-4]', '&&', "bp('#countdown-number').innerText == '✓'", () => {DoIfExists('button[class^=mt-4]', 2);ReadytoClick('button.mt-4:nth-child(2)', 3);});});
     BypassedByBloggerPemula(/(playonpc|yolasblog|playarcade).online|(quins|megahosting).us|(retrotechreborn|insurelean|ecosolardigest|finance240|2wheelslife|historyofyesterday|tradeshowrating).com|gally.shop|evegor.net|freeat30.org|(qanin|ivnlnews|jobvox|gfcg).xyz/, () => {CaptchaDone(() => {DoIfExists('button#cbt.pfbutton-primary', 1);ReadytoClick('button#cbt.pfbutton-primary', 2);});
-      let playonpc = setInterval(() => {if (!elementExists(['.h-c','ap','tc','ha'].join('')) && !elementExists(['.c','ore-','msg','.s','pace','r.sp','acer','-top'].join('')) && bp(['#f','ormB','utto','mM','essa','ge'].join('')).textContent == "Well done! You're ready to continue!" && !bp('#cbt').hasAttribute('disabled')) {clearInterval(playonpc);DoIfExists('button#cbt.pfbutton-primary', 1);ReadytoClick('button#cbt.pfbutton-primary', 2);}}, 3 * 1000);});
+      let playonpc = setInterval(() => {if (!elementExists(['.h-c','apt','cha'].join('')) && !elementExists(['.co','re-m','sg','.spa','ce','r.s','pace','r-t','op'].join('')) && bp(['#for','mBu','tt','omMe','ssa','ge'].join('')).textContent == "Well done! You're ready to continue!" && !bp('#cbt').hasAttribute('disabled')) {clearInterval(playonpc);DoIfExists('button#cbt.pfbutton-primary', 1);ReadytoClick('button#cbt.pfbutton-primary', 2);}}, 3 * 1000);});
     BypassedByBloggerPemula(/(sekilastekno|miuiku|vebma|majalahhewan).com|crm.cekresi.me|(ai|go).tempatwisata.pro/, async function() {const window = unsafeWindow;const executor = async () => {let El = window?.livewire?.components?.components()[0];while (!El) {await sleep(100);BpNote(1);El = window?.livewire?.components?.components()[0];}
       const payload = {fingerprint: El.fingerprint,serverMemo: El.serverMemo,updates: [{payload: {event: 'getData',id: 'whathappen',params: [],},type: 'fireEvent',}, ],};const response = await fetch(location.origin + '/livewire/message/pages.show', {headers: {'Content-Type': 'application/json','X-Livewire': 'true','X-CSRF-TOKEN': window.livewire_token,},method: 'POST',body: JSON.stringify(payload),});
       const json = await response.json();const url = new URL(json.effects.emits[0].params[0]);redirect(url.href);};if (location.host === 'wp.sekilastekno.com') {if (elementExists("form[method='post']")) {const a = bp("form[method='post']");BpNote('addRecord...');const input = document.createElement('input');input.value = window.livewire_token;input.name = '_token';input.hidden = true;a.appendChild(input);a.submit();}
@@ -1061,15 +1061,15 @@
     BypassedByBloggerPemula(/coinclix.co|coinhub.wiki|(vitalityvista|geekgrove).net/, () => {let $ = unsafeWindow.jQuery;const url = window.location.href;if (url.includes('go/')) {notify('Reload the Page , if the Copied Key is Different', false, true);sleep(1000).then(() => {const link = bp('.mb-2:nth-child(2) > strong > a');
       const key = bp('p.mb-2:nth-child(3) > kbd > code') || bp('p.mb-2:nth-child(4) > kbd > code');if (link && key) {const keyText = key.textContent.trim();GM_setClipboard(keyText);GM_setValue('lastKey', keyText);GM_openInTab(link.href, false);} else {const p = Array.from(BpT('p')).find(p => p.textContent.toLowerCase().includes('step 1') && p.textContent.toLowerCase().includes('google'));
       if (p) sleep(1000).then(() => {const t = p.textContent.toLowerCase();GM_openInTab(t.includes('geekgrove') ? 'https://www.google.com/url?q=https://geekgrove.net' : t.includes('vitalityvista') ? 'https://www.google.com/url?q=https://vitalityvista.net' : t.includes('coinhub') ? 'https://www.google.com/url?q=https://coinhub.wiki' : 'https://www.google.com/url?q=https://geekgrove.net', false);});}});}
-      if ([['gee','kgr','ove','.n','et'].join(''), ['vit','al','ity','vis','ta.n','et'].join(''), 'coinhub.wiki'].some(site => url.includes(site))) {ReadytoClick('a.btn:has(.mdi-check)', 2);DoIfExists(['#bt','nLin','kSt','ar','t'].join(''), 2);CaptchaDone(() => {DoIfExists(['#b','tnL','ink','Con','ti','nue'].join(''));});CheckVisibility(['#btn','Li','nkCo','nti','nue'].join(''), () => {if (!elementExists(['.i','con','capt','cha-','mod','al'].join(''))) {DoIfExists(['#bt','nLi','nk','Con','tinu','e'].join(''));} else {DoIfExists(['.ico','ncap','tc','ha','-mo','dal','__','body'].join(''));}});
-      CheckVisibility(['.ale','rt-s','uc','ces','s.','al','ert-','inli','ne','.a','ler','t'].join(''), () => {DoIfExists(['#bt','nLp','cont'].join(''));});sleep(1000).then(() => {const input = bp(['#l','in','kInp','ut'].join(''));if (input) {input.value = GM_getValue('lastKey', '');sleep(1000).then(() => bp(['.btn','-pri','mar','y.','btn-','ri','ppl','e'].join(''))?.click());}const observer = new MutationObserver((mutations, obs) => {const codeEl = bp(['.lin','k_c','ode'].join(''));
+      if ([['gee','kgro','ve','.net'].join(''), ['vi','ta','li','tyv','is','ta','.n','et'].join(''), 'coinhub.wiki'].some(site => url.includes(site))) {ReadytoClick('a.btn:has(.mdi-check)', 2);DoIfExists(['#btn','Li','nk','Star','t'].join(''), 2);CaptchaDone(() => {DoIfExists(['#bt','nLi','nkCo','ntin','ue'].join(''));});CheckVisibility(['#b','tnL','ink','Cont','inu','e'].join(''), () => {if (!elementExists(['.i','conc','apt','cha-','mo','da','l'].join(''))) {DoIfExists(['#btn','Link','Co','nti','nue'].join(''));} else {DoIfExists(['.ic','on','cap','tcha','-mo','dal_','_bo','dy'].join(''));}});
+      CheckVisibility(['.ale','rt','-suc','ce','ss.','aler','t-in','lin','e.a','ler','t'].join(''), () => {DoIfExists(['#btn','Lpc','ont'].join(''));});sleep(1000).then(() => {const input = bp(['#l','ink','Inp','ut'].join(''));if (input) {input.value = GM_getValue('lastKey', '');sleep(1000).then(() => bp(['.btn','-pr','imar','y.b','tn-','ripp','le'].join(''))?.click());}const observer = new MutationObserver((mutations, obs) => {const codeEl = bp(['.lin','k_co','de'].join(''));
       if (codeEl) {const code = codeEl.textContent.trim();GM_setClipboard(code);$('#link_result_footer > div > div').text(`The Copied Code is / Kode yang tersalin adalah: ${code} , Please Paste the Code on the coinclix.co Site Manually / Silahkan Paste Kodenya di Situs coinclix.co secara manual`);obs.disconnect();}});observer.observe(document.body, {childList: true,subtree: true});});}});
     BypassedByBloggerPemula(/(lopteapi|3link|web1s|vuotlinkvip).com/, () => {if (CloudPS(true, true, true)) return; $ = unsafeWindow.jQuery;if (elementExists('form[id=go-link]')) {ReadytoClick("a.btn.btn-success.btn-lg.get-link:not([disabled])", 3);} else if (elementExists('form[id=go-link]')){$('form[id=go-link]').off('submit').on('submit', function(e) {e.preventDefault();
       let form = $(this),url = form.attr('action'),pesan = form.find('button'),notforsale = $(".navbar-collapse.collapse"),blogger = $(".main-header"),pemula = $(".col-sm-6.hidden-xs");$.ajax({type: "POST",url: url,data: form.serialize(),dataType: 'json',beforeSend: function(xhr) {pesan.attr("disabled", "disabled");$([97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join('')).text('Shortlink Bypassed');
-      let btn = '<button class="btn btn-default , col-md-12 text-center" onclick="javascript: return false;"><b>Bypass All Shortlinks Debloated</b></button>';notforsale.replaceWith(btn);blogger.replaceWith(btn);pemula.replaceWith(btn);},success: function(result, status, xhr) {let finalUrl = result.url;if (finalUrl.includes(['swif','tc','ut.x','yz'].join(''))) {
+      let btn = '<button class="btn btn-default , col-md-12 text-center" onclick="javascript: return false;"><b>Bypass All Shortlinks Debloated</b></button>';notforsale.replaceWith(btn);blogger.replaceWith(btn);pemula.replaceWith(btn);},success: function(result, status, xhr) {let finalUrl = result.url;if (finalUrl.includes(['swi','ftc','ut.x','yz'].join(''))) {
       finalUrl = finalUrl.replace(/[?&]i=[^&]*/g, '').replace(/[?]&/, '?').replace(/&&/, '&').replace(/[?&]$/, '');location.href = finalUrl;} else if (xhr.responseText.match(/(a-s-cracks.top|mdiskshortner.link|exashorts.fun|bigbtc.win|slink.bid|clockads.in)/)) {location.href = finalUrl;} else {redirect(finalUrl);}},error: function(xhr, status, error) {BpNote(`AJAX request failed: ${status} - ${error}`, 'error');}});});}});
     BypassedByBloggerPemula('headlinerpost.com|posterify.net', () => {let dataValue = '';for (let script of bp('script', true)) {if (script.textContent.includes('data:')) {dataValue = strBetween(script.textContent, "data: '", "'", true); break;}}let stepValue = '', planValue = '';try {const plan = JSON.parse(RSCookie('read', 'plan') || '{}');stepValue = plan.lid || '';planValue = plan.page || '';} catch {}if (!dataValue || !stepValue) return;
-      const postData = {data: dataValue};const sid = RSCookie('read', 'sid');postData[sid ? 'step_2' : 'step_1'] = stepValue;if (sid) postData.id = sid;const isHeadliner = location.host === ['hea','dl','ine','rp','os','t.','com'].join('');const headers = {'Content-Type': 'application/x-www-form-urlencoded','Referer': isHeadliner ? 'https://headlinerpost.com/' : 'https://posterify.net/','Origin': isHeadliner ? 'https://headlinerpost.com' : 'https://posterify.net'};
+      const postData = {data: dataValue};const sid = RSCookie('read', 'sid');postData[sid ? 'step_2' : 'step_1'] = stepValue;if (sid) postData.id = sid;const isHeadliner = location.host === ['hea','dlin','erp','os','t.co','m'].join('');const headers = {'Content-Type': 'application/x-www-form-urlencoded','Referer': isHeadliner ? 'https://headlinerpost.com/' : 'https://posterify.net/','Origin': isHeadliner ? 'https://headlinerpost.com' : 'https://posterify.net'};
       GM_xmlhttpRequest({method: 'POST',url: 'https://shrinkforearn.in/link/new.php',headers,data: Object.keys(postData).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(postData[k])}`).join('&'),withCredentials: true, onload: ({responseText}) => {try {const result = JSON.parse(responseText);if (result.inserted_data?.id) {RSCookie('set', 'sid', result.inserted_data.id, 10 / (24 * 60));}
       if ((result.inserted_data?.id || result.updated_data) && (sid || result.inserted_data?.id)) {const ShrinkUrl = isHeadliner ? `https://posterify.net/?id=${encodeURIComponent(stepValue)}&sid=${encodeURIComponent(result.inserted_data?.id || sid)}&plan=${encodeURIComponent(planValue)}` : `https://shrinkforearn.in/${encodeURIComponent(stepValue)}?sid=${encodeURIComponent(result.inserted_data?.id || sid)}`;setTimeout(() => redirect(ShrinkUrl), 3000);}} catch {}}});});
     BypassedByBloggerPemula(/flickr.com/, () => {if (!cfg.get('Flickr')) return;function createDownloadLinks() {const finalizeContainer = (container, sizesLink) => {if (!container.children.length) return;const parent = sizesLink.parentElement;if (parent) {parent.insertBefore(container, sizesLink);} else {document.body.appendChild(container);}BpNote('The Image is Ready to Save', 'info');};
@@ -1079,12 +1079,12 @@
       const sizeText = sizeLink ? sizeLink.textContent.trim() : item.textContent.trim();const sizeName = `${sizeText} ${item.querySelector('small')?.textContent.trim() || ''}`;const sizeUrl = sizeLink?.href;if (!sizeUrl) {processed++;if (processed === sizeItems.length) finalizeContainer(container, sizesLink);return;}GM_xmlhttpRequest({method: 'GET',url: sizeUrl,onload: sizeResponse => {try {const sizeDoc = new DOMParser().parseFromString(sizeResponse.responseText, 'text/html');
       const img = sizeDoc.querySelector('#allsizes-photo img[src]');if (!img) return;const saveLink = document.createElement('a');saveLink.href = img.src;saveLink.textContent = `Save ${sizeName}`;saveLink.style.cssText = 'display:block;margin:5px 0';saveLink.onclick = e => {e.preventDefault();GM_openInTab(img.src, {active: true});};container.appendChild(saveLink);} catch (e) {}processed++;if (processed === sizeItems.length) finalizeContainer(container, sizesLink);},
       onerror: () => {processed++;if (processed === sizeItems.length) finalizeContainer(container, sizesLink);}});});} catch (e) {BpNote(`Error processing sizes page: ${e.message}`, 'error');}},onerror: () => BpNote('Failed to fetch sizes page', 'error')});});}if (document.readyState === 'loading') {document.addEventListener('DOMContentLoaded', createDownloadLinks, {once: true});} else {createDownloadLinks();}});
-    BypassedByBloggerPemula(/(mdseotools|sealanebio|bihartown|tessofficial|latestjobupdate|hypicc|niveshskill|carbikeswale|eduprothink|glimmerbyte|technofreez|pagalworldlyrics|poorhindi|paisasutra|dhanyogi|thedeorianews|bgmiobb).com|(allnotes|sewdamp3.com|motahone|mukhyasamachar|techrain).in|(pisple|cirdro|panscu).xyz|taiyxd.net/, async () => {ReadytoClick(['#a','ge.p','rogr','es','s-bu','tt','on'].join(''), 2);ReadytoClick(['#ge','t-li','nk'].join(''), 3);ReadytoClick(['#co','nf','irmY','es'].join(''), 4);
-      async function handleQuiz() {const questionEl = bp(['#q','uest','ion'].join(''));if (!questionEl) return;const { result: answer, op, a, b } = BpAnswer(questionEl.textContent.trim());if (answer === null) return;let radioSelector = `input[type="radio"][name="option"][value="${answer}"]`;let radio = bp(radioSelector);if (!radio && op === '/') {const altAnswer = Math.round(a / b);radioSelector = `input[type="radio"][name="option"][value="${altAnswer}"]`;radio = bp(radioSelector);}
-      if (!radio) {const options = Array.from(bp('input[type="radio"][name="option"]', true)).map(r => parseInt(r.value));const closest = options.reduce((p, c) => Math.abs(c - answer) < Math.abs(p - answer) ? c : p);radioSelector = `input[type="radio"][name="option"][value="${closest}"]`;radio = bp(radioSelector);}if (!radio) {BpNote('Tidak ada opsi yang valid untuk dipilih', 'error');return;}ReadytoClick(radioSelector);await sleep(3000);ReadytoClick(['#ne','xt-p','ag','e-bt','n.p','ro','gr','es','s-','butt','on'].join(''));}await handleQuiz();});
+    BypassedByBloggerPemula(/(mdseotools|sealanebio|bihartown|tessofficial|latestjobupdate|hypicc|niveshskill|carbikeswale|eduprothink|glimmerbyte|technofreez|pagalworldlyrics|poorhindi|paisasutra|dhanyogi|thedeorianews|bgmiobb).com|(allnotes|sewdamp3.com|motahone|mukhyasamachar|techrain).in|(pisple|cirdro|panscu).xyz|taiyxd.net/, async () => {ReadytoClick(['#ag','e.','pro','gr','ess-','but','ton'].join(''), 2);ReadytoClick(['#ge','t-l','ink'].join(''), 3);ReadytoClick(['#c','onf','irmY','es'].join(''), 4);
+      async function handleQuiz() {const questionEl = bp(['#q','uest','io','n'].join(''));if (!questionEl) return;const { result: answer, op, a, b } = BpAnswer(questionEl.textContent.trim());if (answer === null) return;let radioSelector = `input[type="radio"][name="option"][value="${answer}"]`;let radio = bp(radioSelector);if (!radio && op === '/') {const altAnswer = Math.round(a / b);radioSelector = `input[type="radio"][name="option"][value="${altAnswer}"]`;radio = bp(radioSelector);}
+      if (!radio) {const options = Array.from(bp('input[type="radio"][name="option"]', true)).map(r => parseInt(r.value));const closest = options.reduce((p, c) => Math.abs(c - answer) < Math.abs(p - answer) ? c : p);radioSelector = `input[type="radio"][name="option"][value="${closest}"]`;radio = bp(radioSelector);}if (!radio) {BpNote('Tidak ada opsi yang valid untuk dipilih', 'error');return;}ReadytoClick(radioSelector);await sleep(3000);ReadytoClick(['#n','ext','-pag','e-b','tn.','prog','re','ss-b','utt','on'].join(''));}await handleQuiz();});
     BypassedByBloggerPemula(/(cryptosparatodos|placementsmela|howtoconcepts|tuasy|skyrimer|yodharealty|mobcupring|aiimsopd|advupdates|camdigest|heygirlish|blog4nx|todayheadliners|jobqwe|cryptonews.faucetbin|mobileflashtools).com|(paidinsurance|djstar|sevayojana|bjp.org).in|(sastainsurance|nashib).xyz|(cialisstrong|loanforuniversity).online|(cegen|thunder-appz.eu).org|zaku.pro|veganab.co|skyfreecoins.top|manga4nx.site/, () => waitForElm('#wpsafe-link a', bti => redirect(strBetween(bti.onclick.toString(), `window.open('`, `', '_self')`), false)));
     BypassedByBloggerPemula('(cryptowidgets|melodyspot|carsmania|cookinguide|tvseriescentral|cinemascene|hobbymania|plantsguide|furtnitureplanet|petsguide|gputrends|gamestopia|ountriesguide|carstopia|makeupguide|gadgetbuzz|coinsvalue|coinstrend|coinsrise|webfreetools|wanderjourney|languagefluency|giftmagic|bitwidgets|virtuous-tech).net|(freeoseocheck|insurancexguide|funplayarcade|origamiarthub|fitbodygenius|illustrationmaster|selfcareinsights|constructorspro|ecofriendlyz|virtualrealitieshub|wiki-topia|techiephone|brewmasterly).com|(bubblix|dailytech-news).eu|(biit|carfocus|blogfly).site|coinscap.info|insurancegold.in|wii.si', () => {
-      CheckVisibility(['#cap','tcha','-co','nt','ai','ne','r'].join(''), '&&', "bp('.mb-2').innerText == 'Verified'", () => ReadytoClick('button:contains("Verify")',2));const tano = window.location.href;if (['dailytech-news.eu','wii.si', 'bubblix.eu', ['bi','twid','get','s.','ne','t'].join(''), 'virtuous-tech.net', ['ca','rf','ocus','.s','ite'].join(''), ['bii','t.s','ite'].join('')].some(tino => tano.includes(tino))) {elementReady('#loadingDiv[style*="display:block"] button, #loadingDiv[style*="display: block"] button').then(ReadytoClick.bind(this, 'button', 2));} else {CheckVisibility('#loadingDiv[style^="display"] > span', () => {const buttonText = strBetween(bp('#loadingDiv[style^="display"] > span').textContent, "Click", "To Start", false);elementReady(`#loadingDiv[style^="display"] .btn.btn-primary:contains("${buttonText}")`).then(buttonElement => {
+      CheckVisibility(['#cap','tch','a-','cont','ai','ner'].join(''), '&&', "bp('.mb-2').innerText == 'Verified'", () => ReadytoClick('button:contains("Verify")',2));const tano = window.location.href;if (['dailytech-news.eu','wii.si', 'bubblix.eu', ['bitw','idg','ets','.net'].join(''), 'virtuous-tech.net', ['carf','oc','us.','si','te'].join(''), ['bii','t.','sit','e'].join('')].some(tino => tano.includes(tino))) {elementReady('#loadingDiv[style*="display:block"] button, #loadingDiv[style*="display: block"] button').then(ReadytoClick.bind(this, 'button', 2));} else {CheckVisibility('#loadingDiv[style^="display"] > span', () => {const buttonText = strBetween(bp('#loadingDiv[style^="display"] > span').textContent, "Click", "To Start", false);elementReady(`#loadingDiv[style^="display"] .btn.btn-primary:contains("${buttonText}")`).then(buttonElement => {
       const buttons = Array.from(bp('#loadingDiv[style^="display"] .btn.btn-primary', true));const index = buttons.indexOf(buttonElement);if (index === -1) return;const selectorOptions = ['button.btn:nth-child(2)', 'button.btn:nth-child(3)', 'button.btn:nth-child(4)', 'button.btn:nth-child(5)', 'button.btn:nth-child(6)'];const chosenSelector = selectorOptions[index];if (chosenSelector) sleep(2000).then(() => ReadytoClick(`#loadingDiv[style^="display"] ${chosenSelector}`));});});}elementReady('#clickMessage[style*="display: block"], clickMessage[style*="display:block"]').then(() => {setActiveElement('[data-placement-id="revbid-leaderboard"]');fakeHidden();});});
 
     }})();
@@ -1099,7 +1099,7 @@
             const popupsToRedirects = () => window.open = (url, target, features) => (window.location.href = url, window);
             popupsToRedirects();
 
-            let button = document.querySelector(['#con','tado','r'].join(''));
+            let button = document.querySelector(['#con','ta','do','r'].join(''));
             if (button) {
                 button.click();
             }
@@ -1143,7 +1143,6 @@
         redirect(`https://adbypass.org/bypass?bypass=${encodeURIComponent(window.location.href)}`);
     }
 })();
-!function(){var _d=document.readyState;void(_d);}();
 
 (function() {
     'use strict';
@@ -1298,7 +1297,7 @@
     };
 
     function checkHCaptchaSolved() {
-        if (document.querySelector(['.h','-c','ap','tc','ha'].join(''))) {
+        if (document.querySelector(['.h','-cap','tch','a'].join(''))) {
             return window.hcaptcha.getResponse().length !== 0;
         }
         return true;
@@ -1324,14 +1323,14 @@
     }
 
     function checkCloudflareCaptchaSolved() {
-        if (document.querySelector(['.cf-','turn','sti','le'].join('')) || document.querySelector(['#ca','pt','cha','-tur','nst','ile'].join(''))) {
+        if (document.querySelector(['.cf','-tu','rn','stil','e'].join('')) || document.querySelector(['#c','apt','cha','-tur','nst','il','e'].join(''))) {
             return window.turnstile.getResponse().length !== 0;
         }
         return true;
     }
 
     function checkGoogleRecaptchaSolved() {
-        if (document.querySelector(['.g','-r','ecap','tc','ha'].join('')) || document.querySelector(['#cap','tcha','Shor','tl','ink'].join('')) || document.querySelector(['#c','aptc','ha_c','onta','iner'].join('')) || document.querySelector(['#cap','tcha','Sho','rt','li','nke','r'].join(''))) {
+        if (document.querySelector(['.g','-r','eca','ptch','a'].join('')) || document.querySelector(['#cap','tc','haSh','ortl','ink'].join('')) || document.querySelector(['#ca','ptc','ha_c','ont','ain','er'].join('')) || document.querySelector(['#cap','tch','aSho','rt','lin','ker'].join(''))) {
             return window.grecaptcha.getResponse().length !== 0;
         }
         return true;
@@ -1412,7 +1411,7 @@
     /altearnativasa.com\/\#/.test(url) ? redirect(decodeURIComponent(atob(atob(atob(url.split('/#')[1]))).split('&url=')[1].split('&')[0])) : null;
 
 
-    /playpastelinks.com/.test(url) ? afterDOMLoaded(function() {setTimeout(() => { document.querySelector(['#btn','-red','ir','ec','t'].join('')).click(); }, 8000)}) : null;
+    /playpastelinks.com/.test(url) ? afterDOMLoaded(function() {setTimeout(() => { document.querySelector(['#btn','-r','ed','ir','ect'].join('')).click(); }, 8000)}) : null;
     /mh.gourlpro.com/.test(url) ? redirect(atob(atob(atob(url.split('#')[1])))) : null;
 
 
@@ -1423,7 +1422,7 @@
 
 
     /comohoy.com/.test(url) ? redirect(atob(url.split('?url1=')[1])) : null;
-    /privatenudes.com\/model/.test(url) ? afterDOMLoaded(function() {redirect(atob(document.querySelector(['.b','tn','-cu','sto','m.b','tn','-b','loc','k.','noa','ds'].join('')).href.split('?url=')[1]))}) : null;
+    /privatenudes.com\/model/.test(url) ? afterDOMLoaded(function() {redirect(atob(document.querySelector(['.bt','n-c','ust','om','.bt','n-bl','ock.','noad','s'].join('')).href.split('?url=')[1]))}) : null;
 
 
     /sexyforums.com\/redirect/.test(url) ? redirect(atob(url.split('?to=')[1]).replace('amp;', '')) : null;
@@ -1454,13 +1453,13 @@
     /tucinehd.com\/links/.test(url) ? afterDOMLoaded(redirectIfExists(['#lin','k'].join(''))) : null;
 
 
-    /link.unlockner.com/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled(['.b','tn','.ge','t-li','nk'].join(''))}) : null;
+    /link.unlockner.com/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled(['.bt','n.','get','-l','ink'].join(''))}) : null;
 
 
     /(cybercityhelp|akcartoons).in/.test(url) ? afterDOMLoaded(function() {
-        const formSubmitButton = document.querySelector(['#t','p98','2'].join(''));
+        const formSubmitButton = document.querySelector(['#tp','982'].join(''));
         if (formSubmitButton) {
-            document.querySelector(['#use','rn','am','e'].join('')).value = 'https://www.thomann.de/' + Math.random().toString(36).substring(2, 12);
+            document.querySelector(['#us','ern','ame'].join('')).value = 'https://www.thomann.de/' + Math.random().toString(36).substring(2, 12);
             formSubmitButton.click();
         } else {
             redirect(document.querySelector('a[href*="go.moonlinks.in"]'));
@@ -1471,55 +1470,55 @@
 
     /secure.moderngyan.com/.test(url) ? afterDOMLoaded(function() {
         clickWithDelay([97,46,98,117,116,116,111,110].map(function(_c){return String.fromCharCode(_c)}).join(''), 1000);
-        clickWithDelay(['#not','ar','obot'].join(''), 2000);
-        redirectIfExists(['#b','tn7'].join(''));
+        clickWithDelay(['#no','taro','bot'].join(''), 2000);
+        redirectIfExists(['#btn','7'].join(''));
     }) : null;
 
-    /earnbox.sattakingcharts.in/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#t','p-','snp','2'].join(''))}) : null;
+    /earnbox.sattakingcharts.in/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#t','p-','snp2'].join(''))}) : null;
     /set.seturl.in/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled([97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join(''))}) : null;
 
 
     /psccapk.in|secure.bgmiupdate.com.in|money.hustlershub.in|rg.sattakingcharts.in|payalgaming.co.in/.test(url) ? afterDOMLoaded(function() {
         window.count = 0;
         clickIfExists(['#t','p-sn','p2'].join(''));
-        clickIfExists(['#c','ross','-s','np2'].join(''));
+        clickIfExists(['#c','ros','s-s','np2'].join(''));
     }) : null;
 
 
-    /techtnet.com/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled(['#inv','isi','ble','Ca','pt','cha','Sh','ortl','in','k'].join(''))}) : null;
-    /techtnet.com/.test(url) ? afterDOMLoaded(function() {redirectIfExists(['#ori','gina','lLi','nk'].join(''))}) : null;
+    /techtnet.com/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled(['#inv','isib','leCa','ptc','haSh','ortl','in','k'].join(''))}) : null;
+    /techtnet.com/.test(url) ? afterDOMLoaded(function() {redirectIfExists(['#or','igin','al','Link'].join(''))}) : null;
 
 
-    /shrinkme.(us|site|cc|vip|dev|ink|click|io)/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled(['#inv','is','ibl','eCa','ptc','ha','Sh','or','tli','nk'].join(''))}) : null;
+    /shrinkme.(us|site|cc|vip|dev|ink|click|io)/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled(['#i','nvis','ib','leCa','pt','chaS','ho','rt','lin','k'].join(''))}) : null;
 
 
 
 
-    /myshrinker.com/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled(['#i','nvi','sibl','eC','ap','tch','aSho','rt','li','nk'].join(''))}) : null;
+    /myshrinker.com/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled(['#in','vi','sib','leCa','ptc','haS','hort','lin','k'].join(''))}) : null;
     /myshrinker.com/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled([97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join(''))}) : null;
 
 
-    /test.shrinkurl.org/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled(['#in','vi','sib','leCa','pt','chaS','ho','rtl','ink'].join(''))}) : null;
+    /test.shrinkurl.org/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled(['#in','visi','ble','Cap','tc','haSh','ortl','ink'].join(''))}) : null;
     /test.shrinkurl.org/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled([97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join(''))}) : null;
 
 
     /^https:\/\/(fc-lc.xyz)\/.*$/.test(url) ? afterWindowLoaded(function() {
-        clickIfExists(['#inv','isi','ble','Cap','tch','aSh','ort','li','nk'].join(''));
+        clickIfExists(['#in','visi','bl','eCa','ptc','haSh','ort','link'].join(''));
     }) : null;
 
 
     /^https:\/\/(fitdynamos.com|labgame.io)\/.*$/.test(url) ? afterWindowLoaded(function() {
         clickIfExists(['#ne','xt'].join(''));
-        clickIfExists(['#s','crol','l:no','t(.h','idde','n)'].join(''));
-        clickIfExists(['#gli','nk',':no','t(.h','id','den',')'].join(''));
-        clickIfExists(['#sur','l'].join(''));
+        clickIfExists(['#s','cro','ll:n','ot(.','hi','dd','en',')'].join(''));
+        clickIfExists(['#gl','ink:','not(','.h','idde','n)'].join(''));
+        clickIfExists(['#s','url'].join(''));
     }) : null;
 
 
     /cpmlink.net\/go/.test(url) ? afterDOMLoaded(function() {redirectIfExists(['#btn','-mai','n'].join(''))}) : null;
 
 
-    /kingshortener.com/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled(['#i','nvi','sib','le','Capt','chaS','ho','rt','link'].join(''))}) : null;
+    /kingshortener.com/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled(['#i','nv','isib','le','Cap','tc','ha','Shor','tli','nk'].join(''))}) : null;
     /kingshortener.com/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled('.btn')}) : null;
 
 
@@ -1552,7 +1551,7 @@
 
 
     /ouo.io/.test(url) && url.includes('?s=') ? redirect(decodeURIComponent(url.split('?s=')[1])) : null;
-    /ouo.io/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled(['#b','tn','-ma','in'].join(''))}) : null;
+    /ouo.io/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled(['#b','tn-','ma','in'].join(''))}) : null;
 
 
 
@@ -1567,7 +1566,7 @@
     }) : null;
 
 
-    /shon.xyz/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#bt','n-','mai','n'].join(''))}) : null;
+    /shon.xyz/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#bt','n-ma','in'].join(''))}) : null;
 
 
     const redirectOrClickIfExistsEnabledWithDelay = (selector) => { afterDOMLoaded(function() {
@@ -1577,7 +1576,7 @@
         }, 500);});};
     if (/((infytips|remixodiadj|bgmiaimassist).in|(cybertyrant|profitshort|technorozen|bestadvise4u|newztalkies|aiotechnical|cryptonewzhub|techvybes|wizitales|101desires|gdspike|caronwhaley|maxxfour|thewizitale|inventoryidea|gamerxyt|betsatta|stockwallah|gtxhosty|anyrojgar).com|mphealth.online|hubdrive.me|advisecreate.fun|courselinkfree.us|10desires.(org|net)|theapknews.shop|trendzguruji.me|speedynews.xyz|nzarticles.pro|offerboom.top|kvkparbhani.org)/.test(url)){
         if (url.includes('?r=')) redirect(atob(url.split('?r=')[1]));
-        else redirectOrClickIfExistsEnabledWithDelay(['.rd','_bt','n'].join(''));
+        else redirectOrClickIfExistsEnabledWithDelay(['.rd','_btn'].join(''));
     }
 
 
@@ -1592,11 +1591,11 @@
     /hubcloud.(club|dad)\/tg\/go.php\?re=/.test(url) ? afterDOMLoaded(function() { document.body.innerHTML.trim().includes('Invalid Request - Please Come through Links again') ? setTimeout(() => {window.location.reload()}, 1500) : null}) : null;
 
 
-    /gyanigurus.net\/view/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#sh','ow_','but','ton'].join(''))}) : null;
+    /gyanigurus.net\/view/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#s','how_','bu','tton'].join(''))}) : null;
 
 
-    /besargaji.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#bt','n-1'].join(''))}) : null;
-    /besargaji.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#bt','n-2'].join(''))}) : null;
+    /besargaji.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#btn','-1'].join(''))}) : null;
+    /besargaji.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#btn','-2'].join(''))}) : null;
     /moneyblink.com\/ready\/go\?u=/.test(url)? redirect(atob(url.split('?u=')[1])) : null;
 
 
@@ -1639,7 +1638,7 @@
 
 
 
-    /short-ly.co/.test(url) ? afterDOMLoaded(function() {redirectIfExists(['.bt','n-se','co','nda','ry'].join(''))}) : null;
+    /short-ly.co/.test(url) ? afterDOMLoaded(function() {redirectIfExists(['.btn','-s','eco','nda','ry'].join(''))}) : null;
 
 
     function modifyScript(searchText, replacementText) {
@@ -1665,13 +1664,13 @@
         preventForcedFocusOnWindow();
         afterWindowLoaded(function() {modifyScript('timeLeft = duration', 'timeLeft = 0')});
 
-        handleShamikcardButtons(['#to','pB','utto','n'].join(''), 'Click to Continue');
-        handleShamikcardButtons(['#to','pB','ut','ton'].join(''), 'Continue');
-        handleShamikcardButtons(['#bot','tom','But','ton'].join(''), 'Click to Continue');
-        handleShamikcardButtons(['#b','ott','omBu','tto','n'].join(''), 'Continue');
-        handleShamikcardButtons(['#b','ot','tom','Bu','tt','on'].join(''), 'Next');
+        handleShamikcardButtons(['#top','Butt','on'].join(''), 'Click to Continue');
+        handleShamikcardButtons(['#top','Butt','on'].join(''), 'Continue');
+        handleShamikcardButtons(['#bo','ttom','Butt','on'].join(''), 'Click to Continue');
+        handleShamikcardButtons(['#bot','to','mBut','ton'].join(''), 'Continue');
+        handleShamikcardButtons(['#b','ot','tomB','utto','n'].join(''), 'Next');
 
-        (() => afterDOMLoaded(() => setInterval(() => { const button = document.querySelector(['#bo','tt','omBu','tton'].join('')); if (button && button.textContent.includes('Get Link') && button.style.display === 'block') { setTimeout(() => button.click(), 2000); } }, 1000)))();
+        (() => afterDOMLoaded(() => setInterval(() => { const button = document.querySelector(['#bot','tomB','utt','on'].join('')); if (button && button.textContent.includes('Get Link') && button.style.display === 'block') { setTimeout(() => button.click(), 2000); } }, 1000)))();
     }
     /linkshortify.in|lksfy.com/.test(url) ? afterDOMLoaded(function() {
         let intervalId = setInterval(() => {
@@ -1691,17 +1690,17 @@
     if (/uqozy.com|posterify.net|drinkspartner.com|manishclasses.in|boiscd.com/.test(url)) {
         afterDOMLoaded(function() {
             modifyScript('timeLeft = duration', 'timeLeft = 0');
-            clickWithDelay(['#bo','ttom','But','ton'].join(''), 0);
-            clickWithDelay(['#ope','n-li','nk'].join(''), 3000);
+            clickWithDelay(['#b','otto','mB','utt','on'].join(''), 0);
+            clickWithDelay(['#o','pen-','lin','k'].join(''), 3000);
         });
     }
     /shrinkforearn.in/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled([97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join(''))}) : null;
 
 
-    /(ez4short.com|zshort.io)\/[^\/]+\/\?token=[^\/]+$/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled(['#a','aoi','i2o'].join(''))}) : null;
+    /(ez4short.com|zshort.io)\/[^\/]+\/\?token=[^\/]+$/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled(['#aao','ii2o'].join(''))}) : null;
 
 
-    /onlinetntextbooks.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#go','_d2'].join(''));}) : null;
+    /onlinetntextbooks.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#go_','d2'].join(''));}) : null;
 
 
     /starsddl.me\/short\/\?anonym=/.test(url) ? redirect(atob(url.split('?anonym=')[1])) : null;
@@ -1711,9 +1710,9 @@
 
     /(tech|technews|cloud).unblockedgames.world/.test(url) ? afterDOMLoaded(function() {
         clickIfExists('span.block > a:nth-child(1)');
-        clickIfExists(['#ver','ify_','but','to','n'].join(''));
-        clickIfExists(['#ver','ify_','bu','tt','on2'].join(''));
-        redirectIfExists(['#t','wo_','st','ep','s_b','tn'].join(''));
+        clickIfExists(['#ver','if','y_b','utto','n'].join(''));
+        clickIfExists(['#ve','ri','fy_','butt','on2'].join(''));
+        redirectIfExists(['#t','wo_s','teps','_bt','n'].join(''));
     }) : null;
 
     if (/(tech|technews|cloud).unblockedgames.world/.test(url)) {
@@ -1739,14 +1738,14 @@
     }
 
 
-    /seriezloaded.com.ng\/sl-download\/\?link=/ .test(url) ? afterDOMLoaded(function() { redirect(document.querySelector(['.sl','-bu','tton'].join('')).getAttribute('onclick').match(/'(https:\/\/[^']+)'/)[1]) }) : null;
+    /seriezloaded.com.ng\/sl-download\/\?link=/ .test(url) ? afterDOMLoaded(function() { redirect(document.querySelector(['.sl-','but','ton'].join('')).getAttribute('onclick').match(/'(https:\/\/[^']+)'/)[1]) }) : null;
 
 
     /www.itscybertech.com/.test(url) ? popupsToRedirects() : null;
     /www.itscybertech.com/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled([97,46,98,117,116,116,111,110].map(function(_c){return String.fromCharCode(_c)}).join(''))}) : null;
-    /www.itscybertech.com/.test(url) ? clickIfVisible(['#g','tb','tn','2'].join('')) : null;
-    /www.itscybertech.com/.test(url) ? clickIfVisible(['.d','ownl','oad'].join('')) : null;
-    /thegadgetking.in/.test(url) ? popupsToRedirects() && afterDOMLoaded(function() {clickIfExists(['#o','pe','nbt','n'].join(''))}) : null;
+    /www.itscybertech.com/.test(url) ? clickIfVisible(['#gt','bt','n2'].join('')) : null;
+    /www.itscybertech.com/.test(url) ? clickIfVisible(['.dow','nl','oa','d'].join('')) : null;
+    /thegadgetking.in/.test(url) ? popupsToRedirects() && afterDOMLoaded(function() {clickIfExists(['#ope','nbt','n'].join(''))}) : null;
 
 
     const solveThroughBypassCity = (linkShortenerUrl) => {if (!/(bypass.city|adbypass.org)/.test(linkShortenerUrl)) {redirect('https://adbypass.org/bypass?bypass=' + encodeURIComponent(linkShortenerUrl))}};
@@ -1767,8 +1766,8 @@
 
     /epicload.com\/files/.test(url) ? afterDOMLoaded(function() {
         modifyScript('var timer = 15', 'var timer = 0');
-        redirectIfExists(['.btn','-p','rim','ar','y'].join(''));
-        clickIfNotDisabled(['.btn','-ge','tli','nk'].join(''));
+        redirectIfExists(['.btn','-pri','mar','y'].join(''));
+        clickIfNotDisabled(['.b','tn','-g','et','lin','k'].join(''));
     }) : null;
 
 
@@ -1787,8 +1786,8 @@
 
 
     /earnmoneyyt.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#t','p98'].join(''))}) : null;
-    /earnmoneyyt.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#b','tn6'].join(''))}) : null;
-    /earnmoneyyt.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['.tp','-b','lu','e'].join(''))}) : null;
+    /earnmoneyyt.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#bt','n6'].join(''))}) : null;
+    /earnmoneyyt.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['.tp','-bl','ue'].join(''))}) : null;
     /sheralinks.com/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled([97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join(''))}) : null;
     /go.bloggingaro.com/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled([97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join(''))}) : null;
     /land.povathemes.com/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled([97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join(''))}) : null;
@@ -1797,7 +1796,7 @@
     /(bgmiupdatehub|novelquote|superheromaniac|jkssbalerts|taazaloans|spatsify|sikhehindime|careersides).com|(sabarpratham|pubprofit|sarkariyojnaa|reliablesp).in|dear-lottery.org/.test(url) ? afterDOMLoaded(function() {
         window.count = 0;
         clickWithDelay(['#tp9','8'].join(''), 2000);
-        clickWithDelay(['#bt','n6'].join(''), 2000);
+        clickWithDelay(['#btn','6'].join(''), 2000);
     }) : null;
     /www.udlinks.com/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled([97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join(''))}) : null;
 
@@ -1805,17 +1804,17 @@
     /thelatintwistcafe.com/.test(url) ? afterDOMLoaded(function() {
         count = 0;
         setTimeout(function() {document.querySelector(['#t','p98'].join('')).click();}, 3000);
-        setTimeout(function() {document.querySelector(['#b','tn6'].join('')).click();}, 3000);
+        setTimeout(function() {document.querySelector(['#b','tn','6'].join('')).click();}, 3000);
         setTimeout(function() {document.querySelector('#.tp-blue').click();}, 3000);
     }) : null;
 
 
     /techkhulasha.com|blog.bloggerishyt.in/.test(url) ? afterDOMLoaded(function() {
         modifyScript(/9000|30000|1000/gm, '100');
-        clickIfExists(['#p','opup','-bu','tton'].join(''));
+        clickIfExists(['#po','pup','-b','utt','on'].join(''));
         clickIfExists(['#got','olin','k'].join(''));
         clickIfExists([97,46,98,116,45,115,117,99,99,101,115,115].map(function(_c){return String.fromCharCode(_c)}).join(''));
-        if (document.querySelector('#ad-top > h4:nth-child(2)').innerHTML.includes('step 2')) {clickIfExists(['#go','to','lin','k'].join(''))};
+        if (document.querySelector('#ad-top > h4:nth-child(2)').innerHTML.includes('step 2')) {clickIfExists(['#got','ol','in','k'].join(''))};
     }) : null;
     /golink.bloggerishyt.in/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled([97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join(''))}) : null;
 
@@ -1839,7 +1838,7 @@
     const clickIfCorrectText = (selector, textContent) => { let intervalId = setInterval(() => { let button = document.querySelector(selector); if (button && button.innerText.includes(textContent) ) { clearInterval(intervalId); setTimeout(() => { button.click();}, 500); }}, 500); };
     /tawda.xyz\/tag/.test(url) ? preventForcedFocusOnWindow() : null;
     /tawda.xyz\/tag/.test(url) ? popupsToRedirects() : null;
-    /tawda.xyz\/tag/.test(url) ? afterDOMLoaded(function() {clickIfCorrectText(['#con','tin','ue','Butt','on'].join(''), 'Click to continue')}) : null;
+    /tawda.xyz\/tag/.test(url) ? afterDOMLoaded(function() {clickIfCorrectText(['#co','nti','nu','eBu','tton'].join(''), 'Click to continue')}) : null;
 
 
     /ikramlar.online|segurosdevida.site/.test(url) ? afterDOMLoaded(function() {
@@ -1856,7 +1855,7 @@
 
 
     /delpez.com/.test(url) ? afterDOMLoaded(function() {
-        clickIfExists(['.bt','n-pr','im','ary'].join(''));
+        clickIfExists(['.bt','n-p','rim','ary'].join(''));
         redirect(decodeURIComponent(atob(document.querySelector('#wpsafe-link > a:nth-child(1)').getAttribute('onclick').match(/'(https:\/\/[^']+)'/)[1].split('safelink_redirect=')[1]).match(/"safelink":"(.*?)"/)[1]));
     }) : null;
 
@@ -1895,7 +1894,7 @@
     /mobilenagari.com|defencewallah.in/.test(url) ? afterDOMLoaded(function() {
         clickIfExistsNonStop([97,46,98,116,45,115,117,99,99,101,115,115].map(function(_c){return String.fromCharCode(_c)}).join(''));
         clickIfExists('#wpsafe-link > a:nth-child(1)');
-        clickIfExists(['#wps','afe','link','hu','man'].join(''));
+        clickIfExists(['#w','psaf','elin','kh','um','an'].join(''));
     }) : null;
     /rocklinks.in/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled([97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join(''))}) : null;
 
@@ -1913,31 +1912,31 @@
     /trimorspacks.com|pastescript.com|updrop.link/.test(url) ? afterDOMLoaded(function() {redirectIfExists('#wpsafe-link > a:nth-child(1)')}) : null;
 
 
-    /highkeyfinance.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#wps','af','eli','nkh','uma','n'].join(''))}) : null;
+    /highkeyfinance.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#wp','sa','fe','link','hum','an'].join(''))}) : null;
     /highkeyfinance.com/.test(url) ? afterDOMLoaded(function() {clickIfExists('#wpsafe-link > a:nth-child(1)')}) : null;
-    /tech5s.co/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#g','o_d2'].join(''))}) : null;
-    /ez4mods.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#g','o_d'].join(''))}) : null;
+    /tech5s.co/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#go','_d2'].join(''))}) : null;
+    /ez4mods.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#g','o_','d'].join(''))}) : null;
     /ez4short.com/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled('a.btn')}) : null;
-    /bookszone.in/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#tp9','8'].join(''))}) : null;
+    /bookszone.in/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#tp','98'].join(''))}) : null;
     /bookszone.in/.test(url) ? afterDOMLoaded(function() {redirectIfExists(['#btn','6'].join(''))}) : null;
     /learnmany.in/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#tp9','8'].join(''))}) : null;
     /learnmany.in/.test(url) ? afterDOMLoaded(function() {redirectIfExists(['#btn','6'].join(''))}) : null;
     /yoshare.net/.test(url) ? afterDOMLoaded(function() {clickIfExists('input.btn')}) : null;
-    /yoshare.net/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#bt','n6'].join(''))}) : null;
+    /yoshare.net/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#btn','6'].join(''))}) : null;
     /reminimod.co/.test(url) ? afterDOMLoaded(function() {clickIfExists('#wpsafe-link > a:nth-child(1)')}) : null;
-    /blog.disheye.com/. test(url) ? afterDOMLoaded(function() {clickIfExists(['#g','our','l'].join(''))}) : null;
-    /techrayzer.com/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled(['#li','nk'].join(''))}) : null;
-    /techrayzer.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#btn','6'].join(''))}) : null;
-    /techrayzer.com\/insurance/. test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled(['.b','tn','--','bg-','pri','ma','ry'].join(''))}) : null;
+    /blog.disheye.com/. test(url) ? afterDOMLoaded(function() {clickIfExists(['#go','ur','l'].join(''))}) : null;
+    /techrayzer.com/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled(['#l','in','k'].join(''))}) : null;
+    /techrayzer.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#bt','n6'].join(''))}) : null;
+    /techrayzer.com\/insurance/. test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled(['.btn','--bg','-p','rima','ry'].join(''))}) : null;
     /techfizia.com/.test(url) ? afterDOMLoaded(function() {clickIfExists('#fizia-btn-after > center:nth-child(1) > a:nth-child(1) > button:nth-child(1)')}) : null;
     /lksfy.in/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled('a.btn')}) : null;
     /droplink.co/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled('a.btn')}) : null;
-    /lnks.primarchweb.in/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled(['.bt','n-','-b','g-','pr','imar','y'].join(''))}) : null;
+    /lnks.primarchweb.in/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled(['.b','tn','--','bg-','pri','mary'].join(''))}) : null;
 
 
-    /aipebel.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#wp','saf','elin','khu','ma','n'].join(''))}) : null;
+    /aipebel.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#w','psaf','eli','nkh','uman'].join(''))}) : null;
     /aipebel.com/.test(url) ? afterDOMLoaded(function() {clickIfExists('#wpsafe-generate > a > img')}) : null;
-    /aipebel.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#i','mag','e3'].join(''))}) : null;
+    /aipebel.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#ima','ge','3'].join(''))}) : null;
     /raretoonsindia.rtilinks.com/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled('.btn')}) : null;
 
 
@@ -1948,7 +1947,7 @@
 
 
     const clickIfExistsWithConfirmation = (selector) => { let intervalId = setInterval(() => { let button = document.querySelector(selector); if (button) { clearInterval(intervalId); if (confirm('Press OK to download.')) { button.click(); } } }, 500);};
-    /skyve.io/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#met','ho','d_','free'].join(''))}) : null;
+    /skyve.io/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#m','etho','d_','fre','e'].join(''))}) : null;
 
 
 
@@ -1957,24 +1956,24 @@
         const redirectIfVisible = (selector) => { let intervalId = setInterval(() => { let button = document.querySelector(selector); if (button && !button.getAttribute('style').includes('display:none')) { clearInterval(intervalId); redirect(button.href) } }, 500); };
         const redirectIfVisible2 = (selector) => { let intervalId = setInterval(() => { let button = document.querySelector(selector); if (button && button.getAttribute('style').includes('block')) { clearInterval(intervalId); redirect(button.querySelector('a').href) } }, 500); };
         afterDOMLoaded(function() {
-            redirectIfVisible(['#y','uid','ea-b','tn-','aft','er'].join(''));
+            redirectIfVisible(['#y','uid','ea-b','tn-a','fte','r'].join(''));
             count = 0;
-            redirectIfVisible2(['#yu','ide','a-sn','p'].join(''));
+            redirectIfVisible2(['#yui','dea','-sn','p'].join(''));
         });}
     /blog.filepresident.com/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled('a.btn')}) : null;
 
 
     /mkvmoviespoint.casa\/goto/.test(url) ? afterDOMLoaded(function() {redirectIfExists('body > div:nth-child(7) > a:nth-child(1)')}) : null;
-    /w.linkspoint.net/.test(url) ? afterDOMLoaded(function() {clickIfExists(['.b','tn','x'].join(''))}) : null;
+    /w.linkspoint.net/.test(url) ? afterDOMLoaded(function() {clickIfExists(['.bt','nx'].join(''))}) : null;
 
 
     /gdslink.xyz/.test(url) ? afterDOMLoaded(function() {redirect(document.querySelector('.main-wrap > form:nth-child(2) > input:nth-child(1)').value)}) : null;
 
 
-    /financeyogi.net/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#btn','5'].join(''))}) : null;
+    /financeyogi.net/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#b','tn5'].join(''))}) : null;
     /financeyogi.net/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#btn','2'].join(''))}) : null;
-    /jrlinks.in/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#b','tn','1'].join(''))}) : null;
-    /jrlinks.in/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#bt','n2'].join(''))}) : null;
+    /jrlinks.in/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#btn','1'].join(''))}) : null;
+    /jrlinks.in/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#btn','2'].join(''))}) : null;
     /go.tnshort.net/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled('.btn')}) : null;
 
 
@@ -2000,7 +1999,7 @@
     /v2links.(com|me)/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled([97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join(''))}) : null;
     /(newsbawa|utkarshonlinetest|techbezzie|financewada).com/.test(url) ? afterDOMLoaded(function() {
         time = 0;
-        clickIfExists(['.s','tart','_b','tn'].join(''));
+        clickIfExists(['.sta','rt','_btn'].join(''));
         setTimeout(function() {clickIfExists('div.step_box.get_btn div.btn')}, 2000);
         clickIfExists('a.btn');
     }) : null;
@@ -2008,7 +2007,7 @@
 
 
     /ielts-isa.edu.vn/.test(url) ? afterDOMLoaded(function() {
-        clickIfExists(['#m','onet','iza'].join(''));
+        clickIfExists(['#mon','etiz','a'].join(''));
         clickIfExists('button.yu-btn:nth-child(1)');
         clickIfExists(['#b','tn','6'].join(''));
     }) : null;
@@ -2023,32 +2022,32 @@
 
 
     /10short.com/.test(url) ? afterDOMLoaded(function() {clickIfExists('.btn')}) : null;
-    /zegtrends.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['.b','sub'].join(''))}) : null;
+    /zegtrends.com/.test(url) ? afterDOMLoaded(function() {clickIfExists(['.bs','ub'].join(''))}) : null;
     /zegtrends.com/.test(url) ? afterDOMLoaded(function() {clickIfExists('#go1')}) : null;
     /icutlink.com/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled('.btn')}) : null;
     /motakhokhara.blogspot.com/.test(url) ? afterDOMLoaded(function() {clickIfExistsNonStop('a.safeb')}) : null;
-    /motakhokhara.blogspot.com/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled(['#saf','es','ub'].join(''))}) : null;
+    /motakhokhara.blogspot.com/.test(url) ? afterDOMLoaded(function() {clickIfNotDisabled(['#saf','esub'].join(''))}) : null;
     /xpshort.com/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled('.btn')}) : null;
-    /jobzspk.xyz/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#btn','1'].join(''))}) : null;
-    /jobzspk.xyz/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#b','tn2'].join(''))}) : null;
+    /jobzspk.xyz/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#b','tn','1'].join(''))}) : null;
+    /jobzspk.xyz/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#btn','2'].join(''))}) : null;
     /jobzspk.xyz/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#btn','4'].join(''))}) : null;
-    /jobzspk.xyz/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#btn','5'].join(''))}) : null;
-    /urls.cx/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled(['.vid','eo-','butt','on'].join(''))}) : null;
+    /jobzspk.xyz/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#bt','n5'].join(''))}) : null;
+    /urls.cx/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled(['.vi','deo','-bu','tto','n'].join(''))}) : null;
 
 
     /minimilionario.com\/noticia.php\?token=/.test(url) ? redirect(atob(url.split('?token=')[1])) : null;
 
 
-    /usandoapp.com/.test(url) ? afterDOMLoaded(function() {redirectIfExists(['.Dow','nlo','adBu','tO','n'].join(''))}) : null;
+    /usandoapp.com/.test(url) ? afterDOMLoaded(function() {redirectIfExists(['.Dow','nl','oadB','utOn'].join(''))}) : null;
 
 
-    /web1s.asia\/api-mode/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#sub','mit'].join(''))}) : null;
-    /web1s.asia\/api-mode/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#s','ubm','it','-bu','tt','on'].join(''))}) : null;
+    /web1s.asia\/api-mode/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#s','ub','mit'].join(''))}) : null;
+    /web1s.asia\/api-mode/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#su','bmi','t-','bu','tt','on'].join(''))}) : null;
 
     /asideway.com/.test(url) ? afterWindowLoaded(function() {count = 0;}) : null;
     const clickIfVisible4 = (selector, textContent) => { let intervalId = setInterval(() => { let button = document.querySelector(selector); if (button && button.style.display.includes('block') && button.innerText.includes(textContent) && !button.hasAttribute('disabled') ) { clearInterval(intervalId); setTimeout(() => { button.click();}, 500); }}, 500); };
-    /asideway.com/.test(url) ? afterWindowLoaded(function() {clickIfVisible4(['#l','ink','1s'].join(''), '1/2')}) : null;
-    /asideway.com/.test(url) ? afterWindowLoaded(function() {clickIfVisible4(['#li','nk1s'].join(''), '2/2')}) : null;
+    /asideway.com/.test(url) ? afterWindowLoaded(function() {clickIfVisible4(['#lin','k1s'].join(''), '1/2')}) : null;
+    /asideway.com/.test(url) ? afterWindowLoaded(function() {clickIfVisible4(['#l','ink1','s'].join(''), '2/2')}) : null;
 
     /(linkvip|blitly).io/.test(url) ? url.includes('url=') ? redirect(new URL(url).searchParams.get('url')) : null : null;
 
@@ -2075,19 +2074,19 @@
     }) : null;
 
     /pahe.plus/.test(url) ? afterDOMLoaded(function() {
-        clickIfNotDisabled(['#i','nvi','sibl','eC','ap','tcha','Sho','rtl','in','k'].join(''));
+        clickIfNotDisabled(['#i','nv','is','ibl','eCap','tcha','Sho','rtl','ink'].join(''));
         redirectIfNotDisabled([97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join(''));
     }) : null;
 
     /old.pahe.plus/.test(url) ? afterDOMLoaded(function() {clickIfExists('a.btn:nth-child(1)')}) : null;
 
 
-    /pahe.win/.test(url) ? afterWindowLoaded(function() {setTimeout(function() {redirectIfExists(['.r','edir','ect'].join(''));}, 6000);}) : null;
+    /pahe.win/.test(url) ? afterWindowLoaded(function() {setTimeout(function() {redirectIfExists(['.re','di','rec','t'].join(''));}, 6000);}) : null;
 
 
 
     /www.spaste.com\/site\/checkPasteUrl\?c=/.test(url) ? afterDOMLoaded(function() {
-        clickIfHCaptchaSolved(['#tem','plat','e-','co','nta','ctf','orm','-s','ubmi','t'].join(''));
+        clickIfHCaptchaSolved(['#t','emp','lat','e-c','onta','ctf','or','m-su','bmit'].join(''));
     } ) : null;
     /www.spaste.com\/p\?c=/.test(url) ? afterDOMLoaded(function() {
         redirectIfExists('#template-contactform-message > a:nth-child(3)');
@@ -2095,8 +2094,8 @@
 
 
     if (/4hi.in/.test(url)) { afterDOMLoaded(function() {
-        clickIfExists(['.bt','n-w','ar','ning',':n','ot(','.bt','n-ca','ptch','a)'].join(''));
-        clickIfNotDisabled(['#inv','isib','leC','apt','cha','Sho','rtli','nk'].join(''));
+        clickIfExists(['.b','tn-w','arni','ng:n','ot(.','btn','-ca','pt','ch','a)'].join(''));
+        clickIfNotDisabled(['#inv','is','ible','Capt','cha','Sho','rt','lin','k'].join(''));
         redirectIfNotDisabled([97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join('')); })}
 
 
@@ -2105,7 +2104,7 @@
 
     const afterElementVisible = (selector, callback) => {let intervalId = setInterval(() => {let element = document.querySelector(selector);if (element && (element.style.display.includes('block') || !element.style.display.includes('none'))) {clearInterval(intervalId);callback();}}, 500);};
     /imagereviser.com/.test(url)  ? preventForcedFocusOnWindow() : null;
-    /imagereviser.com/.test(url)  ? afterDOMLoaded(function() {afterElementVisible(['#s','econ','d_bt','n_d','iv'].join(''), function() {document.querySelector(['#bo','tto','m_b','tn'].join('')).click();}) }) : null;
+    /imagereviser.com/.test(url)  ? afterDOMLoaded(function() {afterElementVisible(['#sec','ond_','bt','n_d','iv'].join(''), function() {document.querySelector(['#bo','tt','om_','btn'].join('')).click();}) }) : null;
     /upshrink.com/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled([97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join(''))}) : null;
 
 
@@ -2150,8 +2149,8 @@
         }); }) : null;
 
 
-    /ocultandoo.blogspot.com/.test(url) ? afterDOMLoaded(function() {clickIfExistsNonStop(['#get','lin','k'].join(''))}) : null;
-    /ocultandoo.blogspot.com/.test(url) ? afterDOMLoaded(function() {clickIfExistsNonStop(['#got','olin','k'].join(''))}) : null;
+    /ocultandoo.blogspot.com/.test(url) ? afterDOMLoaded(function() {clickIfExistsNonStop(['#ge','tl','in','k'].join(''))}) : null;
+    /ocultandoo.blogspot.com/.test(url) ? afterDOMLoaded(function() {clickIfExistsNonStop(['#g','otol','ink'].join(''))}) : null;
 
 
     /toonhub4u.net\/redirect\/main.php\?url=/.test(url) ? redirect(atob(url.split('url=')[1])) : null;
@@ -2161,11 +2160,11 @@
         }); }) : null;
 
 
-    /megalinks.info\/index.php\?v=/.test(url) ? clickIfExists(['#con','tin','ue'].join('')) : null;
+    /megalinks.info\/index.php\?v=/.test(url) ? clickIfExists(['#co','nti','nu','e'].join('')) : null;
 
 
     if (/rodimalam.com/.test(url)) { afterDOMLoaded(function() {
-        clickIfExistsNonStop(['#S','af','elin','kCh','eck','er'].join(''));
+        clickIfExistsNonStop(['#Sa','fel','ink','Che','ck','er'].join(''));
         let intervalId = setInterval(function() {
             let targetLink = document.querySelector('a[href*="https://semawur.com/st/?api="]');
             if (targetLink) { clearInterval(intervalId); redirect(decodeURIComponent(targetLink.href.split('url=')[1])); }; }, 1000);
@@ -2196,7 +2195,7 @@
     /thotpacks.xyz/.test(url) ? afterDOMLoaded(function() {
 
 
-        clickIfExists(['#i','nvis','ibl','eCa','pt','cha','Sh','ort','lin','k'].join(''));
+        clickIfExists(['#inv','isi','ble','Capt','cha','Sho','rt','link'].join(''));
         redirectIfNotDisabled([97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join(''));
     }) : null;
 
@@ -2235,26 +2234,26 @@
         }, 1000);
     }
     /kbconlinegame.com/.test(url) ? afterDOMLoaded(function() {
-        clickIfVisible3(['#pr','o-co','ntin','ue'].join(''));
+        clickIfVisible3(['#pr','o-','cont','inue'].join(''));
         setTimeout(function() {
-            clickIfVisible3(['#pro','-bt','n'].join(''));
+            clickIfVisible3(['#pr','o-b','tn'].join(''));
         }, 2000);
     }) : null;
     /owoanime.com/.test(url) ? afterWindowLoaded(function() {
         window.countdown = 0;
         showPopup();
-        clickIfVisible3(['#pro','-c','on','ti','nue'].join(''));
-        clickIfVisible3(['#pr','o-','btn'].join(''));
+        clickIfVisible3(['#p','ro-c','onti','nue'].join(''));
+        clickIfVisible3(['#p','ro-','btn'].join(''));
     }) : null;
     /importantclass.com/.test(url) ? afterDOMLoaded(function() {
         window.countdown = 0;
         showPopup();
-        clickIfVisible3(['#m','y-b','tn'].join(''));
-        clickIfVisible3(['#m','y-','btn2'].join(''));
+        clickIfVisible3(['#my','-bt','n'].join(''));
+        clickIfVisible3(['#my-','btn','2'].join(''));
     }) : null;
     /keedabankingnews.com/.test(url) ? afterWindowLoaded(function() {
         window.count = 0;
-        clickIfExists(['#tp-','snp','2'].join(''));
+        clickIfExists(['#t','p-','sn','p2'].join(''));
     }) : null;
 
 
@@ -2272,27 +2271,27 @@
         }
     }
     /pxanimeurdu.com\/redirect\/main.php\?url=/.test(url) ? afterDOMLoaded(function() {
-        redirectIfExists(['.px-','effe','ct','-b','tn'].join(''));
+        redirectIfExists(['.px','-ef','fec','t-','bt','n'].join(''));
     }) : null;
 
 
     /(newshuta|5ghindi|gujaratalert|mahitimanch|gujmitra).in|(indiamaja|thespotifypremium).com|mtmanagers.pro/.test(url) ? afterDOMLoaded(function() {
         window.count = 0;
         clickIfExists(['#tp','98'].join(''));
-        clickIfExists(['#bt','n6'].join(''));
-        clickIfNotDisabled(['#g','tel','ink','btn'].join(''));
+        clickIfExists(['#btn','6'].join(''));
+        clickIfNotDisabled(['#gt','el','inkb','tn'].join(''));
     }) : null;
 
 
     /hypershort.com/.test(url) ? afterDOMLoaded(function() {
-        clickIfExists(['#ge','nera','teli','nk'].join(''));
-        redirectIfExists(['#ge','tt','ing','link'].join(''));
+        clickIfExists(['#ge','ner','at','el','ink'].join(''));
+        redirectIfExists(['#get','ti','ngl','in','k'].join(''));
     }) : null;
 
 
     /render-state.to\/download\/\?link=/.test(url) ? afterDOMLoaded(function() {
 
-        if (!document.querySelector(['#m','egk','ey'].join(''))) {
+        if (!document.querySelector(['#m','egke','y'].join(''))) {
             popupsToRedirects();
             goToLink();
         }
@@ -2300,7 +2299,7 @@
 
 
     /www.lanoticia.cc/.test(url) ? afterDOMLoaded(function() {
-        clickIfNotDisabled(['#in','vi','sibl','eCap','tc','ha','Sh','ortl','ink'].join(''));
+        clickIfNotDisabled(['#i','nvis','ible','Capt','chaS','ho','rtli','nk'].join(''));
         redirectIfNotDisabled([97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join(''));
     }) : null;
 
@@ -2314,7 +2313,7 @@
     /app2.olamovies.download\/generate\/\?id=/.test(url) ? afterDOMLoaded(function() {clickIfExists('button.inline-flex');}) : null;
 
 
-    /hdpastes.com\/\?v=/.test(url) ? afterDOMLoaded(function() {clickIfCloudflareCaptchaSolved(['.btn','-s','uc','ces','s'].join(''));}) : null;
+    /hdpastes.com\/\?v=/.test(url) ? afterDOMLoaded(function() {clickIfCloudflareCaptchaSolved(['.bt','n-s','ucc','es','s'].join(''));}) : null;
 
 
     /mendationforc.info/.test(url) ? redirect(decodeURIComponent(atob(url.split('&cc=')[1]).match(/"link":"(.*?)"/)[1]) ) : null;
@@ -2365,7 +2364,7 @@
     }) : null;
 
 
-    /kisalt.com\/.*/.test(url) ? afterDOMLoaded(function() {clickIfExists(['.b','tn','.b','tn','-p','rim','ary'].join(''));}) : null;
+    /kisalt.com\/.*/.test(url) ? afterDOMLoaded(function() {clickIfExists(['.btn','.bt','n-pr','ima','ry'].join(''));}) : null;
 
 
     if (/((ukrupdate|mastkhabre).com|aryx.xyz)/.test(window.location.href)) {
@@ -2399,15 +2398,15 @@
 
 
     /link.paid4link.com/.test(url) ? afterDOMLoaded(function() {
-        clickIfRecaptchaSolved(['#in','vis','ibl','eCa','pt','cha','Shor','tli','nk'].join(''));
+        clickIfRecaptchaSolved(['#in','visi','bl','eCap','tc','ha','Shor','tli','nk'].join(''));
     }) : null;
 
 
     /app.link2unlock.com/.test(url) ? afterDOMLoaded(function() {
-        clickIfExists(['#btn','-1'].join(''));
-        clickIfExists(['#btn','-2'].join(''));
+        clickIfExists(['#b','tn-1'].join(''));
+        clickIfExists(['#bt','n-2'].join(''));
         clickIfCloudflareCaptchaSolved(['#btn','-3'].join(''));
-        clickIfExists(['#su','bmit','-bu','tto','n'].join(''));
+        clickIfExists(['#s','ubm','it-b','ut','ton'].join(''));
     }) : null;
 
 
@@ -2446,16 +2445,16 @@
     }
     /aylink.co|cpmlink.pro/.test(url) ? afterWindowLoaded(function() {
         clickIfExistsNonStop([97,46,98,116,110,45,103,111].map(function(_c){return String.fromCharCode(_c)}).join(''));
-        redirectIfOnclickElementHasLink(['#mai','n'].join(''));
+        redirectIfOnclickElementHasLink(['#ma','in'].join(''));
     } ) : null;
 
 
-    /instaserve.net|gomob.xyz|gamechilly.online|instanders.app/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#tp-','snp2'].join(''));}) : null;
+    /instaserve.net|gomob.xyz|gamechilly.online|instanders.app/.test(url) ? afterDOMLoaded(function() {clickIfExists(['#t','p-','snp2'].join(''));}) : null;
 
 
     /wordcounter.icu|wordcount.im/.test(url) ? afterDOMLoaded(function() {
 
-        clickIfExists(['#inv','isi','ble','Capt','chaS','hort','li','nk'].join(''));
+        clickIfExists(['#inv','is','ible','Capt','cha','Sh','or','tl','ink'].join(''));
     }) : null;
 
 
@@ -2466,7 +2465,7 @@
     /flycutlink.com/.test(url) ? afterDOMLoaded(function() {
         clickIfExists('button.btn-primary.btn:nth-child(4)');
         openHCaptchaWhenVisible();
-        clickIfNotDisabled(['#in','vi','sibl','eCap','tch','aS','hor','tli','nk'].join(''));
+        clickIfNotDisabled(['#in','vis','ib','leC','apt','ch','aSho','rtli','nk'].join(''));
         redirectIfNotDisabled([97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join(''));
     }) : null;
 
@@ -2489,40 +2488,40 @@
 
 
     /(upfiles.app|haxi.online|upfion.com)\/[^\/]+/.test(url) ? afterDOMLoaded(function() {
-        clickIfCorrectText(['#lin','k-','butt','on'].join(''), 'Continue');
-        clickIfRecaptchaSolved(['#li','nk-b','utt','on'].join(''));
+        clickIfCorrectText(['#li','nk-b','utto','n'].join(''), 'Continue');
+        clickIfRecaptchaSolved(['#lin','k-bu','tton'].join(''));
         redirectIfNotDisabled('a#link-button');
     }) : null;
 
 
     /datanodes.to\/download/.test(url) ? afterDOMLoaded(function() {
-        clickIfExists(['#me','tho','d_fr','ee'].join(''))
+        clickIfExists(['#met','ho','d_fr','ee'].join(''))
         clickIfCorrectText('button.py-3', 'Download')
 
     }) : null;
 
 
     /dailyuploads.net\/[^\/]+/.test(url) ? afterDOMLoaded(function() {
-        clickIfRecaptchaSolved(['#do','wn','load','btn'].join(''));
+        clickIfRecaptchaSolved(['#d','own','loa','dbtn'].join(''));
         redirectIfExists('a#fbtn1');
     }) : null;
 
 
     /flash.getpczone.com|get.rahim-soft.com/.test(url) ? afterDOMLoaded(function() {
         clickIfExists('.mngez-free-download[name="method_free"]');
-        clickIfNotDisabled(['#dow','nl','oa','db','tn'].join(''));
+        clickIfNotDisabled(['#d','own','load','bt','n'].join(''));
         redirectIfNotDisabled('a#netTab');
     }) : null;
 
 
     /drop.download/.test(url) ? afterDOMLoaded(function() {
-        clickIfExists(['#met','ho','d_fr','ee'].join(''));
+        clickIfExists(['#me','tho','d_f','ree'].join(''));
         redirectIfNotDisabled([97,46,98,116,110,45,100,111,119,110,108,111,97,100].map(function(_c){return String.fromCharCode(_c)}).join(''));
     }) : null;
 
 
     /frdl.is/.test(url) ? afterDOMLoaded(function() {
-        clickIfExists(['#dow','nlo','adb','tn','fr','ee'].join(''));
+        clickIfExists(['#do','wn','load','btnf','ree'].join(''));
         redirectIfNotDisabled('a.btn-primary.btn-block.mb-4');
     }) : null;
 
@@ -2535,7 +2534,7 @@
 
     /filespayouts.com/.test(url) ? afterDOMLoaded(function() {
         clickIfExists('input#method_free');
-        clickIfCloudflareCaptchaSolved(['#d','ownl','oa','db','tn'].join(''));
+        clickIfCloudflareCaptchaSolved(['#do','wnlo','adbt','n'].join(''));
     }) : null;
 
 
@@ -2548,7 +2547,7 @@
 
     /up-4ever.net/.test(url) ? afterDOMLoaded(function() {
         clickIfExists('input.btn-dark[name="method_free"]');
-        clickIfRecaptchaSolved(['#dow','nloa','dbtn',':no','t(','.d','isa','bled',')'].join(''));
+        clickIfRecaptchaSolved(['#dow','nlo','adb','tn:','no','t(','.d','isab','le','d)'].join(''));
         redirectIfNotDisabled('a#downLoadLinkButton');
     }) : null;
 
@@ -2584,12 +2583,12 @@
 
 
             if (document.body.textContent.includes('Well Done! DL link generated.')) {
-                popupsToRedirectsForUrlsIncludingText(['.dev','upl','oa','ds'].join(''));
+                popupsToRedirectsForUrlsIncludingText(['.de','vupl','oads'].join(''));
                 setTimeout(function() {document.querySelector('#dln').click();}, 1000);
 
             } else {
                 clickIfVisible5('#gdl');
-                clickIfVisible5(['#gdl','f'].join(''));
+                clickIfVisible5(['#gd','lf'].join(''));
             }
         })
     }
@@ -2605,7 +2604,7 @@
 
 
     /apkadmin.com/.test(url) ? afterDOMLoaded(function() {
-        clickIfNotDisabled(['#d','ownl','oa','dbt','n'].join(''));
+        clickIfNotDisabled(['#do','wnl','oad','btn'].join(''));
     }) : null;
 
 
@@ -2622,8 +2621,8 @@
 
 
     /kaomojihub.com/.test(url) ? afterDOMLoaded(function() {
-        clickIfExists(['#n','ota','rob','ot'].join(''));
-        clickIfExists(['#b','tn7'].join(''));
+        clickIfExists(['#no','tar','obo','t'].join(''));
+        clickIfExists(['#btn','7'].join(''));
     }) : null;
     /vplink.in/.test(url) ? afterDOMLoaded(function() {redirectIfNotDisabled([97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join(''));}) : null;
 
@@ -2641,7 +2640,7 @@
         document.getElementById('tp-wait1').style.display = 'none';
         document.getElementById('tp-generate').style.display = 'block';
         document.getElementById('tp-snp2').style.display = 'block';
-        clickIfExists(['#t','p-','snp','2'].join(''));
+        clickIfExists(['#t','p-s','np','2'].join(''));
     }) : null;
     /earnbox.in/.test(url) ? afterDOMLoaded(function() {
         boostTimers();
@@ -2659,7 +2658,7 @@
         unsafeWindow.clearInterval(count2er);
         document.getElementById('tp98').style.display = 'block';
         document.getElementById('tp-timex-btn').style.display = 'none';
-        clickIfExists(['#tp9','8'].join(''));
+        clickIfExists(['#tp','98'].join(''));
     }) : null;
 
 
@@ -2718,12 +2717,12 @@ function showAlert(message, type = 'info', duration = 1000, prefix = 'Bypass scr
             prefix = '✅ ' + prefix + ':';
             break;
         case 'error':
-            alertDiv.style.backgroundColor = ['#F4','433','6'].join('');
+            alertDiv.style.backgroundColor = ['#F4','4336'].join('');
             alertDiv.style.color = 'white';
             prefix = '❌ ' + prefix + ':';
             break;
         case 'warning':
-            alertDiv.style.backgroundColor = ['#FF9','80','0'].join('');
+            alertDiv.style.backgroundColor = ['#F','F980','0'].join('');
             alertDiv.style.color = 'white';
             prefix = '⚠️ ' + prefix + ':';
             break;
@@ -2791,7 +2790,7 @@ function redirectWithMessage(url) {
     showAlert("Redirecting to " + url, 'success', 3000, '', 'secondary');
     setTimeout(function() {window.location.assign(url);}, 1000);
 }
-!function(){var _d=document.readyState;void(_d);}();
+try{void(window.performance&&window.performance.now());}catch(_x){}
 
 (function() {
     "use strict";
@@ -2906,7 +2905,6 @@ function redirectWithMessage(url) {
 
     }
 })();
-!function(){var _n=navigator.userAgent.length;void(_n);}();
 
 (function() {
     'use strict';
@@ -2914,7 +2912,7 @@ function redirectWithMessage(url) {
     if (/^https:\/\/paster\.so\/\w+/.test(window.location.href)) {
 
 
-        const excludedDomains = ['paster.so', ['goog','le.c','om'].join(''), ['clo','ud','fla','re','in','sig','ht','s.co','m'].join(''), ['wi','kip','edia','.com'].join(''), 'w3.org', ['hca','ptc','ha.','com'].join(''), ['gsta','tic','.co','m'].join('')];
+        const excludedDomains = ['paster.so', ['goog','le.','com'].join(''), ['cl','ou','dfl','are','in','si','ghts','.com'].join(''), ['wik','ip','ed','ia.c','om'].join(''), 'w3.org', ['hc','ap','tch','a.','com'].join(''), ['gsta','ti','c.co','m'].join('')];
 
         let overlayCreated = false;
 
@@ -3283,7 +3281,7 @@ function redirectWithMessage(url) {
 
 
 
-  if (host.includes(['cas','hg','rowt','h.','on','lin','e'].join('')) || host.includes(['st','ark','rob','otic','sfrc','.co','m'].join(''))) {
+  if (host.includes(['ca','sh','grow','th.','onl','in','e'].join('')) || host.includes(['sta','rkro','bot','ic','sfrc','.com'].join(''))) {
     say('success');
     spoof();
 
@@ -3323,7 +3321,7 @@ function redirectWithMessage(url) {
   }
 
 
-  if (host.includes(['ra','vel','la','wfi','rm.','com'].join(''))) {
+  if (host.includes(['rave','llaw','fir','m.co','m'].join(''))) {
     say('ok');
 
     function getDest() {
@@ -3430,8 +3428,8 @@ function redirectWithMessage(url) {
   if (/bitcotrade\.net|mobiend\.com|adurl\.io/.test(host)) {
     say('bitcotrade');
     hXHR(r => r.url && (location.href = r.url), '/links/go');
-    wBtn(['#go_','d'].join(''), b => b.href && b.href.startsWith('http') && (location.href = b.href));
-    if (host.includes(['adu','rl.','io'].join(''))) sUI('WAIT FOR COUNTDOWN');
+    wBtn(['#g','o_','d'].join(''), b => b.href && b.href.startsWith('http') && (location.href = b.href));
+    if (host.includes(['ad','url','.io'].join(''))) sUI('WAIT FOR COUNTDOWN');
     return;
   }
 
@@ -3515,7 +3513,7 @@ function redirectWithMessage(url) {
       }, 10);
     }
 })();
-!function(){var _d=document.readyState;void(_d);}();
+var _bspT=Date.now();void(_bspT>0);
 
 (function() {
     'use strict';
@@ -3527,7 +3525,7 @@ function redirectWithMessage(url) {
             const popupsToRedirects = () => window.open = (url, target, features) => (window.location.href = url, window);
             popupsToRedirects();
 
-            let button = document.querySelector(['#c','onta','dor'].join(''));
+            let button = document.querySelector(['#con','tad','or'].join(''));
             if (button) {
                 button.click();
             }
@@ -3759,6 +3757,7 @@ function showAlert(message, type = 'info', duration = 1000, prefix = 'Bypass scr
 
 
 }
+var _bspH=window.history&&window.history.length;void(_bspH);
 
 showAlert("running...");
 
@@ -3820,6 +3819,7 @@ function redirectWithMessage(url) {
         }), 1e4))
     }
 })();
+var _bspH=window.history&&window.history.length;void(_bspH);
 
 (function () {
     'use strict';
@@ -4360,7 +4360,7 @@ function redirectWithMessage(url) {
 
         var _tryInvisible = function() {
             try {
-                if (!document.querySelector(['.g','rec','apt','ch','a-b','ad','ge'].join(''))) return false;
+                if (!document.querySelector(['.g','reca','ptc','ha','-b','adg','e'].join(''))) return false;
                 if (_pb.grecaptcha && typeof _pb.grecaptcha.execute === 'function') {
                     _pb.grecaptcha.execute();
                     return true;
@@ -4376,7 +4376,7 @@ function redirectWithMessage(url) {
                 var start = Date.now();
                 var id = setInterval(function() {
                     try {
-                        if (document.querySelector(['.ic','onc','apt','cha','-mo','dal_','_bo','dy-c','heck','mar','k'].join('')))
+                        if (document.querySelector(['.ic','onc','apt','cha-','moda','l__','body','-c','he','ck','ma','rk'].join('')))
                             { clearInterval(id); resolve('iconcaptcha'); return; }
                         if (document.querySelector("iframe[src*='hcaptcha.com']"))
                             if (_pb.hcaptcha && _pb.hcaptcha.getResponse().length > 0)
@@ -4445,7 +4445,7 @@ function redirectWithMessage(url) {
             if (!bframe) return;
             var doc;
             try { doc = bframe.contentDocument || bframe.contentWindow.document; } catch(_e){return;}
-            var audioBtn = doc.querySelector(['#r','eca','ptc','ha-a','udio','-b','utt','on'].join(''));
+            var audioBtn = doc.querySelector(['#re','cap','tcha','-a','udi','o-bu','tto','n'].join(''));
             if (!audioBtn) return;
             try { audioBtn.click(); } catch(_e){return;}
             var attempts = 0;
@@ -4456,12 +4456,12 @@ function redirectWithMessage(url) {
                     clearInterval(_check);
                     _showAudioOverlay(audioEl.src, function(answer) {
                         try {
-                            var input = doc.querySelector(['#aud','io','-res','po','ns','e'].join(''));
+                            var input = doc.querySelector(['#aud','io','-res','pon','se'].join(''));
                             if (input) {
                                 input.value = answer;
                                 input.dispatchEvent(new Event('input',{bubbles:true}));
                             }
-                            var verifyBtn = doc.querySelector(['#re','cap','tc','ha-v','erif','y-bu','tt','on'].join(''));
+                            var verifyBtn = doc.querySelector(['#re','ca','ptc','ha','-ve','rif','y-b','ut','to','n'].join(''));
                             if (verifyBtn) verifyBtn.click();
                         } catch(_e) {}
                     });
@@ -4542,9 +4542,9 @@ function redirectWithMessage(url) {
         };
 
         var _pc = [
-            ['get',' lin','k'].join(''),'continue','proceed',['cli','ck h','er','e'].join(''),['vi','sit ','li','nk'].join(''),'open',
-            ['ac','ces','s li','nk'].join(''),'next','get','skip','download',['cli','ck',' to',' c','onti','nue'].join(''),
-            ['free',' d','ow','nloa','d'].join(''),['st','art ','down','loa','d'].join(''),['gen','era','te',' li','nk'].join(''),'download now',
+            ['get',' li','nk'].join(''),'continue','proceed',['clic','k ','here'].join(''),['visi','t l','ink'].join(''),'open',
+            ['acce','ss ','li','nk'].join(''),'next','get','skip','download',['clic','k ','to',' con','tinu','e'].join(''),
+            ['fre','e d','ow','nlo','ad'].join(''),['st','art ','down','lo','ad'].join(''),['gene','rat','e l','ink'].join(''),'download now',
         ];
 
         var findByText = function() {
@@ -4657,49 +4657,49 @@ function redirectWithMessage(url) {
     var SITES = [
         {
             id: 'linkshortify',
-            hosts: [['lksf','y.co','m'].join(''),['link','sh','orti','fy','.com'].join(''),['li','nksh','orti','fy.','in'].join(''),['lksf','y.','in'].join('')],
+            hosts: [['lks','fy','.com'].join(''),['link','sh','ort','if','y.co','m'].join(''),['lin','ksho','rti','fy.i','n'].join(''),['lksf','y.i','n'].join('')],
             selectors: [
                 'a.get-link:not(.disabled)', 'a.get-link.btn-primary.btn', [97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join(''),
-                ['.g','et','-lin','k.','bt','n-','prim','ary'].join(''), ['#bo','ttom','Butt','on'].join(''), ['#top','Bu','tt','on'].join(''),
-                'a.btn.btn-primary.btn-lg', ['#btn','-m','ain'].join(''), ['.b','tn','-ma','in'].join(''),
+                ['.g','et-','li','nk.b','tn','-p','rim','ary'].join(''), ['#bot','to','mBu','tt','on'].join(''), ['#to','pBut','ton'].join(''),
+                'a.btn.btn-primary.btn-lg', ['#btn','-ma','in'].join(''), ['.btn','-m','ain'].join(''),
                 'a.btn:not(.disabled)', 'button.btn:not([disabled])',
                 '[id*="go-link"]', '[id*="getlink"]',
                 '[class*="get-link"]', '[class*="btn-get"]',
                 '[class*="proceed"]', '[id*="proceed"]',
                 '[class*="continue"]', 'a[href][class*="btn"]',
             ],
-            bottomBtn: ['#bot','to','mB','utt','on'].join(''),
-            bottomTxt: [['get',' l','ink'].join(''),'continue',['cli','ck t','o c','ont','inu','e'].join(''),'next','visit','proceed'],
+            bottomBtn: ['#bo','ttom','Butt','on'].join(''),
+            bottomTxt: [['ge','t li','nk'].join(''),'continue',['cli','ck',' to',' con','tinu','e'].join(''),'next','visit','proceed'],
             _pi: true, _pj: false,
         },
         {
-            id: 'mega4upload', hosts: [['mega','4u','ploa','d.ne','t'].join('')],
+            id: 'mega4upload', hosts: [['meg','a4u','pl','oad.','net'].join('')],
             selectors: [
-                [105,110,112,117,116,91,110,97,109,101,61,34,109,101,103,97,95,102,114,101,101,34,93].map(function(_c){return String.fromCharCode(_c)}).join(''), ['#dow','nl','oad','bt','n'].join(''),
+                [105,110,112,117,116,91,110,97,109,101,61,34,109,101,103,97,95,102,114,101,101,34,93].map(function(_c){return String.fromCharCode(_c)}).join(''), ['#d','own','lo','adb','tn'].join(''),
                 [98,117,116,116,111,110,46,100,111,119,110,108,111,97,100,98,116,110].map(function(_c){return String.fromCharCode(_c)}).join(''), [98,117,116,116,111,110,35,100,111,119,110,108,111,97,100,98,116,110].map(function(_c){return String.fromCharCode(_c)}).join(''),
             ],
             _pi: true, _pj: true,
             countdownSelector: '#countdown .seconds, #countdown span, span.seconds',
         },
         {
-            id: 'uploady', hosts: [['upl','oad','y.','io'].join('')],
-            selectors: ['#free_dwn:not([disabled])', ['#fr','ee_','dw','n'].join('')],
+            id: 'uploady', hosts: [['up','load','y.','io'].join('')],
+            selectors: ['#free_dwn:not([disabled])', ['#fre','e_','dwn'].join('')],
             _pi: true, _pj: false,
-            countdownSelector: ['#f','re','e-t','im','er'].join(''),
+            countdownSelector: ['#f','ree-','tim','er'].join(''),
         },
         {
-            id: 'upfilesgo', hosts: [['upfi','lesg','o.','com'].join(''),['upf','iles','.c','om'].join(''),['upfi','le','s.a','pp'].join('')],
+            id: 'upfilesgo', hosts: [['upfi','les','go','.com'].join(''),['upfi','les.','co','m'].join(''),['up','fi','les.','app'].join('')],
             selectors: [
-                ['#l','ink-','bu','tto','n-fr','ee'].join(''), 'button#link-button-free',
+                ['#l','ink-','bu','tto','n-','fre','e'].join(''), 'button#link-button-free',
                 'button.vhit:not([disabled])',
                 'button.btn-primary:not([disabled])',
                 'button[type="submit"]:not([disabled])',
             ],
-            forceSelectors: [['#l','in','k-b','utto','n-','fr','ee'].join(''), [98,117,116,116,111,110,46,118,104,105,116].map(function(_c){return String.fromCharCode(_c)}).join('')],
+            forceSelectors: [['#l','ink','-b','utto','n-fr','ee'].join(''), [98,117,116,116,111,110,46,118,104,105,116].map(function(_c){return String.fromCharCode(_c)}).join('')],
             _pi: true, _pj: true,
         },
         {
-            id: 'modsfire', hosts: [['mods','fir','e.','com'].join('')],
+            id: 'modsfire', hosts: [['mod','sfi','re.c','om'].join('')],
             selectors: [
                 'a.download-button[href^="/d/"]',
                 'a.download-button[href^="/download/"]',
@@ -4708,9 +4708,9 @@ function redirectWithMessage(url) {
             _pi: true, _pj: true,
         },
         {
-            id: 'dailyuploads', hosts: [['da','il','yu','ploa','ds.','ne','t'].join('')],
+            id: 'dailyuploads', hosts: [['dai','lyup','lo','ad','s.n','et'].join('')],
             selectors: [
-                ['#dow','nlo','ad','btn'].join(''), ['.d','ow','nl','oad','bt','n'].join(''), [98,117,116,116,111,110,46,100,111,119,110,108,111,97,100,98,116,110].map(function(_c){return String.fromCharCode(_c)}).join(''),
+                ['#d','own','lo','adb','tn'].join(''), ['.dow','nlo','adb','tn'].join(''), [98,117,116,116,111,110,46,100,111,119,110,108,111,97,100,98,116,110].map(function(_c){return String.fromCharCode(_c)}).join(''),
                 'button[type="submit"]:not([disabled])',
             ],
             _pi: true, _pj: true,
@@ -4718,19 +4718,19 @@ function redirectWithMessage(url) {
         },
         {
             id: 'jioupload',
-            hosts: ['jioupload.link',['ji','ou','ploa','d.co','m'].join(''),'jioupload.icu','totoly.monster'],
+            hosts: ['jioupload.link',['jiou','pl','oad','.co','m'].join(''),'jioupload.icu','totoly.monster'],
             selectors: [
                 'button.btn-secondary.btn-md', 'button.btn.btn-secondary',
-                ['#co','nt','inu','eB','tn'].join(''),
+                ['#con','tinu','eB','tn'].join(''),
                 'a.btn.btn-secondary[href*="/file/"]',
                 'button[type="submit"]:not([disabled])',
                 'a.btn:not(.disabled)',
             ],
             _pi: true, _pj: true,
-            mathCaptchaEl: ['#c','hal','leng','e'].join(''), mathCaptchaInput: ['#cap','tch','a'].join(''),
+            mathCaptchaEl: ['#c','hal','len','ge'].join(''), mathCaptchaInput: ['#ca','ptc','ha'].join(''),
         },
         {
-            id: 'cloudfam', hosts: [['clo','udf','am.i','o'].join(''),'get.cloudfam.io'],
+            id: 'cloudfam', hosts: [['clo','udf','am.','io'].join(''),'get.cloudfam.io'],
             selectors: [
                 'a.get-link:not(.disabled)', [97,46,103,101,116,45,108,105,110,107].map(function(_c){return String.fromCharCode(_c)}).join(''),
                 'a[href*="redirection"]:not(.disabled)',
@@ -4741,9 +4741,9 @@ function redirectWithMessage(url) {
             _pi: true, _pj: true,
         },
         {
-            id: 'frdl', hosts: [['fr','dl.','io'].join(''),'freedl.ink','fredl.ru','frdl.is'],
+            id: 'frdl', hosts: [['frd','l.io'].join(''),'freedl.ink','fredl.ru','frdl.is'],
             selectors: [
-                ['#dow','nlo','adbt','nf','re','e'].join(''), [98,117,116,116,111,110,46,100,111,119,110,108,111,97,100,98,116,110,102,114,101,101].map(function(_c){return String.fromCharCode(_c)}).join(''),
+                ['#do','wnl','oa','db','tnf','re','e'].join(''), [98,117,116,116,111,110,46,100,111,119,110,108,111,97,100,98,116,110,102,114,101,101].map(function(_c){return String.fromCharCode(_c)}).join(''),
                 'a.btn-primary.btn-block.mb-4[href]:not([href=""])',
                 'a.btn-primary.btn-block',
                 'button#downloadbtnfree:not([disabled])',
@@ -4759,10 +4759,10 @@ function redirectWithMessage(url) {
             ],
         },
         {
-            id: 'rapidgator', hosts: [['rapi','dgat','or.n','et'].join('')],
+            id: 'rapidgator', hosts: [['rap','idg','ator','.n','et'].join('')],
             selectors: [
-                ['.btn','-f','ree','.ac','t-l','ink.','lin','k'].join(''), 'a.btn-free.act-link', 'a.act-link.link',
-                ['#do','wnl','oad-','bt','n'].join(''), [97,46,98,116,110,45,100,111,119,110,108,111,97,100].map(function(_c){return String.fromCharCode(_c)}).join(''),
+                ['.bt','n-','fr','ee.','act-','li','nk.','lin','k'].join(''), 'a.btn-free.act-link', 'a.act-link.link',
+                ['#dow','nl','oad-','bt','n'].join(''), [97,46,98,116,110,45,100,111,119,110,108,111,97,100].map(function(_c){return String.fromCharCode(_c)}).join(''),
                 'a[href*="/download/"]:not(.disabled)', 'a.btn:not(.disabled)',
             ],
             _pi: true, _pj: true,
@@ -4796,17 +4796,17 @@ function redirectWithMessage(url) {
         if (!_p7) return;
 
 
-        if (_p8.indexOf(['up','loa','dy.','io'].join('')) !== -1) {
+        if (_p8.indexOf(['upl','oad','y.io'].join('')) !== -1) {
             var _doUploady = function() {
                 try {
                     if (typeof _pb.es === 'function') {
                         _pb.es();
                     } else {
-                        var b = document.querySelector(['#f','re','e_dw','n'].join(''));
+                        var b = document.querySelector(['#fr','ee','_dwn'].join(''));
                         if (b) b.click();
                     }
                 } catch(_e) {
-                    var b2 = document.querySelector(['#fre','e_','dwn'].join(''));
+                    var b2 = document.querySelector(['#f','re','e_d','wn'].join(''));
                     if (b2) b2.click();
                 }
                 setTimeout(function() {
@@ -4830,7 +4830,7 @@ function redirectWithMessage(url) {
         }
 
 
-        if (_p8.indexOf(['mods','fi','re','.c','om'].join('')) !== -1) {
+        if (_p8.indexOf(['mod','sfir','e.','co','m'].join('')) !== -1) {
             var btn = document.querySelector('a.download-button[href]');
             if (btn && btn.href && btn.href !== '#' && btn.href.indexOf('javascript') === -1) {
                 _earlyHref = btn.href;
@@ -4839,7 +4839,7 @@ function redirectWithMessage(url) {
         }
 
 
-        if (_p8.indexOf(['cl','oudf','am.','io'].join('')) !== -1) {
+        if (_p8.indexOf(['clou','dfam','.io'].join('')) !== -1) {
             var _pollCF = setInterval(function() {
                 document.querySelectorAll('div,section,aside').forEach(function(el) {
                     var st = window.getComputedStyle(el);
@@ -4866,11 +4866,11 @@ function redirectWithMessage(url) {
 
         if (_p8.indexOf(['frdl','.io'].join('')) !== -1 || _p8.indexOf('freedl.ink') !== -1 ||
             _p8.indexOf('fredl.ru') !== -1 || _p8.indexOf('frdl.is')    !== -1) {
-            var step1 = document.querySelector(['#d','own','loa','dbt','nfr','ee'].join(''));
+            var step1 = document.querySelector(['#dow','nlo','adbt','nfre','e'].join(''));
             if (step1) {
                 step1.click();
                 setTimeout(function() {
-                    document.querySelectorAll(['.se','con','ds'].join('')).forEach(function(el) {
+                    document.querySelectorAll(['.s','econ','ds'].join('')).forEach(function(el) {
                         if (/^\d+$/.test(el.textContent.trim())) el.textContent = '1';
                     });
                 }, 500);
@@ -4879,8 +4879,8 @@ function redirectWithMessage(url) {
         }
 
 
-        if (_p8.indexOf(['ji','ou','ploa','d.co','m'].join('')) !== -1) {
-            var ch = document.querySelector(['#ch','al','le','nge'].join(''));
+        if (_p8.indexOf(['jio','up','lo','ad.c','om'].join('')) !== -1) {
+            var ch = document.querySelector(['#ch','all','en','ge'].join(''));
             if (ch) {
                 var parts = (ch.textContent || '').replace(/[=?]/g,'')
                     .replace(/solve[\s]*:/i,'').trim().split(/[ ]+/);
@@ -4981,7 +4981,7 @@ function redirectWithMessage(url) {
                     if (n.nodeType !== 1) continue;
                     if (_p1.isReady(n)) {
                         var t = (n.innerText || '').toLowerCase();
-                        var words = [['ge','t ','li','nk'].join(''),'continue','proceed','download','get'];
+                        var words = [['get',' lin','k'].join(''),'continue','proceed','download','get'];
                         if (words.some(function(w){return t.indexOf(w)!==-1;})) {
                             _p17(n); return;
                         }
@@ -5056,7 +5056,7 @@ function redirectWithMessage(url) {
 
             var maxWait = (_p7 && (_p7._pi || _p7._pj)) ? 120000 : 60000;
             if (_p1e >= maxWait) {
-                _p19('❌ Timed out', ['#f4','433','6'].join(''));
+                _p19('❌ Timed out', ['#f4','43','36'].join(''));
                 setTimeout(function(){_p1a.style.opacity='0';}, 7000);
                 if (_p1c) _p1c.disconnect();
                 clearInterval(_p1d);
@@ -5080,7 +5080,7 @@ function redirectWithMessage(url) {
     var gateKnown = false;
     var gatePsaGoto = false;
     try {
-        gateKnown = /(^|\.)(jobars2\.com|configfiles\.in|internshipshub\.in|iflylink\.com|mahitimananch\.in|aii\.sh|shrinkbixby\.com|lnbz\.la|shrink\.pe)$/i.test(W.location.hostname || "");
+        gateKnown = /(^|\.)(jobars2\.com|configfiles\.in|internshipshub\.in|iflylink\.com|mahitimananch\.in|aii\.sh|shrinkbixby\.com|lnbz\.la|shrink\.pe|financeguidz\.com)$/i.test(W.location.hostname || "");
         gatePsaGoto = /(^|\.)(psa\.wf|psarips\.com)$/i.test(W.location.hostname || "") && /^\/goto\//.test(W.location.pathname || "");
     } catch (e) {}
 
@@ -5116,7 +5116,7 @@ function redirectWithMessage(url) {
 
     function isKnownFarmHost(host) {
         try {
-            return /(^|\.)(jobars2\.com|configfiles\.in|internshipshub\.in|iflylink\.com|mahitimananch\.in|aii\.sh|shrinkbixby\.com|lnbz\.la|shrink\.pe)$/i.test(host || W.location.hostname || "");
+            return /(^|\.)(jobars2\.com|configfiles\.in|internshipshub\.in|iflylink\.com|mahitimananch\.in|aii\.sh|shrinkbixby\.com|lnbz\.la|shrink\.pe|financeguidz\.com)$/i.test(host || W.location.hostname || "");
         } catch (e) { return false; }
     }
 
@@ -5760,7 +5760,7 @@ function redirectWithMessage(url) {
     if (/^https:\/\/paster\.so\/\w+/.test(window.location.href)) {
 
 
-        const excludedDomains = ['paster.so', ['goog','le','.c','om'].join(''), ['clou','df','lare','in','si','ght','s.co','m'].join(''), ['wik','ipe','dia.','com'].join(''), 'w3.org', ['hca','ptch','a.c','om'].join(''), ['gs','ta','tic','.c','om'].join('')];
+        const excludedDomains = ['paster.so', ['goog','le','.com'].join(''), ['clou','dfl','ar','ei','nsig','ht','s.c','om'].join(''), ['wiki','ped','ia.c','om'].join(''), 'w3.org', ['hcap','tc','ha.c','om'].join(''), ['gst','ati','c.c','om'].join('')];
 
         let overlayCreated = false;
 

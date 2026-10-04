@@ -34,6 +34,7 @@
 //  - internshipshub.in  mystudy.internshipshub.in walls + robot.php resolver          [confirmed]
 //  - iflylink.com       token exit shortener; 307s back into the farm                 [confirmed]
 //  - mahitimananch.in   "Access Restricted - Open Link In Chrome" Firefox wall        [user-observed live; NXDOMAIN from public resolvers]
+//  - financeguidz.com   blog-wait page ("Please Wait 10 Seconds..."), Netpub ads    [user-observed live 2026-10-05]
 //  - aii.sh             AdLinkFly install ("Shrinkbixby" brand), ?src=PSA step 1;     [confirmed: app_vars + turnstile markers]
 //                       step-2+ URLs DROP the query, hence the explicit @match
 //  - shrinkbixby.com    Shrinkbixby canonical domain (200 OK)                         [curl-verified 2026-10-04]
@@ -79,7 +80,7 @@
     var gateKnown = false;
     var gatePsaGoto = false;
     try {
-        gateKnown = /(^|\.)(jobars2\.com|configfiles\.in|internshipshub\.in|iflylink\.com|mahitimananch\.in|aii\.sh|shrinkbixby\.com|lnbz\.la|shrink\.pe)$/i.test(W.location.hostname || "");
+        gateKnown = /(^|\.)(jobars2\.com|configfiles\.in|internshipshub\.in|iflylink\.com|mahitimananch\.in|aii\.sh|shrinkbixby\.com|lnbz\.la|shrink\.pe|financeguidz\.com)$/i.test(W.location.hostname || "");
         gatePsaGoto = /(^|\.)(psa\.wf|psarips\.com)$/i.test(W.location.hostname || "") && /^\/goto\//.test(W.location.pathname || "");
     } catch (e) {}
 
@@ -115,7 +116,7 @@
 
     function isKnownFarmHost(host) {
         try {
-            return /(^|\.)(jobars2\.com|configfiles\.in|internshipshub\.in|iflylink\.com|mahitimananch\.in|aii\.sh|shrinkbixby\.com|lnbz\.la|shrink\.pe)$/i.test(host || W.location.hostname || "");
+            return /(^|\.)(jobars2\.com|configfiles\.in|internshipshub\.in|iflylink\.com|mahitimananch\.in|aii\.sh|shrinkbixby\.com|lnbz\.la|shrink\.pe|financeguidz\.com)$/i.test(host || W.location.hostname || "");
         } catch (e) { return false; }
     }
 
