@@ -208,20 +208,16 @@ def debloat_and_rebrand(file_path, new_version):
             "// @match *://*.bloggerpemula.pythonanywhere.com/*\n", ""
         )
 
-        # Remove the BypassResults incoming case handler (two-line block)
-        bp_case_line1 = (
-            "      case 'bloggerpemula.pythonanywhere.com': if (h.pathname === '/' "
-            "&& h.searchParams.has('BypassResults')) {result.link = decodeURIComponent("
-            "location.href.split('BypassResults=')[1].replace('&m=1', ''));\n"
+        # Remove the BypassResults incoming case handler (layout-robust: the case may
+        # share its line with following code like `default: break;}})(new URL(...); if (bas) {...`,
+        # so cut exactly from the case label to its `return result;} break;` marker.
+        # Must use a BLOCK comment — a // comment would swallow the rest of the line,
+        # which can contain code from the enclosing switch/IIFE.)
+        content = re.sub(
+            r"case 'bloggerpemula\.pythonanywhere\.com':.*?return result;\} break;",
+            "/* bp tracking case removed */",
+            content, count=1, flags=re.S
         )
-        bp_case_line2 = (
-            "      result.redirectDelay = cfg.get('SetDelay'); result.isNotifyNeeded = true; "
-            "return result;} break;"
-        )
-        if bp_case_line1 in content:
-            idx = content.find(bp_case_line1)
-            end_of_line2 = content.find("\n", content.find(bp_case_line2, idx)) + 1
-            content = content[:idx] + "      // bp tracking case removed\n" + content[end_of_line2:]
 
         # Remove the "Please Wait ... Redirected" notify message that goes with the case
         content = content.replace(
@@ -238,19 +234,13 @@ def debloat_and_rebrand(file_path, new_version):
         )
 
         # Remove the BypassResults return path in the bas() switch block
-        bp_case_line = (
-            "      case 'bloggerpemula.pythonanywhere.com': if (h.pathname === '/' "
-            "&& h.searchParams.has('BypassResults')) {result.link = decodeURIComponent("
-            "location.href.split('BypassResults=')[1].replace('&m=1', ''));"
-        )
-        if bp_case_line in content:
-            idx = content.find(bp_case_line)
-            # The block ends at the next line break after "return result;} break;"
-            end_marker = "return result;} break;"
-            end_idx = content.find(end_marker, idx)
-            if end_idx != -1:
-                end_idx = content.find("\n", end_idx) + 1
-                content = content[:idx] + "      // bp tracking path removed\n" + content[end_idx:]
+        # (same layout-robust regex as above; runs only if any trace survived)
+        if "case 'bloggerpemula.pythonanywhere.com':" in content:
+            content = re.sub(
+                r"case 'bloggerpemula\.pythonanywhere\.com':.*?return result;\} break;",
+                "/* bp tracking path removed */",
+                content, count=1, flags=re.S
+            )
 
         # Fix redirect() function — strip the tracking server route
         old_redirect = (

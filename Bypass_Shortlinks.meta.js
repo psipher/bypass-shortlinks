@@ -5,7 +5,7 @@
 // @author     nOneCode4u
 // @license    Unlicense
 // @noframes
-// @version    96.5-patch0.2.3.20261004.b1
+// @version    96.5-patch0.2.3.20261004.b4
 // @grant      GM_setValue
 // @grant      GM_getValue
 // @grant      GM_addStyle
@@ -300,12 +300,19 @@
 // @grant       GM_registerMenuCommand
 // @grant       GM_unregisterMenuCommand
 // @grant       unsafeWindow
+// @grant        unsafeWindow
 // @match        https://acortalink.me/*
 // @match         *://linkvertise.com/*
 // @match        *://bstlar.com/*
 // @match        https://bypass.city/bypass?bypass=*
 // @match        https://adbypass.org/bypass?bypass=*
 // @match        https://paster.so/*
+// @match        *://*.psa.wf/*
+// @match        *://*.psarips.com/*
+// @match        *://*.exe.io/*
+// @match        *://*.exeygo.com/*
+// @match        *://*.srnky.com/*
+// @match        *://*.clksz.com/*
 // @include       /^https:\/\/((bleleadersto|tonordersitye|daughablelea|mdlinkshub).com)\/s\?(?!.*f933e7ff).*$/
 // @include       /^(https?:\/\/)(loot-link.com|loot-links.com|lootlink.org|lootlinks.co|lootdest.(info|org|com)|links-loot.com|linksloot.net)\/s\?.*$/
 // @include /^(https?:\/\/)(.+)?((actualpost|americanstylo|beautifulfashionnailart|dadinthemaking|glowandglamcorner|listofthis|lobirtech|travelperi|vepiv|seydisehirmansethaber|turkiyertg|tophotelsukraine|balatroltd|tenorminiuk|icryptowin|chronoat|ecoinfotec|bcsclass|mainitbd|newselab|dizok|uzaay|tophistoryview|9sblog|ubnem|techavash|6harfli|professionaley|playghub|apkvmod|apkallworld|techoflix|toplistee|games2mobile|nivtu|bflig|jplna|bilgilendirici|zoninews|smoplay|m-womenstyle|bnirfinance|fuyde|infoguidebd|worthtester|4kphotoediting|befinja).com|(makego|sakazi|momge|englishgrammarpro|arab-plus).net|askerlikforum.com.tr|misterio.ro|(forp|bevery|fanuze|twogamehup|muskokay|zingif).xyz|gamcabd.org|gamerking.shop|nidbd.me)(\/.*)/
@@ -410,6 +417,7 @@
 // @include     /rapidgator\.net/
 // @include     /^(https?:\/\/)(.+)?((mega-enlace|acortados).com|tulink.org)/
 // @include     /^https:\/\/(.*\.|)(playonpc.online|(quins|megahosting).us|(tradeshowrating|historyofyesterday|retrotechreborn|insurelean|ecosolardigest|finance240|2wheelslife|ngebike).com|gally.shop|(qanin|ivnlnews|jobvox|gfcg).xyz|evegor.net|freeat30.org|droplink.co)\/.*/
+// @include      /^https?:\/\/(?!(?:[a-z0-9-]+\.)*(?:psa\.wf|psarips\.com)(?:[\/:]|$))[a-z0-9.-]+\.[a-z]{2,}\/[A-Za-z0-9]{3,12}\?src=PSA(?:&|$)/
 // @include     /quickeemail.com/
 // @exclude /^(https?:\/\/)([^\/]+\.)?((cloudflare|github|aliyun|reddit|bing|yahoo|microsoft|whatsapp|amazon|ebay|payoneer|paypal|skrill|stripe|stripecdn|tipalti|wise|discord|tokopedia|taobao|taboola|aliexpress|netflix|citigroup|spotify|bankofamerica|hsbc|blogger|(accounts|studio).youtube|atlassian|pinterest|twitter|x|live|linkedin|fastbull|tradingview|deepseek|chatgpt|openai|grok|bilibili|indodax|bmcdn6|fbsbx|googlesyndication|amazon-adsystem|pubmatic|gstatic).com|(greasyfork|openuserjs|telegram|wikipedia|lichess).org|(doubleclick|yahoo).net|proton.me|stripe.network|meta.ai|codepen.io|(shopee|lazada|rakuten|maybank|binance).*|(dana|ovo|bca.co|bri.co|bni.co|bankmandiri.co|desa|(.*).go).id|(.*).(edu|gov))(\/.*)/
 // @exclude /^https?:\/\/(?!(www\.google\.com\/(recaptcha\/|url)|docs\.google\.com\/|drive\.google\.com\/)).*google\..*/
