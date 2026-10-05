@@ -451,6 +451,7 @@
         return 9000; // previous default
     }
 
+    var arrivalCounted = false;
     var clicked = new WeakSet();
     var finished = false;
     var lastNavAttempt = 0;
@@ -569,10 +570,35 @@
         });
     }
 
+    // Server-bounce loop guard: if we've landed on the SAME step (same path AND
+    // same form) 3+ times in this tab, the server is rejecting our advance -
+    // clicking again would loop forever. Steps share one URL, so the signature
+    // is path + which form is on the page.
+    function stepVisits() {
+        try {
+            var step = q("#before-captcha") ? "bc" : (q("#link-view") ? "lv" : (q("#go-link") || q("form#submit-form")) ? "gl" : "o");
+            var k = "psaStep:" + W.location.pathname + ":" + step;
+            var n = parseInt(W.sessionStorage.getItem(k) || "0", 10) || 0;
+            n += 1;
+            W.sessionStorage.setItem(k, String(n));
+            if (n > 2) {
+                finished = true;
+                log("step visited " + n + "x without advancing - server is bouncing us; standing down on this step");
+                return 99;
+            }
+            return n;
+        } catch (e) { return 1; }
+    }
+
+    function vhitReport() {
+        try { if (W.vhit && typeof W.vhit.report === "function") W.vhit.report(); } catch (e) {}
+    }
+
     function automationTick(t0) {
         if (finished) return;
         var elapsed = Date.now() - t0;
         if (elapsed > 60000) { log("60s cap reached, stopping automation (manual input may be required)"); return; }
+        if (!arrivalCounted) { arrivalCounted = true; if (stepVisits() === 99) return; }
 
         try { nukeWall(); } catch (e) {}
 
@@ -613,6 +639,7 @@
                 } else if (elapsed > 8000) {
                     log("force-enabling gated Continue button");
                     enableEl(btn);
+                    vhitReport();
                     clickOnce(btn, "#before-captcha submit button (forced)");
                 }
             }
@@ -656,6 +683,7 @@
             if (!clicked.has(lv)) {
                 clicked.add(lv);
                 log("submitting #link-view after counter-aware wait");
+                vhitReport();
                 submitFormEl(lv);
             }
         }
@@ -664,6 +692,7 @@
         if (gl) {
             var gbtn = q("#go-submit", gl) || q("#submit-button", gl) || q('button[type="submit"]', gl) || q("button", gl);
             if (gbtn && !isDisabled(gbtn)) {
+                vhitReport();
                 clickOnce(gbtn, "Get Link button");
             } else if (elapsed > counterWaitMs() + 16000 && Date.now() - lastNavAttempt > 10000) {
                 // page's own XHR never ran (stuck queue) -> do the /links/go POST ourselves

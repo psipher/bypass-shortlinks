@@ -662,6 +662,7 @@
     // ================= 2. AdLinkFly exits (aii.sh / lnbz.la / unknown rotators) =================
     var MODAL_RE = /adblocker detected|firefox is blocking|blocking ads|how to disable your adblocker|please disable/i;
     var DISABLED_IT_RE = /i'?ve disabled/i;
+    var arrivalCounted = false;
     var clicked = new WeakSet();
     var disabledItClicked = false;
     var treatmentStarted = false;
@@ -892,6 +893,30 @@
 
     var lastNavAttempt = 0;
 
+    // Server-bounce loop guard: if we've landed on the SAME step (same path AND
+    // same form) 3+ times in this tab, the server is rejecting our advance -
+    // clicking again would loop forever. Steps share one URL, so the signature
+    // is path + which form is on the page.
+    function stepVisits() {
+        try {
+            var step = q("#before-captcha") ? "bc" : (q("#link-view") ? "lv" : (q("#go-link") || q("form#submit-form")) ? "gl" : "o");
+            var k = "psaStep:" + W.location.pathname + ":" + step;
+            var n = parseInt(W.sessionStorage.getItem(k) || "0", 10) || 0;
+            n += 1;
+            W.sessionStorage.setItem(k, String(n));
+            if (n > 2) {
+                finished = true;
+                log("step visited " + n + "x without advancing - server is bouncing us; standing down on this step");
+                return 99;
+            }
+            return n;
+        } catch (e) { return 1; }
+    }
+
+    function vhitReport() {
+        try { if (W.vhit && typeof W.vhit.report === "function") W.vhit.report(); } catch (e) {}
+    }
+
     function automationTick(t0) {
         if (finished) return;
         var elapsed = Date.now() - t0;
@@ -935,10 +960,11 @@
             var btn = q('button[type="submit"]', bc) || q("button", bc) || q('input[type="submit"]', bc);
             if (btn) {
                 if (!isDisabled(btn)) clickOnce(btn, "#before-captcha submit button");
-                else if (tokenOk) { enableEl(btn); clickOnce(btn, "#before-captcha submit button (token ready)"); }
+                else if (tokenOk) { enableEl(btn); vhitReport(); clickOnce(btn, "#before-captcha submit button (token ready)"); }
                 else if (elapsed > 8000) {
                     log("force-enabling gated Continue button");
                     enableEl(btn);
+                    vhitReport();
                     clickOnce(btn, "#before-captcha submit button (forced)");
                 }
             }
@@ -951,7 +977,7 @@
         // margin); the server rejects ad_form_data POSTs that come too early
         var lv = q("#link-view");
         if (lv && elapsed > counterWaitMs()) {
-            if (!clicked.has(lv)) { clicked.add(lv); log("submitting #link-view after counter-aware wait"); submitFormEl(lv); }
+            if (!clicked.has(lv)) { clicked.add(lv); log("submitting #link-view after counter-aware wait"); vhitReport(); submitFormEl(lv); }
         }
 
         // step 3: #go-link (Get Link) + the 6.x form#submit-form Continue
