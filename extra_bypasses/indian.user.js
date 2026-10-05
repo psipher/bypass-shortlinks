@@ -142,7 +142,8 @@
         var _get = function(k,d){try{return GM_getValue(k,d);}catch(_e){return d;}};
         var _set = function(k,v){try{GM_setValue(k,v);}catch(_e){}};
         var _auto = _get('bsp_auto', false);
-        var _mid;
+        var _pill = _get('bsp_pill', false); // Proceed pill is now opt-in (default hidden)
+        var _mid = undefined, _pid = undefined;
 
         var _toast = function(msg) {
             var t = document.createElement('div');
@@ -170,6 +171,19 @@
                     }
                 );
             } catch(_e) {}
+            if (_pid !== undefined) { try{GM_unregisterMenuCommand(_pid);}catch(_e){} }
+            try {
+                _pid = GM_registerMenuCommand(
+                    _pill ? '🟢 Proceed pill: ON  — click to hide'
+                          : '⚫ Proceed pill: hidden — click to show',
+                    function() {
+                        _pill = !_pill;
+                        _set('bsp_pill', _pill);
+                        _updateMenu();
+                        _toast(_pill ? '👁 Pill on' : '🙈 Pill hidden');
+                    }
+                );
+            } catch(_e) {}
         };
 
         // STATE-AWARE PROCEED PILL: with an optional third arg (a selector for the
@@ -179,6 +193,7 @@
         // without the arg it stays instant-ready exactly as before.
         var showProceedBtn = function(badge, onGo, watchSel) {
             if (!badge) return;
+            if (!_pill) return; // pill hidden (default): fully silent, auto still works
             var btn = document.createElement('button');
             btn.textContent = 'Proceed →';
             btn.style.cssText = 'background:#4caf50;color:#fff;border:none;padding:5px 14px;' +

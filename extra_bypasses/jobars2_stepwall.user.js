@@ -81,7 +81,7 @@
     var gatePsaGoto = false;
     var gateCf = false;
     try {
-        gateKnown = /(^|\.)(jobars2\.com|configfiles\.in|internshipshub\.in|iflylink\.com|mahitimananch\.in|aii\.sh|shrinkbixby\.com|lnbz\.la|shrink\.pe|financeguidz\.com|techbixby\.com|loanbixby\.com|financeehelp\.com|cloudhostt\.com|intercelestial\.com)$/i.test(W.location.hostname || "");
+        gateKnown = /(^|\.)(jobars2\.com|configfiles\.in|internshipshub\.in|iflylink\.com|mahitimananch\.in|aii\.sh|shrinkbixby\.com|lnbz\.la|shrink\.pe|financeguidz\.com|toolkitpro\.net|techbixby\.com|loanbixby\.com|financeehelp\.com|cloudhostt\.com|intercelestial\.com)$/i.test(W.location.hostname || "");
         gatePsaGoto = /(^|\.)(psa\.wf|psarips\.com)$/i.test(W.location.hostname || "") && /^\/goto\//.test(W.location.pathname || "");
         // Active Cloudflare challenge markers only (never cf_clearance, which
         // legitimately persists after a passed challenge)
@@ -123,7 +123,7 @@
 
     function isKnownFarmHost(host) {
         try {
-            return /(^|\.)(jobars2\.com|configfiles\.in|internshipshub\.in|iflylink\.com|mahitimananch\.in|aii\.sh|shrinkbixby\.com|lnbz\.la|shrink\.pe|financeguidz\.com|techbixby\.com|loanbixby\.com|financeehelp\.com|cloudhostt\.com|intercelestial\.com)$/i.test(host || W.location.hostname || "");
+            return /(^|\.)(jobars2\.com|configfiles\.in|internshipshub\.in|iflylink\.com|mahitimananch\.in|aii\.sh|shrinkbixby\.com|lnbz\.la|shrink\.pe|financeguidz\.com|toolkitpro\.net|techbixby\.com|loanbixby\.com|financeehelp\.com|cloudhostt\.com|intercelestial\.com)$/i.test(host || W.location.hostname || "");
         } catch (e) { return false; }
     }
 
@@ -341,6 +341,30 @@
     // calls cannot see. We cannot reach into CLOSED roots, but the page-realm
     // attachShadow hook below tags every host element with data-psa-shadow -
     // and removing/inspecting the HOST works regardless of the root's mode.
+    // CSP resilience: if the page-realm injection was blocked (marker missing),
+    // patch navigator from the sandbox realm. Tampermonkey-Firefox exposes
+    // exportFunction for exactly this; plain defineProperty covers the rest.
+    function verifySpoof() {
+        try {
+            var applied = (W.document.documentElement.getAttribute("data-psa-spoof") === "applied") ||
+                          /Chrome\/126/.test(W.navigator.userAgent || "");
+            if (applied) return true;
+            var nav = W.navigator;
+            var UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
+            try {
+                if (typeof exportFunction === "function") {
+                    exportFunction(function () { return UA; }, nav, { defineAs: "userAgent" });
+                } else {
+                    Object.defineProperty(nav, "userAgent", { configurable: true, get: function () { return UA; } });
+                }
+            } catch (e) {}
+            try { Object.defineProperty(nav, "vendor", { configurable: true, get: function () { return "Google Inc."; } }); } catch (e) {}
+            try { W.chrome = W.chrome || {}; } catch (e) {}
+            log("spoof re-applied via sandbox realm (CSP or injection failure)");
+            return /Chrome\/126/.test(W.navigator.userAgent || "");
+        } catch (e) { return false; }
+    }
+
     function installShadowTrap() {
         injectPageScript(
             "if (!Element.prototype.__psaShadowHook) {" +
@@ -378,6 +402,7 @@
             "function _def(o,p,v){try{Object.defineProperty(o,p,{configurable:true,get:function(){return v;}});}catch(e){}}",
             // core Chrome identity
             "_def(navigator,'userAgent',UA);",
+            "try{document.documentElement.setAttribute('data-psa-spoof','applied');}catch(e){}",
             "_def(navigator,'appVersion',UA.replace(/^Mozilla\\//,''));",
             "_def(navigator,'vendor','Google Inc.');",
             "_def(navigator,'platform','Win32');",
@@ -1018,6 +1043,7 @@
         if (ck.indexOf("steplink") !== -1 || gateKnown) {
             injectChromeSpoof(); // document-start, before any page detection script
             installShadowTrap(); // tag shadow hosts so the modal finder can see them
+            setTimeout(function () { try { verifySpoof(); } catch (e) {} }, 1500); // CSP fallback
             if (W.document.readyState === "loading") {
                 try { W.document.addEventListener("DOMContentLoaded", function() {
                     try { recordDomain(W.location.hostname); } catch (e) {}
