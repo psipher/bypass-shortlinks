@@ -679,9 +679,26 @@
     }
 
     // ================= dispatch =================
+    // Cloudflare challenge pages are strictly hands-off: CF's bot detection reads
+    // navigator/Promise in the page realm, so any tampering makes them loop forever.
+    function isCfChallengePage() {
+        try {
+            if (/cf_chl_prog|cf_chl_seq|cf_chl_opt|cf_chl_rc_ni/i.test(String(document.cookie || ""))) return true;
+        } catch (e) {}
+        try {
+            if (/just a moment|attention required|security verification|checking your browser/i.test(document.title || "")) return true;
+        } catch (e) {}
+        try {
+            if (q('script[src*="/cdn-cgi/challenge-platform"]')) return true;
+        } catch (e) {}
+        return false;
+    }
+
     var h = host();
     log("module build", BUILD);
-    if (/(^|\.)psa\.wf$/i.test(h) || /(^|\.)psarips\.com$/i.test(h)) {
+    if (isCfChallengePage()) {
+        log("Cloudflare challenge page detected - standing down completely");
+    } else if (/(^|\.)psa\.wf$/i.test(h) || /(^|\.)psarips\.com$/i.test(h)) {
         if (/^\/goto\//.test(W.location.pathname)) {
             log("psa.wf /goto/ interstitial:", W.location.pathname);
             installPopunderCloser(); // POPUNDER CLOSER: chain page only

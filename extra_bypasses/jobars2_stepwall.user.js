@@ -79,9 +79,15 @@
     try { ck = String(W.document.cookie || ""); } catch (e) {}
     var gateKnown = false;
     var gatePsaGoto = false;
+    var gateCf = false;
     try {
         gateKnown = /(^|\.)(jobars2\.com|configfiles\.in|internshipshub\.in|iflylink\.com|mahitimananch\.in|aii\.sh|shrinkbixby\.com|lnbz\.la|shrink\.pe|financeguidz\.com|techbixby\.com|loanbixby\.com|financeehelp\.com|cloudhostt\.com|intercelestial\.com)$/i.test(W.location.hostname || "");
         gatePsaGoto = /(^|\.)(psa\.wf|psarips\.com)$/i.test(W.location.hostname || "") && /^\/goto\//.test(W.location.pathname || "");
+        // Active Cloudflare challenge markers only (never cf_clearance, which
+        // legitimately persists after a passed challenge)
+        gateCf = /cf_chl_prog|cf_chl_seq|cf_chl_opt|cf_chl_rc_ni/i.test(ck) ||
+            /just a moment|attention required|security verification|checking your browser/i.test(document.title || "") ||
+            !!q('script[src*="/cdn-cgi/challenge-platform"]');
     } catch (e) {}
 
     var LOG_PREFIX = "[jobars2]";
@@ -119,6 +125,25 @@
         try {
             return /(^|\.)(jobars2\.com|configfiles\.in|internshipshub\.in|iflylink\.com|mahitimananch\.in|aii\.sh|shrinkbixby\.com|lnbz\.la|shrink\.pe|financeguidz\.com|techbixby\.com|loanbixby\.com|financeehelp\.com|cloudhostt\.com|intercelestial\.com)$/i.test(host || W.location.hostname || "");
         } catch (e) { return false; }
+    }
+
+    // Cloudflare challenge pages are strictly hands-off: CF's bot detection reads
+    // navigator/Promise in the page realm, so ANY tampering (UA spoof, Promise
+    // proxy, cookie writes) makes the verification fail and loop forever. Cheap
+    // document-start checks only - active-challenge markers, never cf_clearance
+    // (which legitimately persists after a passed challenge).
+    function isCfChallengePage() {
+        try {
+            if (/cf_chl_prog|cf_chl_seq|cf_chl_opt|cf_chl_rc_ni/i.test(String(W.document.cookie || ""))) return true;
+        } catch (e) {}
+        try {
+            var t = document.title || "";
+            if (/just a moment|attention required|security verification|checking your browser|verify you are human/i.test(t)) return true;
+        } catch (e) {}
+        try {
+            if (q('script[src*="/cdn-cgi/challenge-platform"]')) return true;
+        } catch (e) {}
+        return false;
     }
 
     // ================= harvester (sandbox realm only; the injected
@@ -183,7 +208,7 @@
         try {
             farmWall = !!(W.document.body && /You Are On Step|Click Any Ad|Access Restricted/i.test(W.document.body.textContent));
         } catch (e) {}
-        try { modalUp = findModalContainers().length > 0; } catch (e) {}
+        try { modalUp = findModalContainers().length > 0 || shadowModalHosts().length > 0; } catch (e) {}
         lines.push("build: " + BUILD);
         lines.push("time: " + new Date().toISOString());
         try { lines.push("url: " + W.location.href); } catch (e) { lines.push("url: (unavailable)"); }
@@ -309,6 +334,40 @@
             (W.document.documentElement || W.document.head || W.document.body).appendChild(s);
             try { s.remove(); } catch (e) {}
         } catch (e) { log("page-script injection failed:", e && e.message); }
+    }
+
+    // Shadow-DOM support: the ShrinkApe/Shrinkbixby modal family (srnky, clksz,
+    // lnbz.la, aii.sh) renders inside a shadow root, which plain querySelector
+    // calls cannot see. We cannot reach into CLOSED roots, but the page-realm
+    // attachShadow hook below tags every host element with data-psa-shadow -
+    // and removing/inspecting the HOST works regardless of the root's mode.
+    function installShadowTrap() {
+        injectPageScript(
+            "if (!Element.prototype.__psaShadowHook) {" +
+            "  var orig = Element.prototype.attachShadow;" +
+            "  Element.prototype.attachShadow = function (init) {" +
+            "    var r = orig.apply(this, arguments);" +
+            "    try { this.setAttribute('data-psa-shadow', '1'); } catch (e) {}" +
+            "    return r;" +
+            "  };" +
+            "  Element.prototype.__psaShadowHook = true;" +
+            "}"
+        );
+    }
+
+    function shadowHosts() {
+        return qa("[data-psa-shadow]");
+    }
+
+    function shadowModalHosts() {
+        // hosts whose shadow content matches the wall-text regex
+        return shadowHosts().filter(function (h) {
+            try {
+                var r = h.shadowRoot;
+                if (!r) return true; // closed root: assume wall if tagged (host removal is safe)
+                return MODAL_RE.test(r.textContent || "");
+            } catch (e) { return false; }
+        });
     }
 
     function injectChromeSpoof() {
@@ -647,6 +706,14 @@
                 removed++;
             } catch (e) {}
         });
+        // shadow-DOM variant (ShrinkApe/Shrinkbixby family): removing the tagged
+        // HOST removes the modal even when its root is closed
+        shadowModalHosts().forEach(function(h) {
+            try {
+                h.remove();
+                removed++;
+            } catch (e) {}
+        });
         if (removed) log("removed " + removed + " adblock-modal overlay container(s)");
         return removed;
     }
@@ -655,6 +722,9 @@
         if (disabledItClicked) return;
         try {
             var btns = qa("button, a, input[type='button'], input[type='submit']");
+            shadowHosts().forEach(function(h) {
+                try { var r = h.shadowRoot; if (r) btns = btns.concat(qa("button, a, input[type='button'], input[type='submit']", r)); } catch (e) {}
+            });
             for (var i = 0; i < btns.length; i++) {
                 var b = btns[i];
                 var t = ((b.textContent || b.value || "") + " " + (b.className || "")).trim();
@@ -666,7 +736,7 @@
                 b.click(); // DOM-level click works even under an overlay
                 setTimeout(function() {
                     try {
-                        if (findModalContainers().length) {
+                        if (findModalContainers().length || shadowModalHosts().length) {
                             log("modal persisted 2s after dismissal click, removing containers");
                             nukeModal();
                         }
@@ -805,7 +875,7 @@
         // overlay modal: click the dismissal button first, remove as fallback
         // (the 10s delay gives the site's own handler a chance before we nuke)
         try {
-            if (findModalContainers().length) {
+            if (findModalContainers().length || shadowModalHosts().length) {
                 if (disabledItClicked || elapsed > 10000) nukeModal();
                 else tryDisabledItButton();
             }
@@ -913,6 +983,7 @@
     try {
         W.document.addEventListener("DOMContentLoaded", function() {
             try {
+                if (gateCf || isCfChallengePage()) return; // never touch CF challenges
                 if (looksLikeAdlinkflyStep()) {
                     recordDomain(W.location.hostname);
                     registerMenu();
@@ -922,25 +993,31 @@
         }, { once: true, capture: true });
     } catch (e) {}
 
-    if (gatePsaGoto) harvestPsaGoto(); // psa.wf /goto/: record chain target only
-    if (ck.indexOf("steplink") !== -1 || gateKnown) {
-        injectChromeSpoof(); // document-start, before any page detection script
-        if (W.document.readyState === "loading") {
-            try { W.document.addEventListener("DOMContentLoaded", function() {
+    if (gateCf) {
+        log("Cloudflare challenge page detected - standing down completely (any page-realm tampering makes the challenge loop)");
+        registerMenu(); // keep the debug-report menu available even here
+    } else {
+        if (gatePsaGoto) harvestPsaGoto(); // psa.wf /goto/: record chain target only
+        if (ck.indexOf("steplink") !== -1 || gateKnown) {
+            injectChromeSpoof(); // document-start, before any page detection script
+            installShadowTrap(); // tag shadow hosts so the modal finder can see them
+            if (W.document.readyState === "loading") {
+                try { W.document.addEventListener("DOMContentLoaded", function() {
+                    try { recordDomain(W.location.hostname); } catch (e) {}
+                    try { huntSteplink(12); } catch (e) {} // ~3.6s of retries, then quiet
+                    startAdlinkflyTreatment(); // no-op unless the signature is present
+                }, { once: true, capture: true }); } catch (e) {
+                    try { recordDomain(W.location.hostname); } catch (e2) {}
+                    try { huntSteplink(12); } catch (e2) {}
+                    startAdlinkflyTreatment();
+                }
+            } else {
                 try { recordDomain(W.location.hostname); } catch (e) {}
-                try { huntSteplink(12); } catch (e) {} // ~3.6s of retries, then quiet
-                startAdlinkflyTreatment(); // no-op unless the signature is present
-            }, { once: true, capture: true }); } catch (e) {
-                try { recordDomain(W.location.hostname); } catch (e2) {}
-                try { huntSteplink(12); } catch (e2) {}
+                huntSteplink(12);
                 startAdlinkflyTreatment();
             }
-        } else {
-            try { recordDomain(W.location.hostname); } catch (e) {}
-            huntSteplink(12);
-            startAdlinkflyTreatment();
+            registerMenu();
         }
-        registerMenu();
     }
 })();
 // ----- End Bypass jobars2 step wall + AdLinkFly exits -----

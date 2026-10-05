@@ -182,4 +182,26 @@ describe("jobars2_stepwall.user.js", () => {
     const ua = dom.window.navigator.userAgent;
     assert.match(ua, /Chrome\/126/, "page realm sees a Chrome 126 UA");
   });
+
+  test("13. CRITICAL: Cloudflare challenge page => complete stand-down (no spoof, no jump)", async () => {
+    const dom = makeDom(read("cf_challenge.html"), "https://get-to.link/spider-man-2026/?id=x&b=24");
+    dom.window.document.cookie = "cf_chl_prog=phase2; path=/";
+    dom.window.document.cookie = "steplink=" + encodeURIComponent("iflylink.com/kX?token=xyz");
+    const assigned = [];
+    const fw = makeFakeWindow({ hostname: "get-to.link", pathname: "/spider-man-2026/", onAssign: (u) => assigned.push(u) });
+    loadModule(src(), makeSandbox({ document: dom.window.document, fakeWindow: fw.window }));
+    await sleep(2000);
+    assert.equal(assigned.length, 0, "no navigation during a CF challenge");
+    assert.doesNotMatch(dom.window.navigator.userAgent, /Chrome\/126/, "UA spoof must NOT be injected into a CF challenge");
+  });
+
+  test("14. psa module also stands down on CF challenge pages", async () => {
+    const dom = makeDom(read("adlinkfly_step1.html"), "https://exeygo.com/aa41DoV?src=PSA");
+    dom.window.document.cookie = "cf_chl_seq=abc; path=/";
+    const fw = makeFakeWindow({ hostname: "exeygo.com", pathname: "/aa41DoV", search: "?src=PSA" });
+    loadModule(src(), makeSandbox({ document: dom.window.document, fakeWindow: fw.window }));
+    await sleep(2500);
+    assert.equal(fw.window.app_vars, undefined, "app_vars trap must not be installed during CF challenge");
+    assert.ok(dom.window.document.querySelector("#wall-msg"), "wall node untouched during CF challenge");
+  });
 });
