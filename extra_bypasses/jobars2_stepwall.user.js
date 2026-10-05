@@ -968,6 +968,23 @@
         log("AdLinkFly step detected:", W.location.pathname || "/");
         try { installAppVarsTrap(); } catch (e) {}
         netPatch();
+        // BlockAdblock defuse (fc-lc blanks the page leaving only its logo):
+        // its init skips when window.blockadblock already exists. Also keep
+        // detector bait elements measurable-but-invisible (zero-height baits
+        // read as "blocked") and pre-set the 5.x verified cookie.
+        try { W.blockadblock = false; } catch (e) {}
+        try {
+            Object.defineProperty(W, "blockadblock", { value: false, writable: false, configurable: true });
+        } catch (e) {}
+        try { W.document.cookie = "ab=1;path=/;max-age=3600"; } catch (e) {}
+        try {
+            var st = document.createElement("style");
+            st.id = "jobars2-bait";
+            st.textContent = ".myTestAd,#test-block,.adsbox,ins.adsbygoogle,.ads,.ad-banner,.banner_ads,.ad-unit,.ad-zone,.ad-space,.pub_300x250,.textads"
+                + "{height:5px!important;min-height:5px!important;width:5px!important;max-height:5px!important;overflow:hidden!important;"
+                + "opacity:0!important;pointer-events:none!important;position:fixed!important;left:-9999px!important;top:-9999px!important}";
+            (document.head || document.documentElement).appendChild(st);
+        } catch (e) {}
         var t0 = Date.now();
         var timer = setInterval(function() {
             try { automationTick(t0); } catch (e) {}

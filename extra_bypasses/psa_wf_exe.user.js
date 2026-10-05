@@ -341,12 +341,21 @@
         try { W.onblur = null; } catch (e) {}
 
         // (d) 5.x-family prevention: pre-set the "adblock verified" cookie and keep the
-        // bait elements the 5.x detector measures alive but tiny.
+        // bait elements the 5.x detector measures alive but tiny (dimensions kept:
+        // zero-height baits read as "blocked"). Also defuse BlockAdblock (fc-lc):
+        // its init checks `typeof window.blockadblock === 'undefined'` and skips
+        // when the global already exists - fc-lc blank pages + logo = this script.
         try { document.cookie = "ab=1;path=/;max-age=3600"; } catch (e) {}
+        try { W.blockadblock = false; } catch (e) {}
+        try {
+            Object.defineProperty(W, "blockadblock", {
+                value: false, writable: false, configurable: true
+            });
+        } catch (e) {}
         try {
             var st = document.createElement("style");
             st.id = "psa-exe-bait";
-            st.textContent = ".myTestAd,#test-block,.adsbox,ins.adsbygoogle{height:5px!important;min-height:5px!important;visibility:hidden!important;position:absolute!important;left:-9999px!important}";
+            st.textContent = ".myTestAd,#test-block,.adsbox,ins.adsbygoogle,.ads,.ad-banner,.banner_ads,.ad-unit,.ad-zone,.ad-space,.pub_300x250,.textads{height:5px!important;min-height:5px!important;width:5px!important;max-height:5px!important;overflow:hidden!important;opacity:0!important;pointer-events:none!important;position:fixed!important;left:-9999px!important;top:-9999px!important}";
             (document.head || document.documentElement).appendChild(st);
         } catch (e) {}
 
