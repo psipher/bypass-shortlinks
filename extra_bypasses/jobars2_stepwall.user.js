@@ -1061,9 +1061,10 @@
         }, { once: true, capture: true });
     } catch (e) {}
 
+    registerMenu(); // always available: "Copy debug report" works on any page
+
     if (gateCf) {
         log("Cloudflare challenge page detected - standing down completely (any page-realm tampering makes the challenge loop)");
-        registerMenu(); // keep the debug-report menu available even here
     } else {
         if (gatePsaGoto) harvestPsaGoto(); // psa.wf /goto/: record chain target only
         if (ck.indexOf("steplink") !== -1 || gateKnown) {
